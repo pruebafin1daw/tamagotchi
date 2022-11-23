@@ -18,7 +18,7 @@ class Tablero{
         let mapa = this.map;
         for(let i = 0; i < mapa.length; i++){
             for(let j = 0; j < mapa[i].length; j++){
-                vista.innerHTML += "<div>"+mapa+"</div>";
+                vista.innerHTML += mapa;
             }
             vista.innerHTML += "<br/>"
         }

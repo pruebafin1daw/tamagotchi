@@ -1,5 +1,10 @@
-.mapa{
+#mapa{
     width: 400px;
     height: 400px;
     border: 1px solid black;
+}
+
+#mapa div{
+    display: inline-block;
+    border: 1px solid blue;
 }

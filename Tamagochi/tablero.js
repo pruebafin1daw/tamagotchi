@@ -14,13 +14,13 @@ class Tablero{
     }
 
     dibujaMapa(){
-        let vista = document.getElementsByClassName("mapa");
+        let vista = document.getElementById("mapa");
         let mapa = this.map;
-        vista.textContent = "";
         for(let i = 0; i < mapa.length; i++){
             for(let j = 0; j < mapa[i].length; j++){
-                vista.innerHTML += mapa;
+                vista.innerHTML += "<div>"+mapa+"</div>";
             }
+            vista.innerHTML += "<br/>"
         }
     }
 }

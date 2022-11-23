@@ -1,0 +1,23 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: #222;
+}
+
+.container {
+    width: fit-content;
+    height: auto;
+    margin: auto;
+    background-color: antiquewhite;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row > div {
+    padding: 10px 20px;
+}

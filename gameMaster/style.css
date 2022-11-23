@@ -1,0 +1,17 @@
+body{
+    background-color: gray;
+}
+.space{
+    border: solid white 1px;
+    background-color: black;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+}
+.goal{
+    border: solid white 1px;
+    background-color: greenyellow;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+}

@@ -1,6 +1,21 @@
 "use strict";
 
+import { FormUI } from "./formApi/FormUI";
+import { Tamagotchi } from "./js/tamagotchi";
+
 let socket = new WebSocket("ws://127.0.0.1:8023");
+
+let game = new Tamagotchi();
+initGame({
+  map: {
+    x: 20,
+    y: 20
+  },
+});
+
+function initGame(config) {
+  game.init(config);
+}
 
 socket.onopen = function(e) {
   const msg = {

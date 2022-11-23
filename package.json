@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/pruebafin1daw/tamagotchi/issues"
   },
-  "homepage": "https://github.com/pruebafin1daw/tamagotchi#readme"
+  "homepage": "https://github.com/pruebafin1daw/tamagotchi#readme",
+  "dependencies": {
+    "ws": "^8.11.0"
+  }
 }

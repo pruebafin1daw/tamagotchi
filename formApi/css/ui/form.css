@@ -1,0 +1,23 @@
+.check{
+    width: 66px;
+    height: 24px;
+    background-image: url("../../img/ui/cross.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.checked{
+    background-image: url("../../img/ui/check.png");
+}
+
+.component{
+    background-image: url("../../img/ui/panel.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+
+    width: 157px;
+    height: 339px;
+}

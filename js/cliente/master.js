@@ -1,68 +1,34 @@
-"use strict";
+import { Socket } from "../servidor/socket.js";
 
-let socket = new WebSocket("ws://localhost:8023");
-//socket.binaryType = "arraybuffer";
+// * Códigos para el tipo de mensaje
+const MSG_PRIVADO = 0;
+const MSG_PUBLICO = 1;
 
-socket.onopen = function (e) {
-  alert("[open] Conexión establecida");
-  alert("Enviando al servidor");
-  const msg = {
-    tipo: 1,
-    mensaje: "hola, me llamo pepe",
-  };
-  socket.send(JSON.stringify(msg));
-};
+class Master {
+  socket = new Socket();
 
-socket.onmessage = function (event) {
-  console.log(event);
-
-  alert(`[message] Datos recibidos del servidor: ${event.data}`);
-};
-
-socket.onclose = function (event) {
-  if (event.wasClean) {
-    alert(
-      `[close] Conexión cerrada limpiamente, código=${event.code} motivo=${event.reason}`
-    );
-  } else {
-    // ej. El proceso del servidor se detuvo o la red está caída
-    // event.code es usualmente 1006 en este caso
-    alert("[close] La conexión se cayó");
+  init() {
+    this.socket.conectarse();
+    this.definirTablero(20);
   }
-};
 
-socket.onerror = function (error) {
-  alert(`[error] ${error.message}`);
-};
-
-const CASILLA = 0;
-const MADRIGUERA = 1;
-const META = 2;
-
-// Tablero
-tablero[20][20];
-tablero.forEach((row, rowIndex) => {
-  row.forEach((column, columnIndex) => {
-    let tipo = null;
-    if (
-      rowIndex == Math.round(tablero.lenght / 2) &&
-      columnIndex == Math.round(tablero[0].lenght / 2)
-    ) {
-      tipo = META;
-    } else if (rowIndex == 5 && columnIndex == 8) {
-      tipo = MADRIGUERA;
-    } else {
-      tipo = CASILLA;
-    }
-    let casilla = {
-      tipo: tipo,
-      jugadores: [],
+  /**
+   * * Definir dimensiones del tablero
+   */
+  definirTablero(dimension) {
+    const msg = {
+      tipo: MSG_PUBLICO,
+      mensaje: dimension,
     };
-    tablero[rowIndex][columnIndex] = casilla;
-  });
-});
-const msg = {
-  tipo: 0,
-  mensaje: tablero,
-};
-socket.send(JSON.stringify(msg));
+    this.socket.enviarMensaje(msg);
+  }
+
+  actualizarPosiciones() {
+    let movimiento = this.socket.recibirMensajes();
+    // TODO: Comprobar si el movimiento del jugador es válido
+
+    // ? Reenviar tablero
+  }
+}
+
+export { Master };

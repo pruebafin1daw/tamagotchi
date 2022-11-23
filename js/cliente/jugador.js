@@ -1,59 +1,77 @@
-"use strict";
+import { Socket } from "../servidor/socket.js";
 
-let socket = new WebSocket("ws://localhost:8023");
-//socket.binaryType = "arraybuffer";
+// * Códigos para el tipo de mensaje
+const MSG_PRIVADO = 0;
+const MSG_PUBLICO = 1;
 
-socket.onopen = function (e) {
-  alert("[open] Conexión establecida");
-  alert("Enviando al servidor");
-  const msg = {
-    tipo: 1,
-    mensaje: "hola, me llamo pepe",
-  };
-  socket.send(JSON.stringify(msg));
-};
+// * Códigos para el tipo de casilla
+const CASILLA = 0;
+const MADRIGUERA = 1;
+const META = 2;
 
-socket.onmessage = function (event) {
-  console.log(event);
+class Jugador {
+  socket = new Socket();
 
-  alert(`[message] Datos recibidos del servidor: ${event.data}`);
-};
+  init() {
+    this.socket.conectarse();
+    // TODO: Añadir jugador a lista de jugadores
 
-socket.onclose = function (event) {
-  if (event.wasClean) {
-    alert(
-      `[close] Conexión cerrada limpiamente, código=${event.code} motivo=${event.reason}`
-    );
-  } else {
-    // ej. El proceso del servidor se detuvo o la red está caída
-    // event.code es usualmente 1006 en este caso
-    alert("[close] La conexión se cayó");
+    this.dibujarTablero();
+    this.movimientos();
   }
-};
 
-socket.onerror = function (error) {
-  alert(`[error] ${error.message}`);
-};
-
-// Movimientos
-document.addEventListener("keydown", (event) => {
-  let movimiento = null;
-  switch (event.key) {
-    case "w":
-      movimiento = "arriba";
-      break;
-    case "a":
-      movimiento = "izquierda";
-      break;
-    case "d":
-      movimiento = "abajo";
-      break;
-    case "s":
-      movimiento = "derecha";
-      break;
+  dibujarTablero() {
+    let dimensiones = this.socket.recibirMensajes();
+    const tablero = [];
+    for (let i = 0; i < dimensiones; i++) {
+      for (let j = 0; i < dimensiones; j++) {
+        let tipo = null;
+        if (
+          i == Math.round(dimensiones / 2) &&
+          j == Math.round(dimensiones / 2)
+        ) {
+          tipo = META;
+        } else if (i == 5 && j == 8) {
+          tipo = MADRIGUERA;
+        } else {
+          tipo = CASILLA;
+        }
+        let casilla = {
+          tipo: tipo,
+          jugadores: [],
+        };
+        tablero.push(casilla);
+      }
+    }
   }
-  const msg = {
-    tipo: 0,
-    mensaje: movimiento,
-  };
-});
+
+  /**
+   * * Movimientos del jugador
+   */
+  movimientos() {
+    document.addEventListener("keydown", (event) => {
+      let movimiento = null;
+      switch (event.key) {
+        case "w":
+          movimiento = "arriba";
+          break;
+        case "a":
+          movimiento = "izquierda";
+          break;
+        case "d":
+          movimiento = "abajo";
+          break;
+        case "s":
+          movimiento = "derecha";
+          break;
+      }
+      const msg = {
+        tipo: MSG_PRIVADO,
+        mensaje: movimiento,
+      };
+      this.socket.enviarMensaje(msg);
+    });
+  }
+}
+
+export { Jugador };

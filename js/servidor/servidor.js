@@ -19,12 +19,15 @@ wss.broadcast = function broadcastMsg(msg) {
   };
   console.log("Desde mensajes: " + data.tipo);
   if (data.tipo != null) {
-    if (data.tipo == 0) {
-      clientMaster.send(JSON.stringify(message));
-    } else {
-      wss.clients.forEach(function each(client) {
-        client.send(JSON.stringify(message));
-      });
+    switch (data.tipo) {
+      case 0:
+        clientMaster.send(JSON.stringify(message));
+        break;
+      case 1:
+        wss.clients.forEach(function each(client) {
+          client.send(JSON.stringify(message));
+        });
+        break;
     }
   }
 };

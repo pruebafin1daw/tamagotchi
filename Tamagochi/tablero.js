@@ -4,23 +4,28 @@ class Tablero{
     }
     
     crearMapa(){
-        for(let i = 0; i < 20; i++){
-            for(let j = 0; j < 20; j++){
-                this.map[j] = "X";
-                this.map[i] =this.map[j];
+        this.map2 = [];
+        for(let i = 0; i < 17; i++){
+            for(let j = 0; j < 17; j++){
+                this.map2[j] = 'X';
+                this.map[i] = this.map2[j];
             }
         }
-        
     }
 
     dibujaMapa(){
         let vista = document.getElementById("mapa");
         let mapa = this.map;
         for(let i = 0; i < mapa.length; i++){
-            for(let j = 0; j < mapa[i].length; j++){
-                vista.innerHTML += mapa;
+            for(let j = 0; j < mapa.length; j++){
+                if(i == 8 && j == 8){
+                    vista.innerHTML += "<div class="+'final'+"></div>";
+                }else{
+                    vista.innerHTML += "<div class="+'cubo'+"></div>";
+                }
+
             }
-            vista.innerHTML += "<br/>"
+            vista.innerHTML += "<br/>";
         }
     }
 }

@@ -1,5 +1,24 @@
 #mapa{
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
     border: 1px solid black;
+    margin-left: 300px;
+}
+.cubo{
+    width: 18px;
+    height: 18px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 5px;
+    background-color: greenyellow;
+}
+.final{
+    width: 18px;
+    height: 18px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 5px;
+    background-color: orangered;
 }

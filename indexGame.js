@@ -1,5 +1,5 @@
 import{Game} from "./game.js";
-console.log("Hola");
+
 let configuration = {
     "players" : [
         {
@@ -19,4 +19,5 @@ let configuration = {
 
 
 let game=new Game();
+game.crearMapa();
 game.drawBoard();

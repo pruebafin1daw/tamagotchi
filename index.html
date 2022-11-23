@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<form>
-
-</form>
+<link rel="stylesheet" href="style.css">
+<div id="board">
+</div>
 <script type="module" src="./indexGame.js"></script>
-<!--
-    <script>
+<script>
 "use strict";
 
-let socket = new WebSocket("ws://localhost:8023");
+let socket = new WebSocket("ws://localhost:5500");
 //socket.binaryType = "arraybuffer";
 
 socket.onopen = function(e) {
@@ -40,4 +39,3 @@ socket.onerror = function(error) {
   alert(`[error] ${error.message}`);
 };
 </script>
--->

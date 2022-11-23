@@ -9,11 +9,17 @@ class Master {
         if (number % 2 == 0) {
             number += 1;
         }
-
+        let goalPosition = Math.trunc(number / 2);
+        let type;
         for (let i = 0; i < number; i++) {
             let row = [];
             for (let j = 0; j < number; j++) {
-                row.push(new Box(0));
+                if (i == goalPosition && j == goalPosition) {
+                    type = 9;
+                } else {
+                    type = 0;
+                }
+                row.push(new Box(type));
             }
             this.table.push(row);
         }

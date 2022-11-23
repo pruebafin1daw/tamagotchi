@@ -1,3 +1,3 @@
-# tamagotchi
+# tamagochi
 
 Abril Badea Eduard Andrei

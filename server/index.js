@@ -13,9 +13,10 @@ console.log("Server is Running...");
 // loop through all the connected clients and send them the msg.
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
-    const message = {
-	type: 'mensaje',
-	valor: JSON.parse(msg).mensaje
+    let message = null;
+    message = {
+        type: 'mensaje',
+        valor: JSON.parse(msg).mensaje
     }
     console.log("Desde mensajes: "+ data.tipo);
     if (data.tipo != null) {
@@ -23,8 +24,10 @@ wss.broadcast = function broadcastMsg(msg) {
     		clientMaster.send(JSON.stringify(message));
     	} else {
     		wss.clients.forEach(function each(client) {
-			client.send(JSON.stringify(message));
-		});
+                if(client != clientMaster){
+                    client.send(JSON.stringify(message));
+                }
+		    });
     	}
     }
 };
@@ -33,6 +36,7 @@ wss.broadcast = function broadcastMsg(msg) {
 // Each time we get a connection, the following function
 // is called.
 wss.on('connection', function connection(ws) {
+
     if (first) {
     	clientMaster = ws;
     	first = false;

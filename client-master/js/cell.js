@@ -1,6 +1,6 @@
 class Cell{
-    constructor(tipo){
-        this.tipo = tipo;
+    constructor(type){
+        this.type = type;
     }
 }
 export {Cell};

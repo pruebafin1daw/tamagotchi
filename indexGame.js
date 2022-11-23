@@ -19,4 +19,4 @@ let configuration = {
 
 
 let game=new Game();
-game.init(configuration);
+game.drawBoard();

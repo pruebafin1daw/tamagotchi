@@ -1,32 +1,27 @@
-import { Socket } from "../servidor/socket.js";
-
 // * Códigos para el tipo de mensaje
 const MSG_PRIVADO = 0;
 const MSG_PUBLICO = 1;
 
 class Master {
-  socket = new Socket();
+  comunicacion = null;
 
-  init() {
-    this.socket.conectarse();
-    this.definirTablero(20);
+  init(comunicacion) {
+    this.comunicacion = comunicacion;
+
+    //this.definirTablero(20);
+    this.comunicacion.enviarMensaje(MSG_PUBLICO, "hola");
   }
 
   /**
    * * Definir dimensiones del tablero
    */
   definirTablero(dimension) {
-    const msg = {
-      tipo: MSG_PUBLICO,
-      mensaje: dimension,
-    };
-    this.socket.enviarMensaje(msg);
+    this.enviarMensaje(MSG_PUBLICO, dimension);
   }
 
   actualizarPosiciones() {
-    let movimiento = this.socket.recibirMensajes();
+    //let movimiento = this.socket.recibirMensajes();
     // TODO: Comprobar si el movimiento del jugador es válido
-
     // ? Reenviar tablero
   }
 }

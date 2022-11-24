@@ -1,5 +1,3 @@
-import { Socket } from "../servidor/socket.js";
-
 // * Códigos para el tipo de mensaje
 const MSG_PRIVADO = 0;
 const MSG_PUBLICO = 1;
@@ -10,18 +8,19 @@ const MADRIGUERA = 1;
 const META = 2;
 
 class Jugador {
-  socket = new Socket();
+  comunicacion = null;
 
-  init() {
-    this.socket.conectarse();
+  init(comunicacion) {
+    this.comunicacion = comunicacion;
+
     // TODO: Añadir jugador a lista de jugadores
-
-    this.dibujarTablero();
-    this.movimientos();
+    //this.dibujarTablero();
+    //this.movimientos();
   }
 
   dibujarTablero() {
-    let dimensiones = this.socket.recibirMensajes();
+    //let dimensiones = this.socket.recibirMensajes();
+    let dimensiones = 4;
     const tablero = [];
     for (let i = 0; i < dimensiones; i++) {
       for (let j = 0; i < dimensiones; j++) {
@@ -69,7 +68,7 @@ class Jugador {
         tipo: MSG_PRIVADO,
         mensaje: movimiento,
       };
-      this.socket.enviarMensaje(msg);
+      //this.socket.enviarMensaje(msg);
     });
   }
 }

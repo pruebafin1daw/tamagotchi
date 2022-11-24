@@ -1,21 +1,23 @@
-import { Socket } from "./js/servidor/socket.js";
+import { Comunicacion } from "./js/servidor/comunicacion.js";
 import { Master } from "./js/cliente/master.js";
 import { Jugador } from "./js/cliente/jugador.js";
 
 let control = null;
 
-let socket = new Socket();
-socket.init({
+let comunicacion = new Comunicacion();
+comunicacion.init({
   ip: "localhost",
   port: "8023",
   check: tipoCliente,
 });
 
 function tipoCliente() {
-  if (socket.master) {
+  if (comunicacion.master) {
+    console.log("Soy el master");
     control = new Master();
   } else {
+    console.log("Soy un jugador");
     control = new Jugador();
   }
-  control.init();
+  control.init(comunicacion);
 }

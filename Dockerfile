@@ -13,4 +13,4 @@ RUN /usr/bin/npm install ws
 ADD . ./root
 EXPOSE 8023:8023
 
-ENTRYPOINT ["/usr/bin/node", "/root/js/servidor/servidor.js"]
+ENTRYPOINT ["/usr/bin/node", "/root/js/servidor.js"]

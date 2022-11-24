@@ -1,40 +1,31 @@
-"use strict";
-
 class Socket {
-  socket = new WebSocket("ws://localhost:8023");
+  socket = null;
+  state = false;
+  master = false;
 
-  conectarse() {
-    this.socket.onopen = function (e) {
-      alert("[open] Conexión establecida");
+  init(config) {
+    this.socket = new WebSocket(`ws://${config.ip}:${config.port}`);
+
+    this.socket.onopen = (event) => {
+      this.state = true;
+      const msg = {
+        tipo: 0,
+        mensaje: "master",
+      };
+      this.socket.send(JSON.stringify(msg));
     };
-  }
 
-  enviarMensaje(msg) {
-    this.socket.send(JSON.stringify(msg));
-  }
-
-  recibirMensajes() {
-    this.socket.onmessage = function (event) {
+    this.socket.onmessage = (event) => {
       console.log(event);
       alert(`[message] Datos recibidos del servidor: ${event.data}`);
     };
-  }
 
-  desconectarse() {
-    this.socket.onclose = function (event) {
-      if (event.wasClean) {
-        alert(
-          `[close] Conexión cerrada limpiamente, código=${event.code} motivo=${event.reason}`
-        );
-      } else {
-        alert("[close] La conexión se cayó");
-      }
+    this.socket.onclose = (event) => {
+      this.state = false;
     };
-  }
 
-  errores() {
-    this.socket.onerror = function (error) {
-      alert(`[error] ${error.message}`);
+    this.socket.onerror = (error) => {
+      this.state = false;
     };
   }
 }

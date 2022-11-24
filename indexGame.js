@@ -1,5 +1,6 @@
 import{Game} from "./game.js";
-
+import {Communication} from "./communication.js"
+console.log("Hola");
 let configuration = {
     "players" : [
         {
@@ -16,8 +17,21 @@ let configuration = {
         },
     ]
 }
+let control=null;
+let communication=new Communication();
+communication.init({
+    ip: "localhost",
+    port: "8023",
+    check : pruebaMensaje
+});
 
+function pruebaMensaje(){
+    if(communication.master){
+        control=new Maestro(); //Hay q crearlo
+    } else {
+        control=new Cliente(); //Hay q crearlo
+    }
+}
 
 let game=new Game();
-game.crearMapa();
 game.drawBoard();

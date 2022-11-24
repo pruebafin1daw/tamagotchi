@@ -1,27 +1,24 @@
 class Game{
     init(){
         this.map=[
-            [1,2,3
+            [
+                [1,2,3],
+                [4,5,6],
             ] 
-        ]    
+        ]  
+        this.tipo=[];     
     }
-    crearMapa(){
-        for(let i = 0; i < 15; i++){
-            for(let j = 0; j < 15; j++){
-                this.map[j] = "X";
-                this.map[i] =this.map[j];
-            }
-        }       
+    addEntity(){
+        this.map[0][0][0]=tipo;
     }
     drawBoard(){
-        let saw=document.getElementById("board");
         let mapa=this.map[0];
         for (let i = 0; i < mapa.length; i++) {
             for (let j = 0; j < mapa[i].length; j++) {
-            saw.innerHTML +=mapa;  
+            console.log(mapa);  
             }
-            saw.innerHTML +="<br>";
         }
     }
 }
+
 export {Game};

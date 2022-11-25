@@ -1,10 +1,7 @@
-import { Board } from './board.js';
-import { Player } from './player.js';
+import { Board } from './control/board.js';
 
 // BOARD
 let board = new Board();
 board.init({
     'boardLength': 11 // CHANGE FOR MASTER CHOICE (SQUARE)
-})
-
-console.log(board.board)
+});

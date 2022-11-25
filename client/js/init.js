@@ -1,1 +1,0 @@
-let socket = new WebSocket("ws://localhost:8023");

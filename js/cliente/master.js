@@ -9,6 +9,7 @@ class Master {
     this.comunicacion = comunicacion;
 
     //this.definirTablero(20);
+
     this.comunicacion.enviarMensaje(MSG_PUBLICO, "hola");
   }
 
@@ -16,7 +17,7 @@ class Master {
    * * Definir dimensiones del tablero
    */
   definirTablero(dimension) {
-    this.enviarMensaje(MSG_PUBLICO, dimension);
+    this.comunicacion.enviarMensaje(MSG_PUBLICO, dimension);
   }
 
   actualizarPosiciones() {

@@ -40,6 +40,7 @@ wss.on("connection", function connection(ws) {
     clientMaster = ws;
     first = false;
   }
+  console.log(first);
   // Store the remote systems IP address as "remoteIp".
   //var remoteIp = ws.upgradeReq.connection.remoteAddress;
 

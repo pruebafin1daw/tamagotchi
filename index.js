@@ -1,21 +1,30 @@
 import { Communication } from "./communication/communication.js";
+import { juego } from "./juego/user.js";
 
+let mainDiv = 'mainDiv';
+
+//Crea comunicaciones
 let control = null;
-let comunication = new Communication();
-comunication.init({
+let communication = new Communication();
+communication.init({
     ip : "localhost",
     port : "8023",
-    check : hola
+    check : checkMaster
 });
-if(comunication.master) {
-    console.log("soy el master");
-}
-function hola() {
-    if(comunication.master){
-        control = new Master();
+
+//Comprueba si el usuario es master
+function checkMaster() {
+    if(communication.master){
+        control = new juego.Master();
     }
     else {
-        control = new Client();
+        control = new juego.Client();
     }
-    control.init();
+    control.init(mainDiv, terminate);
 }
+
+function terminate(errorMsg) {
+    communication.close();
+}
+
+

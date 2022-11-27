@@ -3,9 +3,9 @@ class Communication {
     state = false;
     master = false;
     init(config) {
-        this.socket = new WebSocket("ws://" + config.ip + ":" + config.port);
+        this.socket = new WebSocket(`ws://${config.ip}:${config.port}`);
 
-        this.socket.onopen = (e)=> {
+        this.socket.onopen = (e) => {
             this.state = true;
 
             const msg = {
@@ -16,17 +16,20 @@ class Communication {
             this.socket.send(JSON.stringify(msg));
         };
 
-        this.socket.onmessage = (event)=> {
+        this.socket.onmessage = (event) => {
             console.log(event);
             console.log(`[message] Datos recibidos del servidor: ${event.data}`);
 
             let objeto = JSON.parse(event.data);
+            
+            console.log(objeto)
 
             switch(objeto.valor) {
                 case "master":
                     this.master = true;
-                    break;
+                break;
             }
+
             config.check();
         };
 
@@ -37,6 +40,11 @@ class Communication {
         this.socket.onerror = (error) => {
             this.state = false;
         };
+
+        this.close = function() {
+            this.socket = null;
+            this.state = false;
+        }
     }
 }
 

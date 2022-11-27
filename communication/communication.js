@@ -17,13 +17,10 @@ class Communication {
         };
 
         this.socket.onmessage = (event) => {
-            console.log(event);
             console.log(`[message] Datos recibidos del servidor: ${event.data}`);
 
             let objeto = JSON.parse(event.data);
             
-            console.log(objeto)
-
             switch(objeto.valor) {
                 case "master":
                     this.master = true;

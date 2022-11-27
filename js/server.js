@@ -2,7 +2,7 @@
 var WebSocketServer = require("ws").Server;
 
 // Create a new WebSocketServer running on port 7007.
-var wss = new WebSocketServer({port: 8023});
+var wss = new WebSocketServer({ port: 8023 });
 var clientMaster = null;
 var first = true;
 // Output a log to say the server is running.
@@ -13,19 +13,20 @@ console.log("Server is Running...");
 // loop through all the connected clients and send them the msg.
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
+    console.log(JSON.parse(msg));
     const message = {
-	type: 'mensaje',
-	valor: JSON.parse(msg).mensaje
+        type: 'message',
+        value: data.message
     }
-    console.log("Desde mensajes: "+ data.tipo);
-    if (data.tipo != null) {
-    	if (data.tipo == 0) {
-    		clientMaster.send(JSON.stringify(message));
-    	} else {
-    		wss.clients.forEach(function each(client) {
-			client.send(JSON.stringify(message));
-		});
-    	}
+    console.log("Desde mensajes: " + data.type);
+    if (data.type != null) {
+        if (data.type == 0) {
+            clientMaster.send(JSON.stringify(message));
+        } else {
+            wss.clients.forEach(function each(client) {
+                client.send(JSON.stringify(message));
+            });
+        }
     }
 };
 
@@ -34,9 +35,9 @@ wss.broadcast = function broadcastMsg(msg) {
 // is called.
 wss.on('connection', function connection(ws) {
     if (first) {
-    	clientMaster = ws;
-    	first = false;
-    }	
+        clientMaster = ws;
+        first = false;
+    }
     // Store the remote systems IP address as "remoteIp".
     //var remoteIp = ws.upgradeReq.connection.remoteAddress;
 

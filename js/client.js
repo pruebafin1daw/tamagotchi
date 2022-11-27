@@ -1,6 +1,6 @@
 class Client {
     init() {
-        console.log("soy el cliente");
+        return "soy el cliente";
     }
 }
 

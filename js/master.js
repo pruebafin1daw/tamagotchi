@@ -1,6 +1,6 @@
 class Master {
     init() {
-        console.log('soy el master pro');
+        return 'soy el master';
     }
 }
 

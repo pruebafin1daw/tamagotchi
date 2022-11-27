@@ -6,12 +6,13 @@ class Comunicacion {
   init(config) {
     this.socket = new WebSocket(`ws://${config.ip}:${config.port}`);
 
-    if (!this.master) {
-      this.socket.onopen = (event) => {
-        this.state = true;
+    this.socket.onopen = (event) => {
+      this.state = true;
+      // TODO: Comprobar que el master no existe
+      if (!this.master) {
         this.enviarMensaje(0, "master");
-      };
-    }
+      }
+    };
 
     this.socket.onmessage = (event) => {
       let objeto = JSON.parse(event.data);
@@ -44,7 +45,7 @@ class Comunicacion {
 
   recibirMensajes() {
     this.socket.onmessage = (event) => {
-      return JSON.parse(event.data);
+      return JSON.parse(event.data).valor;
     };
   }
 }

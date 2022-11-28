@@ -9,11 +9,6 @@ class Comunication {
     init(config) {
         this.socket = new WebSocket("ws://" + config.ip + ":" + config.port);
 
-        this.socket.onopen = (e) => {
-            this.state = true;
-            this.sendMessage();
-        }
-
         this.socket.onmessage = (event) => {
             this.master = false;
             console.log(event);
@@ -38,7 +33,6 @@ class Comunication {
     sendMessage() {
         let type = 1;
         let user = new Client();
-        console.log('entramos');
         if (this.first) {
             this.first = false;
             user = new Master();
@@ -53,6 +47,13 @@ class Comunication {
         console.log(msg);
         
         this.socket.send(JSON.stringify(msg));
+    }
+
+    onOpen() {
+        this.socket.onopen = (e) => {
+            this.state = true;
+            this.sendMessage();
+        }
     }
 }
 

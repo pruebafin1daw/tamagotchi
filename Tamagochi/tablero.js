@@ -28,6 +28,16 @@ class Tablero{
             vista.innerHTML += "<br/>";
         }
     }
+
+    añadirJugador(jugador){
+        let player = null;
+        if(jugador){
+            player = new Jugador(0, 0, jugador);
+            this.map[0][0] = player;
+            // this.entities.push(player);
+            // pacman.ENTITY = this.entities[0];
+         }
+    }
 }
 
 export {Tablero}

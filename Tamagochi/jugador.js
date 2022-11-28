@@ -46,3 +46,4 @@ class Jugador{
         }
     }
 }
+export {Jugador};

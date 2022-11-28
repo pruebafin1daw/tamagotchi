@@ -1,11 +1,10 @@
-import { Master } from "./master.js";
-import { Client } from "./client.js";
-
 class Comunication {
-    socket = null;
-    state = false;
-    first = true;
-    master;
+    constructor() {
+        this.socket = null;
+        this.state = false;
+        this.master;
+    }
+
     init(config) {
         this.socket = new WebSocket("ws://" + config.ip + ":" + config.port);
 
@@ -13,12 +12,6 @@ class Comunication {
             this.master = false;
             console.log(event);
             console.log(`[message] Datos recibidos del servidor: ${JSON.parse(event.data).value}`);
-            // switch (objeto.valor) {
-            //     case "master":
-            //         this.master = true;
-            //         break;
-            // }
-            // config.check();
         };
 
         this.socket.onclose = (event) => {
@@ -31,29 +24,15 @@ class Comunication {
     }
 
     sendMessage() {
-        let type = 1;
-        let user = new Client();
-        if (this.first) {
-            this.first = false;
-            user = new Master();
-            type = 0;
-        }
-
         const msg = {
-            "type": type,
-            "message": user.init()
+            "type": "1",
+            "message": "new connection"
         }
-
-        console.log(msg);
-        
         this.socket.send(JSON.stringify(msg));
     }
 
     onOpen() {
-        this.socket.onopen = (e) => {
-            this.state = true;
-            this.sendMessage();
-        }
+        this.socket.onopen = (e) => this.sendMessage();
     }
 }
 

@@ -18,16 +18,20 @@ class Communication {
 
         this.socket.onmessage = (event) => {
             console.log(`[message] Datos recibidos del servidor: ${event.data}`);
-
             let objeto = JSON.parse(event.data);
-            
+
             switch(objeto.valor) {
-                case "master":
-                    this.master = true;
+                case 'master':
+                    if(!this.master) { 
+                        this.master = true;
+                        config.check(); 
+                    } else {
+                        
+                    }
                 break;
             }
 
-            config.check();
+            
         };
 
         this.socket.onclose = (event) => {
@@ -39,6 +43,7 @@ class Communication {
         };
 
         this.close = function() {
+            this.socket.close();
             this.socket = null;
             this.state = false;
         }

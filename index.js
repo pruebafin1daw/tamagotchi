@@ -1,5 +1,5 @@
 import { Communication } from "./communication/communication.js";
-import { juego } from "./juego/user.js";
+import { game } from "./game/user.js";
 
 let mainDiv = 'mainDiv';
 
@@ -7,18 +7,18 @@ let mainDiv = 'mainDiv';
 let control = null;
 let communication = new Communication();
 communication.init({
-    ip : "localhost",
-    port : "8023",
-    check : checkMaster
+    ip: "localhost",
+    port: "8023",
+    check: checkMaster,
 });
 
 //Comprueba si el usuario es master
 function checkMaster() {
     if(communication.master){
-        control = new juego.Master();
+        control = new game.Master();
     }
     else {
-        control = new juego.Client();
+        control = new game.Client();
     }
     control.init(mainDiv, terminate);
 }

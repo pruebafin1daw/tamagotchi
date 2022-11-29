@@ -25,9 +25,7 @@ class Communication {
                     if(!this.master) { 
                         this.master = true;
                         config.check(); 
-                    } else {
-                        
-                    }
+                    } 
                 break;
             }
 

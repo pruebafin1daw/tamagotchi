@@ -24,10 +24,12 @@ game.Master = class {
     config = null;
     users = null;
     map = null;
+    mainDiv = null;
 
     init(mainDiv, terminate) {
         //Ejecuta la función showAdminConfigIU para que el administrador configure la partida
         this.showAdminConfigIU(mainDiv);
+        this.mainDiv = mainDiv;
     }
 
     showAdminConfigIU(mainDiv) {
@@ -94,24 +96,37 @@ game.Master = class {
         this.map = [];
 
         for(let i = 0; i < x ; i ++) {
-            let layer = new Array(x);
+            let layer = [];
             for (let j = 0; j < y; j ++) {
                 if(i == centerX && j == centerY) {
                     //Si los indices son los de la meta mete la casilla meta en la posición
-                    layer[i][j] = meta;
+                    layer.push(meta);
                 }else{
                     //Crea una casillas de un tipo random entre 0 y 1 (Vacia o descanso)
                     //TODO: Hacer que el master pase también la cantidad de áreas de descanso.
-                    layer[i][j] = new game.Cell(i, j, Math.round(Math.random()));
+                    layer.push(new game.Cell(i, j, Math.round(Math.random())));
                 }
             } 
+            this.map.push(layer);
         }
 
-        console.log(this.map);
+        this.showGame();
+        
     }
 
     showGame() {
+        let tabla = document.createElement('table');
+        for(let arr in this.map) {
+            let row = document.createElement('tr');
+            for(let index in arr) {
+                let cell = document.createElement('td');
+                cell.textContent = index
+                row.appendChild(cell);
+            }
+            tabla.appendChild(row);
+        }
 
+        console.log(this.config.container);
     }
 
 }

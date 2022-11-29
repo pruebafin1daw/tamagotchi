@@ -27,18 +27,19 @@ game.Master = class {
     mainDiv = null;
 
     init(mainDiv, terminate) {
+        this.mainDiv = mainDiv;
+
         //Ejecuta la función showAdminConfigIU para que el administrador configure la partida
         this.showAdminConfigIU(mainDiv);
-        this.mainDiv = mainDiv;
     }
 
-    showAdminConfigIU(mainDiv) {
+    showAdminConfigIU() {
         let form = new FormUI();
         form.init({
             id: "FormAdmin",
             name: "Formulario de Administrador",
             desc: "Introduce los datos que quieras para la partida",
-            container: mainDiv,
+            container: this.mainDiv,
             action: this.crearMapa,
             fields: [
                 {
@@ -71,9 +72,14 @@ game.Master = class {
 
     }
 
+    //Esta función se va a ejecutar de manera asíncrona por lo que no puede acceder a los datos de la clase
     crearMapa(data) {
-        this.config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
-        console.log(this.config)
+        /*
+            Me gustaría porder devolver esto para que la clase siempre 
+            Tenga los datos
+            this.config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
+        */
+        config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
 
         //Cogemos el ancho y largo del tablero
         let x = +this.config.ejeX;
@@ -110,11 +116,11 @@ game.Master = class {
             this.map.push(layer);
         }
 
-        this.showGame();
-        
-    }
+        /*
+            Esta parte de aquí abajo no funciona porque es asíncrona la función por lo que se ejecutaría fuera
+            de el bloque de la clase y no podría acceder a sus variables
+        */
 
-    showGame() {
         let tabla = document.createElement('table');
         for(let arr in this.map) {
             let row = document.createElement('tr');
@@ -126,7 +132,12 @@ game.Master = class {
             tabla.appendChild(row);
         }
 
-        console.log(this.config.container);
+        let div = document.querySelector(`.${config.container}`);
+
+        console.log(div, this.mainDiv)
+
+        div.innerHTML = "";
+        div.appendChild(tabla);
     }
 
 }

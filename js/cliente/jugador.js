@@ -55,6 +55,7 @@ class Jugador {
     let dimensiones = mensaje[2];
     let posicionY = mensaje[4];
     let posicionX = mensaje[3];
+    let salud = mensaje[5];
 
     // TODO: Dibujamos el tablero
   }

@@ -23,16 +23,17 @@ class Comunication {
         };
     }
 
-    sendMessage() {
+    sendMessage(map) {
         const msg = {
             "type": "1",
-            "message": "new connection"
+            "message": "new connection",
+            "map" : map
         }
         this.socket.send(JSON.stringify(msg));
     }
 
-    onOpen() {
-        this.socket.onopen = (e) => this.sendMessage();
+    onOpen(map) {
+        this.socket.onopen = (e) => this.sendMessage(map);
     }
 }
 

@@ -1,8 +1,7 @@
-import {Comunication} from "./comunication.js";
+import {init, onMessage} from "./client.js";
 
-let comunication = new Comunication();
-comunication.init({
+init({
     ip: "localhost",
     port: "8023"
 });
-comunication.onOpen();
+onMessage();

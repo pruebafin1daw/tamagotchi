@@ -1,16 +1,25 @@
-import { Client } from "./client.js";
-
 class Master {
     constructor() {
-        this.clients = [];
+        this.players = [];
+        this.map;
     }
 
     init() {
-        return 'soy el master';
+        return 'I am the master';
     }
 
-    addClient(client) {
-        this.clients.push(client);
+    addPlayer(player) {
+        this.players.push(player);
+    }
+
+    getPlayers() {
+        this.players.forEach(player => {
+            console.log(player);
+        });
+    }
+
+    setMap(map) {
+        this.map = map;
     }
 }
 

@@ -4,11 +4,11 @@ class Comunication {
     master = false;
     init(config) {
         this.socket = new WebSocket("ws://" + config.ip + ":" + config.port);
-        this.socket.onopen = (e)=> {
+        this.socket.onopen = ()=> {
             this.state = true;
             const msg = {
                 "tipo" : 0,
-                "mensaje" : "master"
+                "data" : "master"
             }
             this.socket.send(JSON.stringify(msg));
         };
@@ -23,10 +23,10 @@ class Comunication {
             }
             config.check();
         };
-        this.socket.onclose = (event)=> {
+        this.socket.onclose = ()=> {
             this.state = false;
         };
-        this.socket.onerror = (error)=> {
+        this.socket.onerror = ()=> {
             this.state = false;
         };
     }

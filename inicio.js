@@ -1,4 +1,6 @@
 import {Comunication} from "./js/comunication.js";
+import {Master} from "./js/master.js";
+import {Client} from "./js/client.js";
 
 let control = null;
 let comunication = new Comunication();

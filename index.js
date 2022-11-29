@@ -1,7 +1,7 @@
 // Import the ws module as a variable called WebSocketServer.
 var WebSocketServer = require("ws").Server;
 
-// Create a new WebSocketServer running on port 7007.
+// Create a new WebSocketServer running on port 8023.
 var wss = new WebSocketServer({port: 8023});
 var clientMaster = null;
 var first = true;
@@ -11,19 +11,13 @@ console.log("Server is Running...");
 // Create a "broadcast" function on our WebSocketServer object.
 // The function will take a "msg" paramter. When called, it will
 // loop through all the connected clients and send them the msg.
-wss.broadcast = function broadcastMsg(msg) {
-    let data = JSON.parse(msg);
-    const message = {
-	type: 'mensaje',
-	valor: JSON.parse(msg).mensaje
-    }
-    console.log("Desde mensajes: "+ data.tipo);
-    if (data.tipo != null) {
-    	if (data.tipo == 0) {
-    		clientMaster.send(JSON.stringify(message));
+wss.broadcast = (msg) => {
+    if (msg.tipo != null) {
+    	if (msg.tipo == 0) {
+    		clientMaster.send(msg.data);
     	} else {
     		wss.clients.forEach(function each(client) {
-			client.send(JSON.stringify(message));
+			client.send(msg.data);
 		});
     	}
     }

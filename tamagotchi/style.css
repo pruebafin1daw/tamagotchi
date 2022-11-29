@@ -1,0 +1,26 @@
+#board{
+    background-color: gray;
+    width: 100px;
+    height: 100px;
+}
+.cube{
+    width: 12px;
+    height: 12px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 5px;
+    background-color: aqua;
+}
+.player{
+background-color: purple;
+}
+.end{
+    width: 12px;
+    height: 12px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 5px;
+    background-color: orange;
+}

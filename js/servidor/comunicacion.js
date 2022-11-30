@@ -2,27 +2,30 @@ class Comunicacion {
   socket = null;
   state = false;
   master = false;
+  handler = null;
 
   init(config) {
     this.socket = new WebSocket(`ws://${config.ip}:${config.port}`);
 
     this.socket.onopen = (event) => {
       this.state = true;
-      // TODO: Comprobar que el master no existe
-      this.enviarMensaje(0, "master");
     };
 
     this.socket.onmessage = (event) => {
       let objeto = JSON.parse(event.data);
       switch (objeto.valor) {
         case "master":
-          if (!this.master) {
-            this.master = true;
-            break;
+          this.master = true;
+          config.check();
+          break;
+        case "jugador":
+          config.check(objeto.id);
+          break;
+        default:
+          if (this.handler) {
+            this.handler.nuevoMensaje(objeto, event.origin);
           }
       }
-      config.check();
-      console.log(objeto.valor);
     };
 
     this.socket.onclose = (event) => {
@@ -34,6 +37,22 @@ class Comunicacion {
     };
   }
 
+  static get MSG_PRIVADO() {
+    return 0;
+  }
+
+  static get MSG_PUBLICO() {
+    return 1;
+  }
+
+  set handler(newHandler) {
+    this._handler = newHandler;
+  }
+
+  get handler() {
+    return this._handler;
+  }
+
   enviarMensaje(tipoMsg, msg) {
     this.socket.send(
       JSON.stringify({
@@ -41,12 +60,6 @@ class Comunicacion {
         mensaje: msg,
       })
     );
-  }
-
-  recibirMensajes() {
-    this.socket.onmessage = (event) => {
-      return JSON.parse(event.data).valor;
-    };
   }
 }
 

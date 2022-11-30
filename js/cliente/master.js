@@ -1,46 +1,40 @@
-// * Códigos para el tipo de mensaje
-const MSG_PRIVADO = 0;
-const MSG_PUBLICO = 1;
-
-// * Códigos para el tipo de casilla
-const CASILLA = 0;
-const MADRIGUERA = 1;
-const META = 2;
-
-// * Dimensiones del tablero
-const DIMENSIONES = 20;
-
-// * Salud inicial del jugador
-const SALUD = 100;
-
 class Master {
   comunicacion = null;
 
-  // * Array con los jugadores de la partida
   jugadores = [];
+  tablero = new Array();
+  bordes = [];
 
-  // * Array con el tablero de juego
-  tablero = [DIMENSIONES][DIMENSIONES];
-
-  init(comunicacion) {
-    // * Obtenemos el socket
+  init(config, comunicacion) {
     this.comunicacion = comunicacion;
+    this.comunicacion.handler = this;
 
-    // * Creamos el array con el tablero de juego
-    this.crearTablero();
-
-    // * Invocamos la interpretación de mensajes
+    this.crearTablero(config);
     this.interpretarMensaje();
   }
 
-  /**
-   * * Método que crea el tablero de juego de la partida
-   */
-  crearTablero() {
-    let casilla = null;
-    for (let i = 0; i < this.tablero.lenght; i++) {
-      for (let j = 0; j < this.tablero[0].lenght; j++) {
-        let tipoCasilla = null;
+  crearTablero(config) {
+    for (let i = 0; i < config.alto; i++) {
+      this.tablero[i] = new Array();
+      for (let j = 0; j < config.ancho; j++) {
+        this.tablero[i][j] = {
+          y: i,
+          x: j,
+          meta: false,
+          jugadores: [],
+          madriguera: false,
+          madrigueraJugador: null,
+        };
+        if (i == 0 || i == config.alto - 1 || j == 0 || j == config.ancho - 1) {
+          if ((i + j) % 2) {
+            this.tablero[i][j].madriguera = true;
+            this.bordes.push(this.tablero[i][j]);
+          }
+        } else if (Math.random() < config.porcentaje) {
+          this.tablero[i][j].madriguera = true;
+        }
+
+        /*let tipoCasilla = null;
         if (i % 2 == 1 && j % 2 == 1) {
           tipoCasilla = MADRIGUERA;
         } else if (
@@ -55,14 +49,24 @@ class Master {
           tipo: tipoCasilla,
           jugadores: [],
         };
-        this.tablero[i][j] = casilla;
+        this.tablero[i][j] = casilla;*/
       }
     }
+    let tableroJugador = {
+      ancho: config.ancho,
+      alto: config.alto,
+      madriguera: this.tablero
+        .flatMap((casilla) => casilla)
+        .filter((casilla) => casilla.madriguera)
+        .map((casilla) => {
+          return {
+            y: casilla.y,
+            x: casilla.x,
+          };
+        }),
+    };
   }
 
-  /**
-   * * Método que interpreta los mensajes de los jugadores
-   */
   interpretarMensaje() {
     if (this.socket.recibirMensajes() != undefined) {
       const mensaje = this.socket.recibirMensajes().split(":");
@@ -77,12 +81,6 @@ class Master {
     }
   }
 
-  /**
-   * * Método que añade al jugador a la partida y le envía las dimensiones del
-   * * tablero de juego junto a su posición en él
-   *
-   * @param {Array} mensaje Array con el contenido del mensaje recibido del jugador
-   */
   añadirJugador(mensaje) {
     let idJugador = mensaje[0];
 
@@ -110,11 +108,6 @@ class Master {
     this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);
   }
 
-  /**
-   * * Método que comprueba el movimiento del jugador y le envía el resultado de este
-   *
-   * @param {Array} mensaje Array con el contenido del mensaje recibido del jugador
-   */
   comprobarMovimiento(mensaje) {
     let idJugador = mensaje[0];
     let movimiento = mensaje[2];

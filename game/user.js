@@ -39,10 +39,9 @@ game.Master = class {
         this.map = new Array();
         this.edges = [];
 
-        this.map = createMap();
+        this.createMap(config);
 
         let clientMap = {
-
             //Dimensiones del mapa
             width: config.width,
             height: config.height,
@@ -56,13 +55,13 @@ game.Master = class {
             })
         }
 
-        this.communication.send();
+        this.communication.send(clientMap, 1, null);
 
         //this.showAdminConfigIU(mainDiv);
 
     }
 
-    createMap() {
+    createMap(config) {
         for (let i = 0; i < config.height; i++) {
 
             this.map[i] = new Array();
@@ -83,7 +82,6 @@ game.Master = class {
         }  
     }
     
-
     showAdminConfigIU() {
         this.form = new FormUI();
         this.form.init({
@@ -194,8 +192,12 @@ game.Master = class {
 
     newMsg(msg, origin) {
         switch(msg.valor) {
-            case 'nuevo':
+            case 'newClient':
                 this.newPlayer(origin);
+                break;
+            
+            case 'disconnected':
+                this.players.pop(this.players.find(num => num.origin === origin));
                 break;
         }
     }

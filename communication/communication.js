@@ -27,10 +27,15 @@ class Communication {
                     }
 
             }
+
+            console.log(objeto.valor)
         };
 
         this.socket.onclose = (event) => {
             this.state = false;
+            if(!this.master) {
+                this.send({valor: 'disconnected'}, 0, null);
+            }
         };
 
         this.socket.onerror = (error) => {
@@ -54,10 +59,15 @@ class Communication {
         return this._handler;
     }
 
-    send(data, type) {
+    send(data, type, id) {
         const msg =  {
             tipo: type,
-            mensaje: data
+            mensaje: data,
+        }
+
+        if(id != null) {
+            msg.id = id;
+            msg.tipo = 2;
         }
 
         this.socket.send(JSON.stringify(msg));

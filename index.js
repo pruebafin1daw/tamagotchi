@@ -1,3 +1,4 @@
+import { v4 as uuidv4, v6 as uuidv6 } from 'uuid';
 // Import the ws module as a variable called WebSocketServer.
 var WebSocketServer = require("ws").Server;
 
@@ -5,6 +6,7 @@ var WebSocketServer = require("ws").Server;
 var wss = new WebSocketServer({port: 8023});
 var clientMaster = null;
 var first = true;
+var clients = [];
 // Output a log to say the server is running.
 console.log("Server is Running...");
 
@@ -17,11 +19,17 @@ wss.broadcast = function broadcastMsg(msg) {
 	type: 'mensaje',
 	valor: JSON.parse(msg).mensaje
     }
+    console.log("Mensaje "+ wss.clients)
     console.log("Desde mensajes: "+ data.tipo);
     if (data.tipo != null) {
     	if (data.tipo == 0) {
     		clientMaster.send(JSON.stringify(message));
-    	} else {
+    	}else if(data.id){
+            let client = clients.find(item => item.id == data.id);
+            if(client){
+                client.socket.send(JSON.stringify(message));
+            }
+        }else {
     		wss.clients.forEach(function each(client) {
 			client.send(JSON.stringify(message));
 		});
@@ -32,7 +40,7 @@ wss.broadcast = function broadcastMsg(msg) {
 // Create a listener function for the "connection" event.
 // Each time we get a connection, the following function
 // is called.
-wss.on('connection', function connection(ws) {
+wss.on('connection', function connection(ws,request, client) {
     ws.on('message', wss.broadcast);
     if (first) {
     	clientMaster = ws;
@@ -43,10 +51,25 @@ wss.on('connection', function connection(ws) {
         }
         clientMaster.send(JSON.stringify(message));
     } else {
+        let id = uuidv4();
+        clients.push({
+            id : id,
+            socket : request.socket
+        });
         const message = {
             type: 'mensaje',
-            valor: 'hello'
+            valor: 'hello',
+            id : id
+        }
+        const messageMaster = {
+            type: 'mensaje',
+            valor: 'newClient',
+            id : id
         }
         ws.send(JSON.stringify(message));
-    }	
+        clientMaster.send(JSON.stringify(messageMaster));
+    }
+    console.log(request.socket.remoteAddress);
+    //console.log(request);
+    //console.log(client);	
 });

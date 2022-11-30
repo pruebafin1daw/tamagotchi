@@ -1,21 +1,23 @@
 class FormUI{
 
     form = null;
+    data = null;
 
     init(config){
         this.form = document.createElement("form");
         this.form.id = config.id;
         this.form.addEventListener("submit", (event) => {
             event.preventDefault();
-            const data = new FormData();
-            let formChildren = this.form.childNodes;
-            formChildren.forEach((element, index) => {
-                if(element.id != "submit"){
-                    data.append(element.id, element.value);
-                }
-            });
-            
-            config.action(data); 
+
+            if(config.action) {
+                this.data = new FormData();
+                let formChildren = this.form.childNodes;
+                formChildren.forEach((element, index) => {
+                    if(element.id != "submit"){
+                        this.data.append(element.id, element.value);
+                    }
+                });
+            }
         });
 
         let container = null;

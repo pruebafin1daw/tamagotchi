@@ -7,8 +7,13 @@ game.REST = 1;
 game.FLAG = 2;
 
 game.Client = class {
-    init() {
-        this.cell = new game.Cell();
+    active = false;
+    map = null;
+
+    init(communication) {
+        this.communication = communication;
+        this.communication.handler = this;
+        this.comunication.send("nuevo", Comunication.MASTER);
     }
 
     showUserConfigIU() {
@@ -25,22 +30,78 @@ game.Master = class {
     users = null;
     map = null;
     mainDiv = null;
+    clientMap = null;
 
-    init(mainDiv, terminate) {
+    init(mainDiv, terminate, communication) {
         this.mainDiv = mainDiv;
 
-        //Ejecuta la función showAdminConfigIU para que el administrador configure la partida
-        this.showAdminConfigIU(mainDiv);
+        this.communication = communication;
+        this.communication.handler = this;
+
+        this.players = [];
+        this.map = new Array();
+
+        this.map = createMap();
+
+        let clientMap = {
+            width: config.width,
+
+            height: config.height,
+
+            burrows: this.map.flatMap(num => num).filter(item => item.burrow).map(item => {
+                return {
+                    y : item.y,
+                    x : item.x
+                }
+            })
+        }
+
+        this.edges = []
+        this.form = null;
+
+
+        //this.showAdminConfigIU(mainDiv);
+
+
     }
 
+    createMap() {
+        for (let i = 0; i < config.height; i++) {
+
+            this.map[i] = new Array();
+
+            for (let j = 0; j < config.width; j++) {
+
+                this.map[i][j] = {
+                    y: i,
+                    x: j,
+                    endPoint : false,
+                    players: [],
+                    burrow: false,
+                    burrowPlayer: null
+                }
+
+                if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {
+                    if ((i+j)%2) {
+                        this.map[i][j].burrow = true;
+                        this.edges.push(this.map[i][j]);
+                    }
+                } else if(Math.random() < config.porcentage){
+                    this.map[i][j].burrow = true;
+                }
+            }
+        }  
+    }
+    
+
     showAdminConfigIU() {
-        let form = new FormUI();
-        form.init({
+        this.form = new FormUI();
+        this.form.init({
             id: "FormAdmin",
             name: "Formulario de Administrador",
             desc: "Introduce los datos que quieras para la partida",
             container: this.mainDiv,
-            action: this.crearMapa,
+            action: this.printMap,
             fields: [
                 {
                     id: "ejeX",
@@ -70,15 +131,16 @@ game.Master = class {
             ]
         });
 
+        this.form.data.addEventListener("change", (target) => {
+            console.log("holi")
+        })
     }
 
-    //Esta función se va a ejecutar de manera asíncrona por lo que no puede acceder a los datos de la clase
-    crearMapa(data) {
-        /*
-            Me gustaría porder devolver esto para que la clase siempre 
-            Tenga los datos
-            this.config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
-        */
+    saveAdminConfig() {
+
+    }
+
+    printMap() {
         config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
 
         //Cogemos el ancho y largo del tablero
@@ -138,6 +200,30 @@ game.Master = class {
 
         div.innerHTML = "";
         div.appendChild(tabla);
+    }
+
+    newMsg(msg, origin) {
+        switch(msg.valor) {
+            case 'nuevo':
+                this.newPlayer(origin);
+                break;
+        }
+    }
+
+    newPlayer(origin) {
+        if(!this.players.find(x => origin.x === origin)) {
+            let player = {
+                origin: origin,
+                name: '',
+                x: 0,
+                y: 0,
+                inBurrow: true,
+                energy: 100
+            }
+
+            let index = Math.floor(Math.random() * this.edges.length);
+            let cell = 
+        }
     }
 
 }

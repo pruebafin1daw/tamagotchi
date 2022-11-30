@@ -10,16 +10,17 @@ communication.init({
     check : hello
 });
 
-function hello() {
+function hello(id) {
     if(communication.master){
         control = new Master();
         control.init({
             width: 51,
-            height: 51
+            height: 51,
+            porcentage : 0.2
         },communication);
     }
     else {
         control = new Client();
-        control.init(communication);
+        control.init(communication, id);
     }
 }

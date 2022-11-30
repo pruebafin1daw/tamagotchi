@@ -13,6 +13,7 @@ class Comunicacion {
 
     this.socket.onmessage = (event) => {
       let objeto = JSON.parse(event.data);
+<<<<<<< HEAD
       switch (objeto.valor) {
         case "master":
           this.master = true;
@@ -26,6 +27,12 @@ class Comunicacion {
             this.handler.nuevoMensaje(objeto, event.origin);
           }
       }
+=======
+      if (objeto.valor == "master") {
+        this.master = true;
+      }
+      config.check();
+>>>>>>> 5a8acce2ef7c82237692e36507fecce11a26f95f
     };
 
     this.socket.onclose = (event) => {

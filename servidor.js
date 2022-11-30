@@ -40,7 +40,12 @@ wss.broadcast = function broadcastMsg(msg) {
 // Create a listener function for the "connection" event.
 // Each time we get a connection, the following function
 // is called.
+<<<<<<< HEAD
 wss.on("connection", function connection(ws, request, client) {
+=======
+wss.on("connection", function connection(ws) {
+  ws.on("message", wss.broadcast);
+>>>>>>> 5a8acce2ef7c82237692e36507fecce11a26f95f
   if (first) {
     clientMaster = ws;
     first = false;
@@ -50,6 +55,7 @@ wss.on("connection", function connection(ws, request, client) {
     };
     clientMaster.send(JSON.stringify(message));
   } else {
+<<<<<<< HEAD
     let id = uuidv4();
     clientes.push({
       id: id,
@@ -59,6 +65,11 @@ wss.on("connection", function connection(ws, request, client) {
       type: "mensaje",
       valor: "jugador",
       id: id,
+=======
+    const message = {
+      type: "mensaje",
+      valor: "jugador",
+>>>>>>> 5a8acce2ef7c82237692e36507fecce11a26f95f
     };
     ws.send(JSON.stringify(message));
   }

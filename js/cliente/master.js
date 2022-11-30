@@ -72,7 +72,7 @@ class Master {
       const mensaje = this.socket.recibirMensajes().split(":");
       switch (mensaje[1]) {
         case "conexion":
-          this.añadirJugador(mensaje);
+          this.añadirJugador(origeny);
           break;
         case "movimiento":
           this.comprobarMovimiento(mensaje);
@@ -94,18 +94,29 @@ class Master {
       this.tablero[posicionY][posicionX].jugador.lenght != 0
     );
 
-    let jugador = {
-      id: idJugador,
-      posicionX: posicionX,
-      poisicionY: posicionY,
-      salud: SALUD,
-    };
+    if (!this.jugadores.find((x) => x.origen === origen)) {
+      let jugador = {
+        origen: origen,
+        nombre: "",
+        posicionX: posicionX,
+        poisicionY: posicionY,
+        enMadriguera: true,
+        salud: SALUD,
+      };
 
-    this.tablero[posicionY][posicionX].jugador.push(jugador);
-    this.jugadores.push(jugador);
+      let index = Math.floor(Math.random() * this.bordes.length);
+      let celda = this.bordes.splice(index, 1);
+      celda.madrigueraJugador = jugador;
+      jugador.x = celda.x;
+      jugador.y = celda.y;
+      this.jugadores.push(jugador);
+    }
+    /*this.tablero[posicionY][posicionX].jugador.push(jugador);
+    this.jugadores.push(jugador);*/
 
-    let msg = `${idJugador}:tablero:${DIMENSIONES}:${posicionX}:${posicionY}:${SALUD}`;
-    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);
+    // TODO: Enviar posicion
+    /*let msg = `${idJugador}:tablero:${DIMENSIONES}:${posicionX}:${posicionY}:${SALUD}`;
+    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);*/
   }
 
   comprobarMovimiento(mensaje) {

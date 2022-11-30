@@ -8,21 +8,14 @@ class Comunicacion {
 
     this.socket.onopen = (event) => {
       this.state = true;
-      // TODO: Comprobar que el master no existe
-      this.enviarMensaje(0, "master");
     };
 
     this.socket.onmessage = (event) => {
       let objeto = JSON.parse(event.data);
-      switch (objeto.valor) {
-        case "master":
-          if (!this.master) {
-            this.master = true;
-            break;
-          }
+      if (objeto.valor == "master") {
+        this.master = true;
       }
       config.check();
-      console.log(objeto.valor);
     };
 
     this.socket.onclose = (event) => {

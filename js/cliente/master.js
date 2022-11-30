@@ -7,9 +7,6 @@ const CASILLA = 0;
 const MADRIGUERA = 1;
 const META = 2;
 
-// * Dimensiones del tablero
-const DIMENSIONES = 20;
-
 // * Salud inicial del jugador
 const SALUD = 100;
 
@@ -20,14 +17,17 @@ class Master {
   jugadores = [];
 
   // * Array con el tablero de juego
-  tablero = [DIMENSIONES][DIMENSIONES];
+  tablero = new Array();
 
-  init(comunicacion) {
+  // * Array con los bordes del tablero
+  bordes = [];
+
+  init(config, comunicacion) {
     // * Obtenemos el socket
     this.comunicacion = comunicacion;
 
     // * Creamos el array con el tablero de juego
-    this.crearTablero();
+    this.crearTablero(config);
 
     // * Invocamos la interpretación de mensajes
     this.interpretarMensaje();
@@ -36,11 +36,28 @@ class Master {
   /**
    * * Método que crea el tablero de juego de la partida
    */
-  crearTablero() {
-    let casilla = null;
-    for (let i = 0; i < this.tablero.lenght; i++) {
-      for (let j = 0; j < this.tablero[0].lenght; j++) {
-        let tipoCasilla = null;
+  crearTablero(config) {
+    for (let i = 0; i < config.alto; i++) {
+      this.tablero[i] = new Array();
+      for (let j = 0; j < config.ancho; j++) {
+        this.tablero[i][j] = {
+          y: i,
+          x: j,
+          meta: false,
+          jugadores: [],
+          madriguera: false,
+          madrigueraJugador: null,
+        };
+        if (i == 0 || i == config.alto - 1 || j == 0 || j == config.ancho - 1) {
+          if ((i + j) % 2) {
+            this.tablero[i][j].madriguera = true;
+            this.bordes.push(this.tablero[i][j]);
+          }
+        } else if (Math.random() < config.porcentaje) {
+          this.tablero[i][j].madriguera = true;
+        }
+
+        /*let tipoCasilla = null;
         if (i % 2 == 1 && j % 2 == 1) {
           tipoCasilla = MADRIGUERA;
         } else if (
@@ -55,9 +72,22 @@ class Master {
           tipo: tipoCasilla,
           jugadores: [],
         };
-        this.tablero[i][j] = casilla;
+        this.tablero[i][j] = casilla;*/
       }
     }
+    let tableroJugador = {
+      ancho: config.ancho,
+      alto: config.alto,
+      madriguera: this.tablero
+        .flatMap((casilla) => casilla)
+        .filter((casilla) => casilla.madriguera)
+        .map((casilla) => {
+          return {
+            y: casilla.y,
+            x: casilla.x,
+          };
+        }),
+    };
   }
 
   /**
@@ -68,7 +98,7 @@ class Master {
       const mensaje = this.socket.recibirMensajes().split(":");
       switch (mensaje[1]) {
         case "conexion":
-          this.añadirJugador(mensaje);
+          this.añadirJugador(origeny);
           break;
         case "movimiento":
           this.comprobarMovimiento(mensaje);
@@ -83,8 +113,8 @@ class Master {
    *
    * @param {Array} mensaje Array con el contenido del mensaje recibido del jugador
    */
-  añadirJugador(mensaje) {
-    let idJugador = mensaje[0];
+  añadirJugador(origen) {
+    /*let idJugador = mensaje[0];
 
     let posicionX = null;
     let posicionY = null;
@@ -94,20 +124,31 @@ class Master {
     } while (
       this.tablero[posicionY][posicionX].tipo != CASILLA &&
       this.tablero[posicionY][posicionX].jugador.lenght != 0
-    );
+    );*/
 
-    let jugador = {
-      id: idJugador,
-      posicionX: posicionX,
-      poisicionY: posicionY,
-      salud: SALUD,
-    };
+    if (!this.jugadores.find((x) => x.origen === origen)) {
+      let jugador = {
+        origen: origen,
+        nombre: "",
+        posicionX: posicionX,
+        poisicionY: posicionY,
+        enMadriguera: true,
+        salud: SALUD,
+      };
 
-    this.tablero[posicionY][posicionX].jugador.push(jugador);
-    this.jugadores.push(jugador);
+      let index = Math.floor(Math.random() * this.bordes.length);
+      let celda = this.bordes.splice(index, 1);
+      celda.madrigueraJugador = jugador;
+      jugador.x = celda.x;
+      jugador.y = celda.y;
+      this.jugadores.push(jugador);
+    }
+    /*this.tablero[posicionY][posicionX].jugador.push(jugador);
+    this.jugadores.push(jugador);*/
 
-    let msg = `${idJugador}:tablero:${DIMENSIONES}:${posicionX}:${posicionY}:${SALUD}`;
-    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);
+    // TODO: Enviar posicion
+    /*let msg = `${idJugador}:tablero:${DIMENSIONES}:${posicionX}:${posicionY}:${SALUD}`;
+    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);*/
   }
 
   /**

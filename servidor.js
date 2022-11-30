@@ -36,18 +36,21 @@ wss.broadcast = function broadcastMsg(msg) {
 // Each time we get a connection, the following function
 // is called.
 wss.on("connection", function connection(ws) {
+  ws.on("message", wss.broadcast);
   if (first) {
     clientMaster = ws;
     first = false;
+    const message = {
+      type: "mensaje",
+      valor: "master",
+    };
+    clientMaster.send(JSON.stringify(message));
+  } else {
+    const message = {
+      type: "mensaje",
+      valor: "jugador",
+    };
+    ws.send(JSON.stringify(message));
   }
-  // Store the remote systems IP address as "remoteIp".
-  //var remoteIp = ws.upgradeReq.connection.remoteAddress;
-
-  // Print a log with the IP of the client that connected.
-  console.log("Connection received: ");
-
-  // Add a listener which listens for the "message" event.
-  // When a "message" event is received, take the contents
-  // of the message and pass it to the broadcast() function.
-  ws.on("message", wss.broadcast);
+  console.log(client);
 });

@@ -15,9 +15,17 @@ function tipoCliente() {
   if (comunicacion.master) {
     console.log("Soy el master");
     control = new Master();
+    control.init(
+      {
+        ancho: 51,
+        alto: 51,
+        porcentaje: 0.2,
+      },
+      comunicacion
+    );
   } else {
     console.log("Soy un jugador");
     control = new Jugador();
+    control.init(comunicacion);
   }
-  control.init(comunicacion);
 }

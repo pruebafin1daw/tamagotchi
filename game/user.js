@@ -10,18 +10,15 @@ game.Client = class {
     active = false;
     map = null;
 
-    init(communication) {
+    init(mainDiv, communication, id) {
+        this.id = id;
         this.communication = communication;
         this.communication.handler = this;
-        this.comunication.send("nuevo", Comunication.MASTER);
+        this.comunication.send("nuevo", this.comunication.MASTER);
     }
 
-    showUserConfigIU() {
-
-    }
-
-    showUserGame() {
-
+    newMsg(msg, origin) {
+        console.log(msg);
     }
 }
 
@@ -32,7 +29,7 @@ game.Master = class {
     mainDiv = null;
     clientMap = null;
 
-    init(mainDiv, terminate, communication) {
+    init(mainDiv, config, communication) {
         this.mainDiv = mainDiv;
 
         this.communication = communication;
@@ -40,14 +37,17 @@ game.Master = class {
 
         this.players = [];
         this.map = new Array();
+        this.edges = [];
 
         this.map = createMap();
 
         let clientMap = {
-            width: config.width,
 
+            //Dimensiones del mapa
+            width: config.width,
             height: config.height,
 
+            //Refugios del mapa
             burrows: this.map.flatMap(num => num).filter(item => item.burrow).map(item => {
                 return {
                     y : item.y,
@@ -56,12 +56,9 @@ game.Master = class {
             })
         }
 
-        this.edges = []
-        this.form = null;
-
+        this.communication.send();
 
         //this.showAdminConfigIU(mainDiv);
-
 
     }
 
@@ -72,14 +69,7 @@ game.Master = class {
 
             for (let j = 0; j < config.width; j++) {
 
-                this.map[i][j] = {
-                    y: i,
-                    x: j,
-                    endPoint : false,
-                    players: [],
-                    burrow: false,
-                    burrowPlayer: null
-                }
+                this.map[i][j] = new game.Cell(j, i, false, [], false, null);
 
                 if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {
                     if ((i+j)%2) {
@@ -211,21 +201,30 @@ game.Master = class {
     }
 
     newPlayer(origin) {
+        //Si el jugador no existe lo crea
         if(!this.players.find(x => origin.x === origin)) {
-            let player = {
-                origin: origin,
-                name: '',
-                x: 0,
-                y: 0,
-                inBurrow: true,
-                energy: 100
-            }
+            let player = new game.Player(origin, '', 0, 0, true, 100);
 
             let index = Math.floor(Math.random() * this.edges.length);
-            let cell = 
+            let cell = this.edges.splice(index, 1);
+            cell.burrowPlayer = player;
+            player.x = cell.x;
+            player.y = cell.y;
+            this.players.push(player);
         }
     }
 
+}
+
+game.Player = class {
+    constructor(origin, id, x, y, inBurrow, energy) {
+        this.origin = origin;
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.inBurrow = inBurrow;
+        this.energy = energy;
+    }
 }
 
 game.Cell = class {
@@ -235,10 +234,13 @@ game.Cell = class {
     * @Y Eje y
     * @Contenido ( 0 => Casilla Vacia, 1 => Area Descanso, 3 => Bandera Final)
     */
-    constructor(x, y, contenido) {
+    constructor(x, y, endPoint, players, burrow, burrowPlayer) {
         this.x = x;
         this.y = y;
-        this.contenido = contenido;
+        this.endPoint = endPoint;
+        this.players = players;
+        this.burrow = burrow;
+        this.burrowPlayer = burrowPlayer;
     }
 }
 

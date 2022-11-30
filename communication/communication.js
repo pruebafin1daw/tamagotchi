@@ -36,12 +36,6 @@ class Communication {
         this.socket.onerror = (error) => {
             this.state = false;
         };
-
-        this.close = function() {
-            this.socket.close();
-            this.socket = null;
-            this.state = false;
-        }
     }
 
     static get MASTER () {

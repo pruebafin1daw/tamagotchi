@@ -16,15 +16,18 @@ communication.init({
 function checkMaster() {
     if(communication.master){
         control = new game.Master();
+        control.init(mainDiv, {
+            width: 10,
+            height: 10,
+            difficulty: 0.2
+        }, communication);
     }
     else {
         control = new game.Client();
+        control.init(mainDiv, communication);
     }
-    control.init(mainDiv, terminate);
+    
 }
 
-function terminate(errorMsg) {
-    communication.close();
-}
 
 

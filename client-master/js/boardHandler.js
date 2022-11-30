@@ -1,167 +1,173 @@
 import {Cell} from "./cell.js"
 import {Player} from "./player.js";
 import {checkCollision} from "./collisionChecker.js";
+class Board{
+    blankCell = 1;
+    burrow = 2;
+    goal = 3;
 
-const blankCell = 1, burrow = 2, goal = 3;
-let cellTypes = {
-    1: "O",
-    2: "#",
-    3: "G",
-}
-
-let board = null;
-let width = null;
-let height = null;
-let players = [];
-
-let socket = null;
-let gameThread = null;
-let generator = null;
-
-function* idGenerator(){
-    let i = 1;
-    while(true){
-        yield i;
-        i++;
+    cellTypes = {
+        1: "O",
+        2: "#",
+        3: "G",
     }
-}
-
-function init(config){
-    generator = idGenerator();
-    socket = config.socket;
-    width = config.width;
-    height = config.height;
-    createBoard(config.burrowNumber)
-    startGame();
-}
-
-function createBoard(burrowNumber){
-    board = Array.from({ length:height }, () => (
-        Array.from({ length:width }, ()=> new Cell(blankCell))
-    ))
     
-    generateBurrows(burrowNumber, width, height, board);
-}
-
-function generateBurrows(burrowNumber){
-    let cont = 0;
-    while(cont < burrowNumber){
-        let y = Math.floor(Math.random() * height);
-        let x = Math.floor(Math.random() * width);
-
-        if(board[y][x].type != burrow){
-            board[y][x] = new Cell(burrow);
-        }
-        cont++;
-    }
-}
-
-function addPlayer(nickname){
-    let y = Math.floor(Math.random() * height);
-    let x = Math.floor(Math.random() * width);
-    let newPlayer = new Player({
-        id: generator.next().value,
-        nickname: nickname,
-        posX: x,
-        posY: y
-    });
-
-    // FIXEAR ESTO
-    for (const player of players) {
-        while(newPlayer.haveSameCoords(player)){
-            y = Math.floor(Math.random() * height);
-            x = Math.floor(Math.random() * width);
-            newPlayer.posX = x;
-            newPlayer.posY = y;
+    board = null;
+    width = null;
+    height = null;
+    players = [];
+    
+    gameThread = null;
+    generator = null;
+    
+    communication = null;
+    
+    // QUITAR
+    * idGenerator(){
+        let i = 1;
+        while(true){
+            yield i;
+            i++;
         }
     }
-    players.push(newPlayer);
-    const message = {
-        "tipo" : 1,
-        "mensaje" : {
+    
+    init(config){
+        this.communication = config.communication,
+        this.width = config.width;
+        this.height = config.height;
+        this.createBoard(config.burrowNumber);
+        this.communication.activateMessages();
+        this.startGame();
+    }
+    
+    createBoard(){
+        this.board = Array.from({ length:this.height }, () => (
+            Array.from({ length:this.width }, ()=> new Cell(this.blankCell))
+        ))
+        this.generateBurrows();
+        this.generateGoal();
+    }
+    
+    generateBurrows(){
+        this.board = this.board.map(row => {
+            return row.map(cell =>{
+                if(Math.random() < 0.2) {
+                    return new Cell(this.burrow);
+                } else return cell;
+            });
+        });
+    }
+    
+    generateGoal(){
+        let ycenter = Math.floor(this.height / 2);
+        let xcenter = Math.floor(this.width / 2);
+        if(this.height % 2){
+    
+        }else{
+            this.board[ycenter][xcenter] = new Cell(this.goal);
+        }
+        
+    }
+    
+    addPlayer(nickname, clientId){
+        let y = Math.floor(Math.random() * this.height);
+        let x = Math.floor(Math.random() * this.width);
+        let newPlayer = new Player({
+            clientId: clientId,
+            nickname: nickname,
+            posX: x,
+            posY: y
+        });
+        // FIXEAR ESTO
+        for (const player of this.players) {
+            while(newPlayer.haveSameCoords(player)){
+                y = Math.floor(Math.random() * this.height);
+                x = Math.floor(Math.random() * this.width);
+                newPlayer.posX = x;
+                newPlayer.posY = y;
+            }
+        }
+        this.players.push(newPlayer);
+        this.communication.sendId({
             type: "player",
             player: newPlayer
-        },
+        }, clientId);
+        return newPlayer;
     }
-    socket.send(JSON.stringify(message));
-}
-
-function startGame(){
-    gameThread = setInterval(() =>{
-        const message = {
-            "tipo" : 1,
-            "mensaje" :{
-                type: "draw",
-                board: [...board]
-            }
-        }
-        socket.send(JSON.stringify(message));
-        drawBoard();
-    }, 100)
-}
-
-function stopGame(){
-    clearInterval(gameThread);
-}
-
-function drawBoard(){
-    // Copy of board
-    let boardCopy = board.map(cell => {return [...cell]})
     
-    for (const player of players) {
-        boardCopy[player.posY][player.posX] = player;
+    startGame(){
+        this.gameThread = setInterval(() =>{
+            this.communication.send({
+                type: "draw",
+                board: [...this.board]
+            }, this.communication.CLIENTS)
+            this.drawBoard();
+        }, 100)
     }
-    let container = document.getElementById("container");
-    removeAllChildNodes(container);
-
-    for (const row of boardCopy) {
-        let rowDiv = document.createElement("div");
-        rowDiv.classList.add("row");
-        for (const square of row) {
-            let squareDiv = document.createElement("div");
-            squareDiv.classList.add("cell");
-            if(square.constructor.name == "Cell"){
-                squareDiv.innerHTML = cellTypes[square.type];
-            }else{
-                squareDiv.innerHTML = "P";
+    
+    stopGame(){
+        clearInterval(this.gameThread);
+    }
+    
+    drawBoard(){
+        // Copy of board
+        let boardCopy = this.board.map(cell => {return [...cell]})
+        
+        for (const player of this.players) {
+            boardCopy[player.posY][player.posX] = player;
+        }
+        let container = document.getElementById("container");
+        this.removeAllChildNodes(container);
+    
+        for (const row of boardCopy) {
+            let rowDiv = document.createElement("div");
+            rowDiv.classList.add("row");
+            for (const square of row) {
+                let squareDiv = document.createElement("div");
+                squareDiv.classList.add("cell");
+                if(square.constructor.name == "Cell"){
+                    squareDiv.innerHTML = this.cellTypes[square.type];
+                }else{
+                    squareDiv.classList.add("player");
+                    squareDiv.innerHTML = "P";
+                }
+                rowDiv.appendChild(squareDiv);
             }
-            rowDiv.appendChild(squareDiv);
-        }
-        container.appendChild(rowDiv);
-    }
-}
-
-function removeAllChildNodes(parent) {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
-}
-
-function findPlayer(playerId){
-    for (const player of players) {
-        if(player.id == playerId){
-            return player;
+            container.appendChild(rowDiv);
         }
     }
-}
-
-function movePlayer(movementData){
-    // Move player
-    let player = findPlayer(movementData.playerId);
-    let collisioned = checkCollision(player, movementData.direction, width, height, board);
-
-    if(!collisioned) player.move(movementData.direction);
-
-    // Send position to all player
-    let message = {
-        tipo: 1,
-        mensaje: {
+    
+    removeAllChildNodes(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+    
+    findPlayer(clientId){
+        for (const player of this.players) {
+            console.log(player.clientId + "   |   " + clientId);
+            if(player.clientId == clientId){
+                return player;
+            }
+        }
+    }
+    
+    movePlayer(movementData){
+        // Move player
+        let player = this.findPlayer(movementData.playerId);
+        console.log(player);
+        let collisioned = checkCollision(player, movementData.direction, this.width, this.height, this.board);
+    
+        if(!collisioned) player.move(movementData.direction);
+    
+        // Send position to all player
+        this.communication.sendId({
             type: "playerMovement",
             posX: player.posX,
             posY: player.posY
-        }
+        }, player.clientId);
     }
-    socket.send(JSON.stringify(message))
 }
 
-export {init, addPlayer, movePlayer};
+
+export {Board};

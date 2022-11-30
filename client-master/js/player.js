@@ -1,6 +1,6 @@
 class Player{
     constructor(config){
-        this.id = config.id;
+        this.clientId = config.clientId;
         this.nickname = config.nickname;
         this.posX = config.posX;
         this.posY = config.posY;

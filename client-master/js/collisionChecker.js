@@ -2,8 +2,9 @@ const horizontalAxis = 1;
 const vertialAxis = 2;
 
 function checkCollision(player, direction, width, height, board){
-    console.log(board);
+    
     let playerCopy = {...player};
+    console.log(playerCopy);
     let prediction = null;
     let axis = null;
     switch (direction) {

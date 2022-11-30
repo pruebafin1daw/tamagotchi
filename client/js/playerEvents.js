@@ -1,35 +1,31 @@
-
-function init(player, socket){
+let communicationInstance = null;
+function setEvents(communication, player){
+    communicationInstance = communication
     document.addEventListener('keyup', (event) => {
         switch(event.code){
             case "ArrowUp":
-                sendMessage("up", player, socket)
+                sendMessage("up", player)
                 break;
             case "ArrowRight":
-                sendMessage("right", player, socket)
+                sendMessage("right", player)
                 break;
             case "ArrowDown":
-                sendMessage("down", player, socket)
+                sendMessage("down", player)
                 break;
             case "ArrowLeft":
-                sendMessage("left", player, socket)
+                sendMessage("left", player)
                 break;
         }
     });
-
 }
 
-function sendMessage(direction, player, socket){
+function sendMessage(direction, player){
     console.log(player);
-    let message = {
-        tipo: 0,
-        mensaje: {
-            type: "move",
-            direction: direction,
-            playerId: player.id
-        }
-    }
-    socket.send(JSON.stringify(message))
+    communicationInstance.send({
+        type: "move",
+        direction: direction,
+        playerId: player.clientId
+    }, communicationInstance.MASTER);
 }
 
-export {init};
+export {setEvents};

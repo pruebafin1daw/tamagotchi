@@ -1,3 +1,4 @@
+const { v4:uuidv4 } = require('uuid');
 // Import the ws module as a variable called WebSocketServer.
 var WebSocketServer = require("ws").Server;
 
@@ -5,19 +6,32 @@ var WebSocketServer = require("ws").Server;
 var wss = new WebSocketServer({port: 8023});
 var clientMaster = null;
 var first = true;
+var clients = [];
 // Output a log to say the server is running.
 console.log("Server is Running...");
 
 // Create a "broadcast" function on our WebSocketServer object.
 // The function will take a "msg" paramter. When called, it will
 // loop through all the connected clients and send them the msg.
-wss.broadcast = (msg) => {
-    if (msg.tipo != null) {
-    	if (msg.tipo == 0) {
-    		clientMaster.send(msg.data);
-    	} else {
+wss.broadcast = function broadcastMsg(msg) {
+    let data = JSON.parse(msg);
+    const message = {
+        type: 'mensaje',
+        valor: JSON.parse(msg).mensaje
+    }
+    console.log("Mensaje "+ wss.clients)
+    console.log("Desde mensajes: "+ data.tipo);
+    if (data.tipo != null) {
+    	if (data.tipo == 0) {
+    		clientMaster.send(JSON.stringify(message));
+    	}else if(data.id){
+            let client = clients.find(item => item.id == data.id);
+            if(client){
+                client.socket.send(JSON.stringify(message));
+            }
+        }else {
     		wss.clients.forEach(function each(client) {
-			client.send(msg.data);
+			client.send(JSON.stringify(message));
 		});
     	}
     }
@@ -26,19 +40,36 @@ wss.broadcast = (msg) => {
 // Create a listener function for the "connection" event.
 // Each time we get a connection, the following function
 // is called.
-wss.on('connection', function connection(ws) {
+wss.on('connection', function connection(ws, request, client) {
+    ws.on('message', wss.broadcast);
     if (first) {
     	clientMaster = ws;
     	first = false;
-    }	
-    // Store the remote systems IP address as "remoteIp".
-    //var remoteIp = ws.upgradeReq.connection.remoteAddress;
-
-    // Print a log with the IP of the client that connected.
-    console.log('Connection received: ');
-
-    // Add a listener which listens for the "message" event.
-    // When a "message" event is received, take the contents
-    // of the message and pass it to the broadcast() function.
-    ws.on('message', wss.broadcast);
+        const message = {
+            type: 'mensaje',
+            valor: 'master'
+        }
+        clientMaster.send(JSON.stringify(message));
+    } else {
+        let id = uuidv4();
+        clients.push({
+            id : id,
+            socket : request.socket
+        });
+        const message = {
+            type: 'mensaje',
+            valor: 'hello',
+            id : id
+        }
+        const messageMaster = {
+            type: 'mensaje',
+            valor: 'newClient',
+            id : id
+        }
+        ws.send(JSON.stringify(message));
+        clientMaster.send(JSON.stringify(messageMaster));
+    }
+    console.log(request.socket.remoteAddress);
+    //console.log(request);
+    //console.log(client);	
 });

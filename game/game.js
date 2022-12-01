@@ -120,11 +120,6 @@ game.Master = class {
                 }
             })
         }
-
-        // this.communication.send(clientMap, 1, null);
-
-        //this.showAdminConfigIU(mainDiv);
-
     }
 
     createMap(config) {
@@ -193,7 +188,7 @@ game.Master = class {
     saveAdminConfig() {
 
     }
-
+    //Para imprimir el mapa de ShowAdminConfigIU
     printMap() {
         config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
 
@@ -263,7 +258,6 @@ game.Master = class {
             cadena = msg.valor.type;
         }
 
-
         switch(cadena) {
             case 'newClient':
                 this.newPlayer(msg, origin);
@@ -281,7 +275,7 @@ game.Master = class {
 
     movePlayer(msg, origin) {
         if(this.players.find(x => x.origin.id === msg.valor.playerId)){
-            let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);
+            let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);   
 
             let originalX = jugador.x;
             let originalY = jugador.y;
@@ -295,7 +289,6 @@ game.Master = class {
 
                 case "down":
                     if(jugador.x < this.clientMap.height - 1) {
-                        console.log(jugador.x < this.clientMap.height, jugador.x, this.clientMap.height)
                         jugador.x++;
                     }
                 break;
@@ -313,9 +306,17 @@ game.Master = class {
                 break;
             }
 
-            console.log(originalX, jugador.x, originalY, jugador.y)
 
             if(originalX != jugador.x || originalY != jugador.y){
+                this.map[originalX][originalY].players.pop(jugador);
+                this.map[jugador.x][jugador.y].players.push(jugador);
+
+                console.log(this.map[jugador.x][jugador.y].players.length)
+
+                if(this.map[jugador.x][jugador.y].players.length > 1) {
+                    console.log("Fight!")
+                }
+
                 this.communication.send({
                     jugador: jugador,
                 }, 1, jugador.origin.id);

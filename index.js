@@ -1,5 +1,5 @@
 import { Communication } from "./communication/communication.js";
-import { game } from "./game/user.js";
+import { game } from "./game/game.js";
 
 let mainDiv = 'mainDiv';
 

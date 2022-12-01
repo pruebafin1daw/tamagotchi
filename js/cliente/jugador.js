@@ -1,50 +1,67 @@
-const MSG_PRIVADO = 0;
-const MSG_PUBLICO = 1;
-
 const CASILLA = 0;
 const MADRIGUERA = 1;
 const META = 2;
-
-const IDJUGADOR = 100; // TODO: Establecer id del jugador
+const JUGADOR = 3;
 
 class Jugador {
-  comunicacion = null;
-
   init(comunicacion, id) {
     this.comunicacion = comunicacion;
-
     this.id = id;
-    this.comunicacion.enviarMensaje(MSG_PRIVADO, `${this.IDJUGADOR}:conexion`);
+    this.comunicacion.enviarMensaje(comunicacion.MSG_PRIVADO, "conexion", id);
 
-    this.interpretarMensaje();
+    this.jugador = null;
+    this.tablero = null;
+    this.activo = false;
+    this.movimientos();
   }
 
-  interpretarMensaje() {
-    if (this.socket.recibirMensajes().includes(this.IDJUGADOR)) {
-      const mensaje = this.socket.recibirMensajes().split(":");
-      switch (mensaje[1]) {
-        case "tablero":
-          this.dibujarTablero(mensaje);
-          break;
-        case "posicion":
-          this.actualizarPosicion(mensaje);
-          break;
-        case "enemigo":
-          this.activarModoBatalla(mensaje);
-          break;
-      }
-    } else if (this.socket.recibirMensajes().includes("finPartida")) {
-      this.partidaFinalizada(mensaje);
+  interpretarMensaje(msg, origin) {
+    const mensaje = msg.valor;
+    switch (mensaje.tipo) {
+      case "tablero":
+        this.dibujarTablero(mensaje);
+        break;
+      case "posicion":
+        this.actualizarPosicion(mensaje);
+        break;
+      case "enemigo":
+        this.activarModoBatalla(mensaje);
+        break;
     }
   }
 
   dibujarTablero(mensaje) {
-    let dimensiones = mensaje[2];
-    let posicionY = mensaje[4];
-    let posicionX = mensaje[3];
-    let salud = mensaje[5];
+    this.tablero = [mensaje.tablero.alto][mensaje.tablero.ancho];
+    this.jugador = mensaje.jugador;
 
-    // TODO: Dibujamos el tablero
+    let table = document.createElement("table");
+    for (let i = 0; i < this.tablero.lenght; i++) {
+      let tr = document.createElement("tr");
+      for (let j = 0; j < this.tablero[i].lenght; j++) {
+        let th = document.createElement("th");
+        tr.appendChild(th);
+        let casilla = null;
+        if (
+          mensaje.tablero.madriguera.find(
+            (madriguera) => madriguera.y === i && madriguera.x === j
+          )
+        ) {
+          casilla = MADRIGUERA;
+        } else if (
+          i == this.tablero.lenght - 1 / 2 &&
+          j == this.tablero[0].lenght - 1 / 2
+        ) {
+          casilla = META;
+        } else if (this.jugador.posicionY == i && this.jugador.posicionX == j) {
+          casilla = JUGADOR;
+        } else {
+          casilla = CASILLA;
+        }
+        tr.cells[j].appendChild(document.createTextNode(casilla));
+        table.appendChild(tr);
+      }
+    }
+    document.body.appendChild(table);
   }
 
   movimientos() {
@@ -64,32 +81,20 @@ class Jugador {
           movimiento = "derecha";
           break;
       }
-      this.comunicacion.enviarMensaje(
-        MSG_PRIVADO,
-        `${this.IDJUGADOR}:movimiento:${movimiento}`
-      );
+
+      let msg = {
+        tipo: "movimiento",
+        movimiento: movimiento,
+      };
+      this.comunicacion.enviarMensaje(MSG_PRIVADO, msg, this.id);
     });
   }
 
-  actualizarPosicion(mensaje) {
-    let posicionY = mensaje[3];
-    let posicionX = mensaje[2];
+  actualizarPosicion(mensaje) {}
 
-    // TODO: Actualizamos las posiciones del jugador
-  }
+  activarModoBatalla(mensaje) {}
 
-  activarModoBatalla(mensaje) {
-    // TODO: Activamos el modo batalla
-  }
-
-  partidaFinalizada(mensaje) {
-    // TODO: Finalizamos la partida con el resultado requerido
-    if (mensaje[0] == IDJUGADOR) {
-      console.log("HAS GANADO");
-    } else {
-      console.log("HAS PERDIDO");
-    }
-  }
+  partidaFinalizada(mensaje) {}
 }
 
 export { Jugador };

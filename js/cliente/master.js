@@ -1,16 +1,14 @@
 class Master {
-  comunicacion = null;
-
-  jugadores = [];
-  tablero = new Array();
-  bordes = [];
-
   init(config, comunicacion) {
     this.comunicacion = comunicacion;
     this.comunicacion.handler = this;
 
+    this.jugadores = [];
+    this.tablero = new Array();
+    this.bordes = [];
+    this.tableroJugador = null;
+
     this.crearTablero(config);
-    this.interpretarMensaje();
   }
 
   crearTablero(config) {
@@ -33,26 +31,9 @@ class Master {
         } else if (Math.random() < config.porcentaje) {
           this.tablero[i][j].madriguera = true;
         }
-
-        /*let tipoCasilla = null;
-        if (i % 2 == 1 && j % 2 == 1) {
-          tipoCasilla = MADRIGUERA;
-        } else if (
-          i == Math.floor(DIMENSIONES / 2) - 1 &&
-          j == Math.floor(DIMENSIONES / 2) - 1
-        ) {
-          tipoCasilla = META;
-        } else {
-          tipoCasilla = CASILLA;
-        }
-        casilla = {
-          tipo: tipoCasilla,
-          jugadores: [],
-        };
-        this.tablero[i][j] = casilla;*/
       }
     }
-    let tableroJugador = {
+    this.tableroJugador = {
       ancho: config.ancho,
       alto: config.alto,
       madriguera: this.tablero
@@ -67,39 +48,26 @@ class Master {
     };
   }
 
-  interpretarMensaje() {
-    if (this.socket.recibirMensajes() != undefined) {
-      const mensaje = this.socket.recibirMensajes().split(":");
-      switch (mensaje[1]) {
-        case "conexion":
-          this.añadirJugador(origeny);
-          break;
+  interpretarMensaje(msg, origin) {
+    if (msg.valor == "conexion") {
+      this.añadirJugador(msg.id, origin);
+    } else {
+      const mensaje = msg.valor;
+      switch (mensaje.tipo) {
         case "movimiento":
-          this.comprobarMovimiento(mensaje);
+          this.comprobarMovimiento(mensaje, msg.id);
           break;
       }
     }
   }
 
-  añadirJugador(mensaje) {
-    let idJugador = mensaje[0];
-
-    let posicionX = null;
-    let posicionY = null;
-    do {
-      posicionX = Math.floor(Math.random() * DIMENSIONES) + 1;
-      posicionY = Math.floor(Math.random() * DIMENSIONES) + 1;
-    } while (
-      this.tablero[posicionY][posicionX].tipo != CASILLA &&
-      this.tablero[posicionY][posicionX].jugador.lenght != 0
-    );
-
-    if (!this.jugadores.find((x) => x.origen === origen)) {
+  añadirJugador(id, origin) {
+    if (!this.jugadores.find((x) => x.origin === origin)) {
       let jugador = {
-        origen: origen,
+        origin: origin,
         nombre: "",
-        posicionX: posicionX,
-        poisicionY: posicionY,
+        posicionX: 0,
+        poisicionY: 0,
         enMadriguera: true,
         salud: SALUD,
       };
@@ -107,21 +75,22 @@ class Master {
       let index = Math.floor(Math.random() * this.bordes.length);
       let celda = this.bordes.splice(index, 1);
       celda.madrigueraJugador = jugador;
-      jugador.x = celda.x;
-      jugador.y = celda.y;
-      this.jugadores.push(jugador);
+      jugador.posicionX = celda.posicionX;
+      jugador.posicionY = celda.posicionY;
+      this.jugadores.push(jugador, id);
     }
-    /*this.tablero[posicionY][posicionX].jugador.push(jugador);
-    this.jugadores.push(jugador);*/
 
-    // TODO: Enviar posicion
-    /*let msg = `${idJugador}:tablero:${DIMENSIONES}:${posicionX}:${posicionY}:${SALUD}`;
-    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);*/
+    let msg = {
+      tipo: "tablero",
+      jugador: jugador,
+      tablero: this.tableroJugador,
+    };
+    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg, id);
   }
 
-  comprobarMovimiento(mensaje) {
-    let idJugador = mensaje[0];
-    let movimiento = mensaje[2];
+  comprobarMovimiento(mensaje, id) {
+    let idJugador = id;
+    let movimiento = mensaje.movimiento;
 
     let jugador = this.jugadores.find(({ id }) => id === idJugador);
     let posicionX = jugador.posicionX;
@@ -160,9 +129,9 @@ class Master {
       }
     }
 
-    let casilla = null;
+    //let casilla = null;
     if (posicion < maximaPosicion) {
-      casilla = this.tablero[nuevaPosicionY][nuevaPosicionX];
+      /*casilla = this.tablero[nuevaPosicionY][nuevaPosicionX];
       switch (casilla.tipo) {
         case META:
           this.casillaMeta(mensaje, casilla);
@@ -173,16 +142,23 @@ class Master {
         case CASILLA:
           this.casillaNormal(mensaje, casilla);
           break;
-      }
+      }*/
+      jugador.posicionX = nuevaPosicionX;
+      jugador.posicionY = nuevaPosicionY;
+      let msg = {
+        tipo: "posicion",
+        posicionX: nuevaPosicionX,
+        posicionY: nuevaPosicionY,
+      };
+      this.comunicacion.enviarMensaje(MSG_PUBLICO, msg, id);
     }
   }
 
-  casillaMeta(mensaje, casilla) {
+  /*casillaMeta(mensaje, casilla) {
     let msg = null;
     if (casilla.jugadores.lenght != 0) {
-      // TODO Ya hay un jugador en la meta
+
     } else {
-      // TODO Implementar victoria
       msg = `${idJugador}:finPartida:${posicionX}:${posicionY}`;
     }
     this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);
@@ -197,7 +173,7 @@ class Master {
     let msg = null;
     msg = `${idJugador}:posicion:${posicionX}:${posicionY}`;
     this.comunicacion.enviarMensaje(MSG_PUBLICO, msg);
-  }
+  }*/
 }
 
 export { Master };

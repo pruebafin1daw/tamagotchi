@@ -22,11 +22,37 @@ game.Client = class {
 
     newMsg(msg, origin) {
         
-        //Aquí tiene que crear un jugador
+        //Si nos llegan el mapa y el jugador, los asigna y dibuja el mapa
         if(msg.valor.map && msg.valor.player){
             this.map = msg.valor.map;
             this.player = msg.valor.player;
             this.drawMap();
+        }
+
+        //Si nos llega un jugador
+        if(msg.valor.jugador) {
+            let jugador = msg.valor.jugador;
+
+            let maxHeight = this.map.height - 1;
+            let maxWidth = this.map.width - 1;
+
+            //Si las posiciones del jugador son distintas a las del nuestro
+            if(this.player.x != jugador.x || this.player.y != jugador.y && jugador.x < maxHeight || jugador.y < maxHeight - 1){
+                this.player.x = msg.valor.jugador.x;
+                this.player.y = msg.valor.jugador.y;
+                
+                //Borramos la clase de la posición anterior
+                let oldCell = document.querySelector('.player');
+                oldCell.classList.toggle('player');
+    
+                //Cogemos el div para introducir la clase en la nueva posición
+                let div = document.querySelector(`.${this.mainDiv}`);
+                let table = div.childNodes[1];
+                console.log(this.player.x, msg.valor.jugador.x, this.player.y, msg.valor.jugador.y)
+                table.childNodes[this.player.x].childNodes[this.player.y].classList.toggle('player');   
+            }
+
+            
         }
     }
 
@@ -111,7 +137,7 @@ game.Master = class {
                 this.map[i][j] = new game.Cell(j, i, false, [], false, null);
 
                 if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {
-                    if ((i+j)%2) {
+                    if (( i + j ) % 2) {
                         this.map[i][j].burrow = true;
                         this.edges.push(this.map[i][j]);
                     }
@@ -255,7 +281,45 @@ game.Master = class {
 
     movePlayer(msg, origin) {
         if(this.players.find(x => x.origin.id === msg.valor.playerId)){
-           console.log("hi")
+            let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);
+
+            let originalX = jugador.x;
+            let originalY = jugador.y;
+
+            switch(msg.valor.direction) {
+                case "up":
+                    if(jugador.x > 0) {
+                        jugador.x--;
+                    }
+                break;
+
+                case "down":
+                    if(jugador.x < this.clientMap.height - 1) {
+                        console.log(jugador.x < this.clientMap.height, jugador.x, this.clientMap.height)
+                        jugador.x++;
+                    }
+                break;
+
+                case "right":
+                    if(jugador.y < this.clientMap.width - 1) {
+                        jugador.y++;
+                    }
+                break;
+
+                case "left":
+                    if(jugador.y > 0){
+                        jugador.y--;
+                    }
+                break;
+            }
+
+            console.log(originalX, jugador.x, originalY, jugador.y)
+
+            if(originalX != jugador.x || originalY != jugador.y){
+                this.communication.send({
+                    jugador: jugador,
+                }, 1, jugador.origin.id);
+            }
         }
     }
 
@@ -266,8 +330,9 @@ game.Master = class {
             let index = Math.floor(Math.random() * this.edges.length);
             let cell = this.edges.splice(index, 1);
             cell.burrowPlayer = player;
-            player.x = cell.x;
-            player.y = cell.y;
+            player.x = cell[0].x;
+            player.y = cell[0].y;
+            console.log(player, cell)
             this.players.push(player);
 
             this.communication.send({

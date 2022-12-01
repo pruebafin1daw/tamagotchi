@@ -230,12 +230,6 @@ game.Player = class {
 }
 
 game.Cell = class {
-    
-    /*
-    * @X Eje x
-    * @Y Eje y
-    * @Contenido ( 0 => Casilla Vacia, 1 => Area Descanso, 3 => Bandera Final)
-    */
     constructor(x, y, endPoint, players, burrow, burrowPlayer) {
         this.x = x;
         this.y = y;

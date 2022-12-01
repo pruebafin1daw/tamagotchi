@@ -1,0 +1,18 @@
+body{
+    font-family: monospace;
+}
+
+.row{
+    user-select: none;
+    display: flex;
+    gap: 10px;
+}
+
+.cell{
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.player{
+    color: red;
+}

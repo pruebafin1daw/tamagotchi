@@ -9,25 +9,65 @@ game.FLAG = 2;
 game.Client = class {
     active = false;
     map = null;
+    player = null;
+    fullMap = [];
 
     init(mainDiv, communication, id) {
+        this.mainDiv = mainDiv;
         this.id = id;
+
         this.communication = communication;
         this.communication.handler = this;
-        this.comunication.send("nuevo", this.comunication.MASTER);
     }
 
     newMsg(msg, origin) {
-        console.log(msg);
+        
+        //Aquí tiene que crear un jugador
+        if(msg.valor.map && msg.valor.player){
+            this.map = msg.valor.map;
+            this.player = msg.valor.player;
+            this.drawMap();
+        }
+    }
+
+    drawMap() {
+        let table = document.createElement('table');
+        for(let x = 0; x < this.map.width; x++){
+            let row = document.createElement('tr');
+            for(let y = 0; y < this.map.height; y++){
+                let endPointX = Math.floor(this.map.width % 2);
+                let endPointY = Math.floor(this.map.height % 2);
+                console.log(endPointX, endPointY)
+                let endPoint = x == endPointX && y == endPointY;
+
+                let burrow = false;
+
+                if(this.map.burrows.find(burrow => burrow.x == x && burrow.y == y)){
+                    burrow = true;
+                }
+
+                let cell = new game.Cell(x, y, endPoint, [], burrow, false);
+                this.fullMap.push(cell);
+
+
+                let docCell = document.createElement('td');
+                if(cell.burrow) {
+                   docCell.classList.toggle('burrow'); 
+                }
+
+                if(cell.x == this.player.x && cell.y == this.player.y){
+                    docCell.classList.toggle('player');
+                }
+
+                row.appendChild(docCell);
+            }
+            table.appendChild(row);
+        }
+        document.querySelector(`.${this.mainDiv}`).appendChild(table);
     }
 }
 
 game.Master = class {
-    config = null;
-    users = null;
-    map = null;
-    mainDiv = null;
-    clientMap = null;
 
     init(mainDiv, config, communication) {
         this.mainDiv = mainDiv;
@@ -41,7 +81,7 @@ game.Master = class {
 
         this.createMap(config);
 
-        let clientMap = {
+        this.clientMap = {
             //Dimensiones del mapa
             width: config.width,
             height: config.height,
@@ -55,7 +95,7 @@ game.Master = class {
             })
         }
 
-        this.communication.send(clientMap, 1, null);
+        // this.communication.send(clientMap, 1, null);
 
         //this.showAdminConfigIU(mainDiv);
 
@@ -191,28 +231,49 @@ game.Master = class {
     }
 
     newMsg(msg, origin) {
-        switch(msg.valor) {
+        let cadena = msg.valor;
+
+        if(msg.valor.type){
+            cadena = msg.valor.type;
+        }
+
+
+        switch(cadena) {
             case 'newClient':
-                this.newPlayer(origin);
-                break;
+                this.newPlayer(msg, origin);
+            break;
             
             case 'disconnected':
                 this.players.pop(this.players.find(num => num.origin === origin));
-                break;
+            break;
+
+            case 'move':
+                this.movePlayer(msg, origin);
+            break;
+        }
+    }
+
+    movePlayer(msg, origin) {
+        if(this.players.find(x => x.origin.id === msg.valor.playerId)){
+           console.log("hi")
         }
     }
 
     newPlayer(origin) {
         //Si el jugador no existe lo crea
-        if(!this.players.find(x => origin.x === origin)) {
+        if(!this.players.find(x => x.origin === origin)) {
             let player = new game.Player(origin, '', 0, 0, true, 100);
-
             let index = Math.floor(Math.random() * this.edges.length);
             let cell = this.edges.splice(index, 1);
             cell.burrowPlayer = player;
             player.x = cell.x;
             player.y = cell.y;
             this.players.push(player);
+
+            this.communication.send({
+                map: this.clientMap,
+                player: player
+            }, 1, origin.id);
         }
     }
 

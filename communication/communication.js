@@ -21,21 +21,20 @@ class Communication {
                     config.check(); 
                 break;
 
+                case 'Has sido conectado':
+                    config.check(objeto.id);
+                break;
+
                 default:
                     if(this.handler) {
                         this.handler.newMsg(objeto, event.origin);
                     }
-
             }
-
-            console.log(objeto.valor)
+            console.log(objeto)
         };
 
         this.socket.onclose = (event) => {
             this.state = false;
-            if(!this.master) {
-                this.send({valor: 'disconnected'}, 0, null);
-            }
         };
 
         this.socket.onerror = (error) => {
@@ -67,7 +66,6 @@ class Communication {
 
         if(id != null) {
             msg.id = id;
-            msg.tipo = 2;
         }
 
         this.socket.send(JSON.stringify(msg));

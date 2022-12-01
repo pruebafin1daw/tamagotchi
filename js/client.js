@@ -1,23 +1,17 @@
-import { Master } from "./master.js";
-import { Player } from "./player.js";
+class Client {
+    active = false;
+    map = null;
 
-var socket;
+    init(comunication, id) {
+        this.id = id;
+        this.comunication = comunication;
+        this.comunication.handler = this;
+        this.comunication.sendId(id, "nuevo cliente");
+    }
 
-function init(config) {
-    socket = new WebSocket(`ws://${config.ip}:${config.port}`);
-}
-
-function onMessage() {
-    socket.onmessage = (e) => {
-        let master;
-        if (JSON.parse(e.data).client == "master") {
-            localStorage.setItem('master', JSON.stringify(new Master()));
-        } else {
-            master = JSON.parse(localStorage.getItem('master'));
-            master.addPlayer(new Player());
-            master.getPlayers();
-        }
+    newMsg(msg, origin) {
+        console.log(msg);
     }
 }
 
-export {init, onMessage};
+export { Client };

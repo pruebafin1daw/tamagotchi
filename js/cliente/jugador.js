@@ -7,7 +7,13 @@ class Jugador {
   init(comunicacion, id) {
     this.comunicacion = comunicacion;
     this.id = id;
-    this.comunicacion.enviarMensaje(comunicacion.MSG_PRIVADO, "conexion", id);
+
+    //this.comunicacion.enviarMensaje(comunicacion.MSG_PRIVADO, "conexion", this.id);
+    this.comunicacion.enviarMensaje(
+      comunicacion.MSG_PRIVADO,
+      this.añadirJugador(this.id, origin),
+      this.id
+    );
 
     this.jugador = null;
     this.tablero = null;
@@ -15,7 +21,7 @@ class Jugador {
     this.movimientos();
   }
 
-  interpretarMensaje(msg, origin) {
+  /*interpretarMensaje(msg, origin) {
     const mensaje = msg.valor;
     switch (mensaje.tipo) {
       case "tablero":
@@ -28,7 +34,7 @@ class Jugador {
         this.activarModoBatalla(mensaje);
         break;
     }
-  }
+  }*/
 
   dibujarTablero(mensaje) {
     this.tablero = [mensaje.tablero.alto][mensaje.tablero.ancho];
@@ -83,10 +89,15 @@ class Jugador {
       }
 
       let msg = {
-        tipo: "movimiento",
+        //tipo: "movimiento",
         movimiento: movimiento,
       };
-      this.comunicacion.enviarMensaje(MSG_PRIVADO, msg, this.id);
+      //this.comunicacion.enviarMensaje(MSG_PRIVADO, msg, this.id);
+      this.comunicacion.enviarMensaje(
+        MSG_PRIVADO,
+        this.comprobarMovimiento(msg, msg.id),
+        this.id
+      );
     });
   }
 

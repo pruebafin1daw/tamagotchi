@@ -1,7 +1,18 @@
 class Master {
+  /*static MSG_NEW_PLAYER = 0;
+  static MSG_DEAD_PLAYER = 1;
+  msgs = [
+    {
+      name: "",
+    },
+    {
+      name: "",
+    },
+  ];*/
+
   init(config, comunicacion) {
     this.comunicacion = comunicacion;
-    this.comunicacion.handler = this;
+    //this.comunicacion.handler = this;
 
     this.jugadores = [];
     this.tablero = new Array();
@@ -48,7 +59,7 @@ class Master {
     };
   }
 
-  interpretarMensaje(msg, origin) {
+  /*interpretarMensaje(msg, origin) {
     if (msg.valor == "conexion") {
       this.añadirJugador(msg.id, origin);
     } else {
@@ -59,12 +70,12 @@ class Master {
           break;
       }
     }
-  }
+  }*/
 
-  añadirJugador(id, origin) {
-    if (!this.jugadores.find((x) => x.origin === origin)) {
+  añadirJugador(id) {
+    if (!this.jugadores.find((jugador) => jugador.id === id)) {
       let jugador = {
-        origin: origin,
+        id: id,
         nombre: "",
         posicionX: 0,
         poisicionY: 0,
@@ -77,22 +88,21 @@ class Master {
       celda.madrigueraJugador = jugador;
       jugador.posicionX = celda.posicionX;
       jugador.posicionY = celda.posicionY;
-      this.jugadores.push(jugador, id);
+      this.jugadores.push(jugador);
     }
 
     let msg = {
-      tipo: "tablero",
       jugador: jugador,
       tablero: this.tableroJugador,
     };
-    this.comunicacion.enviarMensaje(MSG_PUBLICO, msg, id);
+    //this.comunicacion.enviarMensaje(MSG_PUBLICO, msg, id);
+    this.comunicacion.enviarMensaje(MSG_PUBLICO, this.dibujarTablero(msg), id);
   }
 
   comprobarMovimiento(mensaje, id) {
-    let idJugador = id;
     let movimiento = mensaje.movimiento;
 
-    let jugador = this.jugadores.find(({ id }) => id === idJugador);
+    let jugador = this.jugadores.find((jugador) => jugador.id === id);
     let posicionX = jugador.posicionX;
     let posicionY = jugador.posicionY;
 
@@ -146,11 +156,15 @@ class Master {
       jugador.posicionX = nuevaPosicionX;
       jugador.posicionY = nuevaPosicionY;
       let msg = {
-        tipo: "posicion",
         posicionX: nuevaPosicionX,
         posicionY: nuevaPosicionY,
       };
-      this.comunicacion.enviarMensaje(MSG_PUBLICO, msg, id);
+      //this.comunicacion.enviarMensaje(MSG_PUBLICO, msg, id);
+      this.comunicacion.enviarMensaje(
+        MSG_PUBLICO,
+        this.actualizarPosicion(msg),
+        id
+      );
     }
   }
 

@@ -1,4 +1,4 @@
-import { v4 as uuidv4, v6 as uuidv6 } from "uuid";
+const { uuid } = require("uuidv4");
 
 var WebSocketServer = require("ws").Server;
 
@@ -19,15 +19,17 @@ wss.broadcast = function broadcastMsg(msg) {
   if (data.tipo != null) {
     if (data.tipo == 0) {
       clientMaster.send(JSON.stringify(message));
-    } else if (data.id) {
-      let cliente = clientes.find((item) => item.id == data.id);
-      if (cliente) {
-        cliente.socket.send(JSON.stringify(message));
-      }
     } else {
-      wss.clients.forEach(function each(client) {
-        client.send(JSON.stringify(message));
-      });
+      if (data.id) {
+        let cliente = clientes.find((item) => item.id == data.id);
+        if (cliente) {
+          cliente.socket.send(JSON.stringify(message));
+        }
+      } else {
+        wss.clients.forEach(function each(client) {
+          client.send(JSON.stringify(message));
+        });
+      }
     }
   }
 };
@@ -42,10 +44,10 @@ wss.on("connection", function connection(ws, request, client) {
     };
     clientMaster.send(JSON.stringify(message));
   } else {
-    let id = uuidv4();
+    let id = uuid();
     clientes.push({
       id: id,
-      socket: request.socket,
+      socket: ws,
     });
     const message = {
       type: "mensaje",

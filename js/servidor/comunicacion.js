@@ -21,10 +21,11 @@ class Comunicacion {
         case "jugador":
           config.check(objeto.id);
           break;
-        default:
+        /*default:
           if (this.handler) {
             this.handler.interpretarMensaje(objeto, event.origin);
           }
+        */
       }
     };
 

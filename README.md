@@ -4,3 +4,6 @@ Equipo 1:
 2. Adrián Cruz Martín.
 3. Eduard Andrei Abril Badea.
 4. Carlos Díaz Benítez.
+
+2/11
+Reunión de equipo online para determinar código a utilizar, determinar tareas principales y secundarias, el reparto de las mismas, donde deberían ser implementadas, organización del trabajo y método de subida de código nuevo.

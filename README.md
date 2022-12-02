@@ -12,3 +12,8 @@ Reparto funciones Master:
 - Gestionar Batallas -> Carlos (en desarrollo)
 - Comprobar Final
 - Iniciar Partida
+
+Client Izam: 
+- Mover Cliente (en desarrollo)
+- Lucha
+- Final

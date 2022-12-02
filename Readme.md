@@ -1,6 +1,6 @@
 #01/12/2022
 - He añadido el código de sergio en su mayoría a mi estructura y lo he adaptado.
-- Bugs conocidos: 
+- Bugs conocidos: <br/>
     · En el tablero de 5x5 al moverse a la casilla 3 4 el moñeco desaparece
     menos cuando entras en la casilla desde arriba.
 

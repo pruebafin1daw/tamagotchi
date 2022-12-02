@@ -36,8 +36,10 @@ game.Client = class {
             let maxHeight = this.map.height - 1;
             let maxWidth = this.map.width - 1;
 
+            console.log(jugador.x, maxHeight, jugador.y, maxWidth)
+
             //Si las posiciones del jugador son distintas a las del nuestro
-            if(this.player.x != jugador.x || this.player.y != jugador.y && jugador.x < maxHeight || jugador.y < maxHeight - 1){
+            if(this.player.x != jugador.x || this.player.y != jugador.y && jugador.x <= maxHeight || jugador.y <= maxWidth){
                 this.player.x = msg.valor.jugador.x;
                 this.player.y = msg.valor.jugador.y;
                 
@@ -143,6 +145,7 @@ game.Master = class {
         }  
     }
     
+    //Función que genera un formulario para el admin
     showAdminConfigIU() {
         this.form = new FormUI();
         this.form.init({
@@ -185,10 +188,12 @@ game.Master = class {
         })
     }
 
+    //Función que guarda el formulario del admin
     saveAdminConfig() {
 
     }
-    //Para imprimir el mapa de ShowAdminConfigIU
+
+    //Para imprimir la información del admin
     printMap() {
         config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
 
@@ -251,6 +256,7 @@ game.Master = class {
         div.appendChild(tabla);
     }
 
+    //Función para ejecutar los mensajes que nos llegan de communication
     newMsg(msg, origin) {
         let cadena = msg.valor;
 
@@ -273,6 +279,7 @@ game.Master = class {
         }
     }
 
+    //Función que mueve al jugador
     movePlayer(msg, origin) {
         if(this.players.find(x => x.origin.id === msg.valor.playerId)){
             let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);   
@@ -306,17 +313,21 @@ game.Master = class {
                 break;
             }
 
-
+            //Si los valores originales no han cambiado es porque no se ha movido
             if(originalX != jugador.x || originalY != jugador.y){
                 this.map[originalX][originalY].players.pop(jugador);
                 this.map[jugador.x][jugador.y].players.push(jugador);
 
                 console.log(this.map[jugador.x][jugador.y].players.length)
 
+                //Comprueba si en la celda a la que se ha movido el jugador hay otro jugador
+                //TODO: boolean que se ponga a true en caso de que haya alguien para activar el modo
+                //Batalla del cliente
                 if(this.map[jugador.x][jugador.y].players.length > 1) {
-                    console.log("Fight!")
+                    console.log("Fight!");
                 }
 
+                //Manda al jugador su nueva configuración
                 this.communication.send({
                     jugador: jugador,
                 }, 1, jugador.origin.id);
@@ -324,16 +335,19 @@ game.Master = class {
         }
     }
 
+    //Función que crea un jugador nuevo
     newPlayer(origin) {
         //Si el jugador no existe lo crea
         if(!this.players.find(x => x.origin === origin)) {
+            //Crea el jugador y le asigna una posicion
             let player = new game.Player(origin, '', 0, 0, true, 100);
             let index = Math.floor(Math.random() * this.edges.length);
             let cell = this.edges.splice(index, 1);
+
             cell.burrowPlayer = player;
             player.x = cell[0].x;
             player.y = cell[0].y;
-            console.log(player, cell)
+
             this.players.push(player);
 
             this.communication.send({
@@ -345,6 +359,7 @@ game.Master = class {
 
 }
 
+//Clase jugador
 game.Player = class {
     constructor(origin, id, x, y, inBurrow, energy) {
         this.origin = origin;
@@ -356,6 +371,7 @@ game.Player = class {
     }
 }
 
+//Clase Celda
 game.Cell = class {
     constructor(x, y, endPoint, players, burrow, burrowPlayer) {
         this.x = x;

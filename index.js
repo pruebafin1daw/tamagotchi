@@ -41,20 +41,29 @@ function setMovement(control) {
             case "ArrowUp":
                 msg.direction = 'up';                
                 communication.send(msg, 0);
-                break;
+            break;
+
             case "ArrowRight":
                 msg.direction = 'right';
                 communication.send(msg, 0);
-                break;
+            break;
+
             case "ArrowDown":
                 msg.direction = 'down';
                 communication.send(msg, 0);
-                break;
+            break;
+
             case "ArrowLeft":
                 msg.direction = 'left';
                 communication.send(msg, 0);
-                break;
+            break;
+
+            case "Space":
+                msg.direction = "in-out";
+                communication.send(msg, 0);
+            break;
         }
+
     });
 }
 

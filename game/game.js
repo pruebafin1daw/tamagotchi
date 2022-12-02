@@ -27,37 +27,43 @@ game.Client = class {
             this.map = msg.valor.map;
             this.player = msg.valor.player;
             this.drawMap();
+            this.drawUI();
         }
 
-        //Si nos llega un jugador
+        //Si nos llega un jugador esque se va a mover
         if(msg.valor.jugador) {
             let jugador = msg.valor.jugador;
 
             let maxHeight = this.map.height - 1;
             let maxWidth = this.map.width - 1;
 
-            console.log(jugador.x, maxHeight, jugador.y, maxWidth)
 
             //Si las posiciones del jugador son distintas a las del nuestro
             if(this.player.x != jugador.x || this.player.y != jugador.y && jugador.x <= maxHeight || jugador.y <= maxWidth){
-                this.player.x = msg.valor.jugador.x;
-                this.player.y = msg.valor.jugador.y;
-                
-                //Borramos la clase de la posición anterior
-                let oldCell = document.querySelector('.player');
-                oldCell.classList.toggle('player');
+                //Asignamos las nuevas posiciones
+                this.player.x = jugador.x;
+                this.player.y = jugador.y;
+
+                //Editamos el HTML
+                let previousCell = document.querySelector('.player');
+                previousCell.classList.toggle('player');
     
                 //Cogemos el div para introducir la clase en la nueva posición
                 let div = document.querySelector(`.${this.mainDiv}`);
                 let table = div.childNodes[1];
-                console.log(this.player.x, msg.valor.jugador.x, this.player.y, msg.valor.jugador.y)
                 table.childNodes[this.player.x].childNodes[this.player.y].classList.toggle('player');   
             }
+        }
 
-            
+        //Si nos llega un burrow esque va a salir o a entrar
+        if(msg.valor.burrow != null || msg.valor.burrow != undefined) {
+            let divBurrow = document.querySelector('.madriguera');
+            console.log(msg.valor.burrow)
+            divBurrow.textContent = msg.valor.burrow  ? 'Estas en una madriguera' : 'No estas en una madriguera';
         }
     }
 
+    //Dibuja el mapa en la interfaz
     drawMap() {
         let table = document.createElement('table');
         for(let x = 0; x < this.map.width; x++){
@@ -65,7 +71,6 @@ game.Client = class {
             for(let y = 0; y < this.map.height; y++){
                 let endPointX = Math.floor(this.map.width % 2);
                 let endPointY = Math.floor(this.map.height % 2);
-                console.log(endPointX, endPointY)
                 let endPoint = x == endPointX && y == endPointY;
 
                 let burrow = false;
@@ -92,6 +97,26 @@ game.Client = class {
             table.appendChild(row);
         }
         document.querySelector(`.${this.mainDiv}`).appendChild(table);
+    }
+
+    //Dibuja la interfaz de usuario
+    drawUI() {
+        //Contenedor Interfaz
+        let container = document.createElement('div');
+        container.classList.toggle('interfaz');
+        container.style.display = "flex";
+
+        //TODO => Loger que saque mensajes a los usuarios
+        //TODO => Energía del usuario
+
+        
+        //Madriguera
+        let texto = document.createElement('h1');
+        texto.textContent = "Estas en una madriguera";
+        texto.classList.toggle('madriguera');
+
+        container.appendChild(texto);
+        document.querySelector(`.${this.mainDiv}`).parentElement.append(container);
     }
 }
 
@@ -250,8 +275,6 @@ game.Master = class {
 
         let div = document.querySelector(`.${config.container}`);
 
-        console.log(div, this.mainDiv)
-
         div.innerHTML = "";
         div.appendChild(tabla);
     }
@@ -281,8 +304,10 @@ game.Master = class {
 
     //Función que mueve al jugador
     movePlayer(msg, origin) {
-        if(this.players.find(x => x.origin.id === msg.valor.playerId)){
-            let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);   
+        let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);
+
+        //Si existe el jugador y no está en una madriguera
+        if(jugador && !jugador.inBurrow){
 
             let originalX = jugador.x;
             let originalY = jugador.y;
@@ -318,7 +343,6 @@ game.Master = class {
                 this.map[originalX][originalY].players.pop(jugador);
                 this.map[jugador.x][jugador.y].players.push(jugador);
 
-                console.log(this.map[jugador.x][jugador.y].players.length)
 
                 //Comprueba si en la celda a la que se ha movido el jugador hay otro jugador
                 //TODO: boolean que se ponga a true en caso de que haya alguien para activar el modo
@@ -332,7 +356,40 @@ game.Master = class {
                     jugador: jugador,
                 }, 1, jugador.origin.id);
             }
+
+
         }
+
+
+        if(jugador && msg.valor.direction == "in-out") {
+            let cell = this.map.flat().find(cell => cell.x == jugador.x && cell.y == jugador.y);
+            this.handleBurrow(cell, jugador);
+        }
+    }
+
+    handleBurrow(cell, player) {
+        let inBurrow = false;
+
+        if(cell && cell.burrow){
+            
+            if(cell.burrowPlayer == null) {
+                cell.burrowPlayer = player;
+                player.inBurrow = true;
+                inBurrow = true;
+            }
+            
+            else if(cell.burrowPlayer == player) {
+                cell.burrowPlayer = null;
+                player.inBurrow = false;
+            }
+
+        }
+
+        const burrowMsg = {
+            burrow: inBurrow,
+        }
+
+        this.communication.send(burrowMsg, 2, player.id);
     }
 
     //Función que crea un jugador nuevo
@@ -343,10 +400,12 @@ game.Master = class {
             let player = new game.Player(origin, '', 0, 0, true, 100);
             let index = Math.floor(Math.random() * this.edges.length);
             let cell = this.edges.splice(index, 1);
+            cell = cell[0];
 
+            cell.players.push(player);
             cell.burrowPlayer = player;
-            player.x = cell[0].x;
-            player.y = cell[0].y;
+            player.x = cell.x;
+            player.y = cell.y;
 
             this.players.push(player);
 

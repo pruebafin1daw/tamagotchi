@@ -16,4 +16,5 @@ Reparto funciones Master:
 Client Izam: 
 - Mover Cliente (en desarrollo)
 - Lucha
+- Cliente Muerto
 - Final

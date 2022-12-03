@@ -77,6 +77,17 @@ class Master {
             });
         });
     }
+
+    restoreLife() {
+        this.players(player => {
+            if(player.inBurrow) {
+                player.energy += 10; // Valor pasado por config?
+            }
+            else if (!this.players.find(i => i.x == player.x && i.y == player.y)) {
+                player.energy += 2; // Valor pasado por config?
+            }
+        });
+    }
 }
 
 export { Master };

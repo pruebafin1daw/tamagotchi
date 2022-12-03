@@ -9,4 +9,5 @@ Equipo 1:
 Reunión de equipo online para determinar código a utilizar, determinar tareas principales y secundarias, el reparto de las mismas, donde deberían ser implementadas, organización del trabajo y método de subida de código nuevo.
 
 3/11
-El master elige las dimensiones del mapa y dibuja su mapa
+Carlos - El master elige las dimensiones del mapa y dibuja su mapa
+Alejandro - Implementadas conexiones de prueba entre maestro y clientes

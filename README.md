@@ -21,7 +21,12 @@ Client Izam:
 - Cliente Muerto
 - Final
 
+Master.js
+- Se ha añadido al init (Carlos)
+  * this.config = config; // Se ha guardado el config en una variable de clase
+  * this.map[this.config.height/2][this.config.width/2].endPoint = true; // Se ha indicado en el mapa la bandera
+  * this.flag = this.map[this.config.height/2][this.config.width/2]; // Se ha guardado la bandera en una variable de clase
 
 Inicio.js
-- Se ha añadido al json
+- Se ha añadido al json (Carlos)
   * lifeTakenDamage : 10, lifeRestoredBurrow : 10, lifeRestoredAlone : 2

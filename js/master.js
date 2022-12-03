@@ -28,6 +28,8 @@ class Master {
                 }
             }
         }
+        this.map[this.config.height/2][this.config.width/2].endPoint = true;
+        this.flag = this.map[this.config.height/2][this.config.width/2];
         let clientMap = { 
             width : this.config.width,
             height : this.config.height,
@@ -106,7 +108,9 @@ class Master {
     }
 
     endgame() {
-        
+        if (this.players.find(player => player.x == this.flag.x && player.y == this.flag.y)) {
+            this.comunication.send("winnerPlayer", player); // Communication debe indicar al cliente que ha ganado y terminar el juego
+        }
     }
 }
 

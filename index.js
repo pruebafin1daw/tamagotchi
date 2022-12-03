@@ -15,12 +15,21 @@ console.log("Server is Running...");
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
     console.log(data);
-    const message = {
-        type: 'mensaje',
-        valor: data.message,
-        id: data.id
+    let message;
+    if (typeof data.message == 'object') {
+        message = {
+            type: 'mensaje',
+            valor: data.message.move,
+            id: data.message.id
+        }
+    } else {
+        message = {
+            type: 'mensaje',
+            valor: data.message,
+            id: data.id
+        }
     }
-    // console.log("Mensaje " + wss.clients)
+    
     if (data.tipo != null) {
         if (data.tipo == 0) {
             clientMaster.send(JSON.stringify(message));
@@ -58,7 +67,7 @@ wss.on('connection', function connection(ws, request, client) {
         });
         const message = {
             type: 'mensaje',
-            valor: 'hello',
+            valor: 'player',
             id
         }
         ws.send(JSON.stringify(message));

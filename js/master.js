@@ -1,5 +1,4 @@
 class Master {
-
     init(config, communication) {
         this.communication = communication;
         this.communication.handler = this;

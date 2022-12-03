@@ -7,10 +7,21 @@ class Client {
         this.comunication = comunication;
         this.comunication.handler = this;
         this.comunication.sendId(id, "nuevo cliente");
+        this.move();
     }
 
-    newMsg(msg, origin) {
-        console.log(msg);
+    move() {
+        document.querySelector('.container').addEventListener('click', () => {
+            console.log('click');
+            this.newMsg({
+                'move': 'i want to move',
+                'id': this.id
+            }, 0);
+        });
+    }
+    
+    newMsg(msg, type) {
+        this.comunication.send(msg, type);
     }
 }
 

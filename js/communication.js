@@ -1,6 +1,9 @@
+import { Board } from "./board.js";
+
 class Communication {
     socket = null;
     state = false;
+    board = null;
     master = false;
     handler = null;
     init(config) {
@@ -10,18 +13,23 @@ class Communication {
         };
         this.socket.onmessage = (event) => {
             let objeto = JSON.parse(event.data);
+            console.log(objeto.valor);
             switch (objeto.valor) {
                 case "master":
                     this.master = true;
                     config.check(); //#2
                     break;
-                case "hello":
+                case "player":
                     config.check(objeto.id);
                     break;
-                default:
-                    if (this.handler) {
-                        this.handler.newMsg(objeto, event.origin);
-                    }
+                case "move":
+                    this.board = new Board();
+                    this.board.init();
+                    break;
+                // default:
+                //     if (this.handler) {
+                //         this.handler.newMsg(objeto, event.origin);
+                //     }
             }
         };
         this.socket.onclose = (event) => {
@@ -51,7 +59,7 @@ class Communication {
     send(data, type) {
         const msg = {
             tipo: type,
-            mensaje: data
+            message: data
         }           
         this.socket.send(JSON.stringify(msg));
     }

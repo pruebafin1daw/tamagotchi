@@ -4,3 +4,4 @@ Equipo 3:
 2. Álvaro Yerel Escobar Dinter.
 3. Christian Josué Fuentes Muñoz.
 4. Adrián Francisco García Moreno.
+

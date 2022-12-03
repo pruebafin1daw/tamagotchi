@@ -9,10 +9,10 @@ Reparto funciones Master:
 - Conectar Cliente
 - Iniciar Partida
 - Mover Cliente -> Iker (en desarrollo)
-- Gestionar Turno -> Carlos (corregir comentarios)
-  * manageBattles() -> Carlos (corregir comentarios)
-  * restoreLife() -> Carlos (corregir comentarios)
-  * killPlayer() -> Carlos (corregir comentarios)
+- Gestionar Turno -> Carlos (por terminar comentarios)
+  * manageBattles() -> Carlos (por terminar comentarios)
+  * restoreLife() -> Carlos (por terminar comentarios)
+  * killPlayer() -> Carlos (por terminar comentarios)
 - Comprobar Final -> Carlos (en desarrollo)
 
 Client Izam: 

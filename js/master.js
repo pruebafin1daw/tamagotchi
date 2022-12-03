@@ -78,7 +78,7 @@ class Master {
     }
     
     movePlayer(msg) {
-        this.players(player => {
+            let player = msg.player;
             let positionX = player.x;
             let positionY = player.y;
             let position, maxPosition, newPositionX, newPositionY;
@@ -116,9 +116,7 @@ class Master {
                 let box = this.map[newPositionY][newPositionX];
                 let oldBox = this.map[positionY][positionX];
                 if (box.players.length == 0) {
-                    if (box.endPoint) {
-                        this.comunication.send("win", player); // Communication debe indicar al cliente que ha ganado
-                    } else if (box.burrow) {
+                    if (box.burrow) {
                         player.inBurrow = true;
                     }
                     player.x = newPositionX;
@@ -135,7 +133,6 @@ class Master {
                     }
                 }
             }
-        });
     }
 
     updateMap(player, box, oldBox) {

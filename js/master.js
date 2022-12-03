@@ -88,6 +88,15 @@ class Master {
             }
         });
     }
+
+    killPlayer() {
+        this.players(player => {
+            if(player.energy == 0) {
+                this.comunication.send("deadPlayer", player); // Communication debe indicar al cliente que ha muerto y cerrar la conexión
+                this.players.slice(this.players.indexOf(player), 1);
+            }
+        });
+    }
 }
 
 export { Master };

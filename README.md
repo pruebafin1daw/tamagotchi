@@ -9,7 +9,7 @@ Reparto funciones Master:
 - Conectar Cliente
 - Iniciar Partida
 - Mover Cliente -> Iker (en desarrollo)
-- Gestionar Turno -> Carlos (en desarrollo)
+- Gestionar Turno -> Carlos (comentar codigo al equipo)
   * manageBattles() -> Carlos (comentar codigo al equipo)
   * restoreLife() -> Carlos (comentar codigo al equipo)
   * killPlayer() -> Carlos (comentar codigo al equipo)

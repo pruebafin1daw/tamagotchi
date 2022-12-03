@@ -5,9 +5,9 @@ Equipo 1:
 3. Eduard Andrei Abril Badea.
 4. Carlos Díaz Benítez.
 
-2/11
+2/11<br/>
 Reunión de equipo online para determinar código a utilizar, determinar tareas principales y secundarias, el reparto de las mismas, donde deberían ser implementadas, organización del trabajo y método de subida de código nuevo.
 
-3/11
-Carlos - El master elige las dimensiones del mapa y dibuja su mapa
+3/11<br/>
+Carlos - El master elige las dimensiones del mapa y dibuja su mapa.<br/>
 Alejandro - Implementadas conexiones de prueba entre maestro y clientes

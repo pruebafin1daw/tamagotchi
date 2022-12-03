@@ -8,8 +8,8 @@ Equipo 4:
 Reparto funciones Master:
 - Conectar Cliente
 - Mover Cliente -> Iker (en desarrollo)
-- Matar Cliente
-- Gestionar Batallas -> Carlos (en desarrollo)
+- manageBattles() -> Carlos (terminado)
+- Matar Cliente -> Carlos (en desarrollo)
 - Comprobar Final
 - Iniciar Partida
 

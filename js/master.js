@@ -78,6 +78,7 @@ class Master {
     }
     
     movePlayer(msg) {
+            let oldPlayer = msg.player;
             let player = msg.player;
             let positionX = player.x;
             let positionY = player.y;
@@ -121,7 +122,7 @@ class Master {
                     }
                     player.x = newPositionX;
                     player.y = newPositionY;
-                    this.updateMap(player, box, oldBox);
+                    this.updateMap(player, oldPlayer, box, oldBox);
                 } else {
                     if (box.burrow) {
                         this.comunication.send("occupiedBurrow", player); // Communication debe indicar al cliente que ya hay un jugador en la madriguera
@@ -129,17 +130,17 @@ class Master {
                         this.comunication.send("battle", player); // Communication debe indicar al cliente que ha entrado en batalla
                         player.x = newPositionX;
                         player.y = newPositionY;
-                        this.updateMap(player, box, oldBox);
+                        this.updateMap(player, oldPlayer, box, oldBox);
                     }
                 }
             }
     }
 
-    updateMap(player, box, oldBox) {
-        this.players.slice(this.players.indexOf(player), 1, player);
+    updateMap(player, oldPlayer, box, oldBox) {
+        this.players.slice(this.players.indexOf(oldPlayer), 1, player);
         box.players.push(player);
         this.map.slice(this.map.indexOf(box), 1, box);
-        oldBox.players.slice(oldBox.players.indexOf(player), 1);
+        oldBox.players.slice(oldBox.players.indexOf(oldPlayer), 1);
         this.map.slice(this.map.indexOf(oldBox), 1, oldBox);
     }
         

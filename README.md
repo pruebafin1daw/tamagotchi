@@ -13,7 +13,7 @@ Reparto funciones Master:
   * manageBattles() -> Carlos (terminado)
   * restoreLife() -> Carlos (terminado)
   * killPlayer() -> Carlos (por terminar comentarios)
-- Comprobar Final -> Carlos (en desarrollo)
+- endgame() -> Carlos (por terminar comentarios)
 
 Client Izam: 
 - Mover Cliente (en desarrollo)

@@ -4,10 +4,10 @@
 3. Álvaro Yerel Escobar Dinter
 4. Adrián García Moreno
 
--Master
-  Comunicación: Christian
-  Mapa: Álvaro Urbano
+Master
+-Comunicación: Christian
+-Mapa: Álvaro Urbano
   
--Cliente
-  Comunicación: Álvaro Yerel
-  Mapa: Adrián 
+Cliente
+-Comunicación: Álvaro Yerel
+-Mapa: Adrián 

@@ -67,6 +67,16 @@ class Master {
             this.players.push(player);
         }
     }
+
+    manageBattles() {
+        this.players(i => {
+            this.players(j => {
+                if(i.x == j.x && i.y == j.y) {
+                    j.energy -= 10; // Valor pasado por config?
+                }
+            });
+        });
+    }
 }
 
 export { Master };

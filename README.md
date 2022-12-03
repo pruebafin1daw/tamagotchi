@@ -9,7 +9,8 @@ Reparto funciones Master:
 - Conectar Cliente
 - Mover Cliente -> Iker (en desarrollo)
 - manageBattles() -> Carlos (terminado)
-- Matar Cliente -> Carlos (en desarrollo)
+- Restaurar vida -> Carlos (en desarrollo)
+- Matar Cliente
 - Comprobar Final
 - Iniciar Partida
 

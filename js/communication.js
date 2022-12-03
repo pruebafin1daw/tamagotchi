@@ -17,9 +17,7 @@ class Communication {
                     break;
                 case "hello":
                     config.check();                    
-                    break;
-                    
-                    //TO DO Conectar cliente y master
+                    break;                                        
                 default:
                     if (this.handler) {
                         
@@ -60,6 +58,7 @@ class Communication {
         }           
         this.socket.send(JSON.stringify(msg));
     }
+    //Funcion que mandará datos especificando el cliente
     sendid(data, origin) {
         const msg = {
             tipo: data.type,

@@ -140,9 +140,18 @@ class Master {
             case "newClient": 
                 this.newPlayer(origin);
                 break;
+            case "inputData":
+                break;
+            //Implementar aquí los diferentes casos de mensajes que
+            //puede recibir el master y su respuesta
+            default:
+                //Este es el jugador que aparece en la consola de master
+                console.log(msg.valor);
+                break;
             //TO DO Funciones importantes 
             //Ejemplo movimiento
         }
+        console.log("Master recieved a message")
         //TO DO llamada a funcion dibujar mapa
     }
 
@@ -166,6 +175,9 @@ class Master {
             //TO DO Introducir nombre
             
             this.players.push(player);
+            //Esto pasa los datos del jugador a todo el mundo junto con su id
+            //Habrá que modficarla a medida que avancemos para que solo pase datos concretos
+            this.communication.send(JSON.stringify(player), origin);            
         }
     }
 

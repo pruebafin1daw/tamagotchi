@@ -107,7 +107,7 @@ class Master {
         });
     }
 
-    endgame() {
+    endgame() { // Método que debe de ser lanzado al comienzo de la partida con una promesa
         if (this.players.find(player => player.x == this.flag.x && player.y == this.flag.y)) {
             this.comunication.send("winnerPlayer", player); // Communication debe indicar al cliente que ha ganado y terminar el juego
         }

@@ -16,8 +16,8 @@ function hello() {
         control = new Master();
         //TO DO Introducir las preguntas
         control.init({            
-            width: 51,
-            height: 51,
+            width: 0,
+            height: 0,
             porcentage : 0.2
         },communication);
     }

@@ -68,6 +68,12 @@ class Master {
         }
     }
 
+    manageShift() { // Método que debe de ser lanzdo al comienzo de la partida con una promesa cada X tiempo
+        this.manageBattles();
+        this.restoreLife();
+        this.killPlayer();
+    }
+
     manageBattles() {
         this.players(i => {
             this.players(j => {

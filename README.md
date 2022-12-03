@@ -10,8 +10,8 @@ Reparto funciones Master:
 - Iniciar Partida
 - Mover Cliente -> Iker (en desarrollo)
 - Gestionar Turno -> Carlos (por terminar comentarios)
-  * manageBattles() -> Carlos (por terminar comentarios)
-  * restoreLife() -> Carlos (por terminar comentarios)
+  * manageBattles() -> Carlos (terminado)
+  * restoreLife() -> Carlos (terminado)
   * killPlayer() -> Carlos (por terminar comentarios)
 - Comprobar Final -> Carlos (en desarrollo)
 
@@ -24,6 +24,4 @@ Client Izam:
 
 Inicio.js
 - Se ha añadido al json
-  * lifeTakenDamage : 10,
-  * lifeRestoredBurrow : 10,
-  * lifeRestoredAlone : 2
+  * lifeTakenDamage : 10, lifeRestoredBurrow : 10, lifeRestoredAlone : 2

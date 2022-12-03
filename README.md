@@ -24,6 +24,6 @@ Client Izam:
 
 Inicio.js
 - Se ha añadido al json
-   lifeTakenDamage : 10,
-   lifeRestoredBurrow : 10,
-   lifeRestoredAlone : 2
+  * lifeTakenDamage : 10,
+  * lifeRestoredBurrow : 10,
+  * lifeRestoredAlone : 2

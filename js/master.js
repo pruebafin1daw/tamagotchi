@@ -76,7 +76,69 @@ class Master {
         this.restoreLife();
         this.killPlayer();
     }
+    
+    movePlayer(msg) {
+        let player = this.players.find(); // Obtener jugador
+        let positionX = player.x;
+        let positionY = player.y;
+        let position, maxPosition, newPositionX, newPositionY;
+        switch (msg.movement) {
+            case "up": {
+              position = 0;
+              maxPosition = positionX;
+              newPositionX = positionX - 1;
+              newPositionY = positionY;
+              break;
+            }
+            case "left": {
+              position = 0;
+              maxPosition = positionY;
+              newPositionX = positionX;
+              newPositionY = positionY - 1;
+              break;
+            }
+            case "right": {
+              position = positionY;
+              maxPosition = this.map.length;
+              newPositionX = positionX;
+              newPositionY = positionY + 1;
+              break;
+            }
+            case "down": {
+              position = positionX;
+              maxPosition = this.map.length;
+              newPositionX = positionX + 1;
+              newPositionY = positionY;
+              break;
+            }
+          }
+          if (position < maxPosition) {
+            let box = this.map[newPositionY][newPositionX];
+            if (box.players.length == 0) {
+                if (box.endPoint) {
+                    // Funcion ganar
+                } else if (box.burrow) {
+                    // Funcion madriguera
+                }
+                box.players.push(player);
+                player.x = newPositionX;
+                player.y = newPositionY;
+                player.energy--;
+            } else {
+                if (box.burrow) {
+                    // Cliente no se mueve
+                } else {
+                    // Funcion combate
+                    box.players.push(player);
+                    player.x = newPositionX;
+                    player.y = newPositionY;
+                    player.energy--;
+                }
+            }
 
+          }
+    }
+        
     manageBattles() {
         this.players(i => {
             this.players(j => {

@@ -78,65 +78,72 @@ class Master {
     }
     
     movePlayer(msg) {
-        let player = this.players.find(); // Obtener jugador
-        let positionX = player.x;
-        let positionY = player.y;
-        let position, maxPosition, newPositionX, newPositionY;
-        switch (msg.movement) {
-            case "up": {
-              position = 0;
-              maxPosition = positionX;
-              newPositionX = positionX - 1;
-              newPositionY = positionY;
-              break;
-            }
-            case "left": {
-              position = 0;
-              maxPosition = positionY;
-              newPositionX = positionX;
-              newPositionY = positionY - 1;
-              break;
-            }
-            case "right": {
-              position = positionY;
-              maxPosition = this.map.length;
-              newPositionX = positionX;
-              newPositionY = positionY + 1;
-              break;
-            }
-            case "down": {
-              position = positionX;
-              maxPosition = this.map.length;
-              newPositionX = positionX + 1;
-              newPositionY = positionY;
-              break;
-            }
-          }
-          if (position < maxPosition) {
-            let box = this.map[newPositionY][newPositionX];
-            if (box.players.length == 0) {
-                if (box.endPoint) {
-                    // Funcion ganar
-                } else if (box.burrow) {
-                    // Funcion madriguera
+        this.players(player => {
+            let positionX = player.x;
+            let positionY = player.y;
+            let position, maxPosition, newPositionX, newPositionY;
+            switch (msg.movement) {
+                case "up": {
+                position = 0;
+                maxPosition = positionX;
+                newPositionX = positionX - 1;
+                newPositionY = positionY;
+                break;
                 }
-                box.players.push(player);
-                player.x = newPositionX;
-                player.y = newPositionY;
-                player.energy--;
-            } else {
-                if (box.burrow) {
-                    // Cliente no se mueve
-                } else {
-                    // Funcion combate
-                    box.players.push(player);
+                case "left": {
+                position = 0;
+                maxPosition = positionY;
+                newPositionX = positionX;
+                newPositionY = positionY - 1;
+                break;
+                }
+                case "right": {
+                position = positionY;
+                maxPosition = this.map.length;
+                newPositionX = positionX;
+                newPositionY = positionY + 1;
+                break;
+                }
+                case "down": {
+                position = positionX;
+                maxPosition = this.map.length;
+                newPositionX = positionX + 1;
+                newPositionY = positionY;
+                break;
+                }
+            }
+            if (position < maxPosition) {
+                let box = this.map[newPositionY][newPositionX];
+                let oldBox = this.map[positionY][positionX];
+                if (box.players.length == 0) {
+                    if (box.endPoint) {
+                        this.comunication.send("win", player); // Communication debe indicar al cliente que ha ganado
+                    } else if (box.burrow) {
+                        player.inBurrow = true;
+                    }
                     player.x = newPositionX;
                     player.y = newPositionY;
-                    player.energy--;
+                    this.updateMap(player, box, oldBox);
+                } else {
+                    if (box.burrow) {
+                        this.comunication.send("occupiedBurrow", player); // Communication debe indicar al cliente que ya hay un jugador en la madriguera
+                    } else {
+                        this.comunication.send("battle", player); // Communication debe indicar al cliente que ha entrado en batalla
+                        player.x = newPositionX;
+                        player.y = newPositionY;
+                        this.updateMap(player, box, oldBox);
+                    }
                 }
             }
+        });
+    }
 
-          }
+    updateMap(player, box, oldBox) {
+        this.players.slice(this.players.indexOf(player), 1, player);
+        box.players.push(player);
+        this.map.slice(this.map.indexOf(box), 1, box);
+        oldBox.players.slice(oldBox.players.indexOf(player), 1);
+        this.map.slice(this.map.indexOf(oldBox), 1, oldBox);
     }
         
     manageBattles() {

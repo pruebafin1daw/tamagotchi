@@ -20,3 +20,10 @@ Client Izam:
 - Lucha
 - Cliente Muerto
 - Final
+
+
+Inicio.js
+-Se ha añadido al json
+   lifeTakenDamage : 10,
+   lifeRestoredBurrow : 10,
+   lifeRestoredAlone : 2

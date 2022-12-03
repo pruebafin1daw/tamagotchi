@@ -7,13 +7,13 @@ Equipo 4:
 
 Reparto funciones Master:
 - Conectar Cliente
+- Iniciar Partida
 - Mover Cliente -> Iker (en desarrollo)
 - Gestionar Turno -> Carlos (en desarrollo)
-  * manageBattles() -> Carlos (comentar codigo)
-  * restoreLife() -> Carlos (comentar codigo)
+  * manageBattles() -> Carlos (comentar codigo al equipo)
+  * restoreLife() -> Carlos (comentar codigo al equipo)
+  * killPlayer() -> Carlos (comentar codigo al equipo)
 - Comprobar Final
-- Matar Cliente
-- Iniciar Partida
 
 Client Izam: 
 - Mover Cliente (en desarrollo)

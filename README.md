@@ -11,3 +11,6 @@ Reunión de equipo online para determinar código a utilizar, determinar tareas 
 3/11<br/>
 Carlos - El master elige las dimensiones del mapa y dibuja su mapa.<br/>
 Alejandro - Implementadas conexiones de prueba entre maestro y clientes
+
+4/11
+Carlos - El cliente crea su mapa a partir de los datos que le manda el master, y dibuja el mapa

@@ -14,7 +14,6 @@ communication.init({
 function hello() {
     if(communication.master){
         control = new Master();
-        //TO DO Introducir las preguntas
         control.init({            
             width: 0,
             height: 0,

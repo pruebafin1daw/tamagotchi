@@ -1,8 +1,9 @@
-const { v4:uuidv4 } = require('uuid');
 // Import the ws module as a variable called WebSocketServer.
 var WebSocketServer = require("ws").Server;
 
-// Create a new WebSocketServer running on port 8023.
+const { v4: uuidv4 } = require('uuid');
+
+// Create a new WebSocketServer running on port 7007.
 var wss = new WebSocketServer({port: 8023});
 var clientMaster = null;
 var first = true;
@@ -16,8 +17,8 @@ console.log("Server is Running...");
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
     const message = {
-        type: 'mensaje',
-        valor: JSON.parse(msg).mensaje
+	type: 'mensaje',
+	valor: JSON.parse(msg).mensaje
     }
     console.log("Mensaje "+ wss.clients)
     console.log("Desde mensajes: "+ data.tipo);
@@ -28,6 +29,15 @@ wss.broadcast = function broadcastMsg(msg) {
             let client = clients.find(item => item.id == data.id);
             if(client){
                 client.socket.send(JSON.stringify(message));
+                if(data.tipo ===  "deadPlayer"){
+                    client.socket.close();
+                    //Search on clients the client index
+                    let indexOf = clients.findIndex(object =>{
+                        return object.id === client.id;
+                    });
+                    //remove client with that index
+                    clients.splice(indexOf, 1);
+                }
             }
         }else {
     		wss.clients.forEach(function each(client) {
@@ -40,7 +50,7 @@ wss.broadcast = function broadcastMsg(msg) {
 // Create a listener function for the "connection" event.
 // Each time we get a connection, the following function
 // is called.
-wss.on('connection', function connection(ws, request, client) {
+wss.on('connection', function connection(ws,request, client) {
     ws.on('message', wss.broadcast);
     if (first) {
     	clientMaster = ws;
@@ -54,7 +64,7 @@ wss.on('connection', function connection(ws, request, client) {
         let id = uuidv4();
         clients.push({
             id : id,
-            socket : request.socket
+            socket : ws
         });
         const message = {
             type: 'mensaje',

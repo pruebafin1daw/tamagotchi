@@ -17,12 +17,11 @@ Reparto funciones Master:
 
 Client Izam: 
 - Mover Cliente (en desarrollo)
-  * dealClients()
-  * movePlayer()
-  * showMap()
-  * refreshMap -> por terminar
+  * dealClients() -> Terminado
+  * movePlayer() -> Por terminar
+  * showMap() -> Terminado
 - Lucha
-- Cliente Muerto
+- Cliente Muerto -> Terminado
 - Final
 
 Master.js
@@ -36,10 +35,10 @@ Inicio.js
   * lifeTakenDamage : 10, lifeRestoredBurrow : 10, lifeRestoredAlone : 2
   
  Index.html (Izam)
--   <div id="health"></div>
-    <div id="info"></div>
-    <div id="map"></div>
-    <div id="clients"></div>
+-   div id="health"
+    div id="info"
+    div id="map"
+    div id="clients"
     
  Index.js(Izam)
  - Se ha añadido el if(data.tipo === "deadPlayer")

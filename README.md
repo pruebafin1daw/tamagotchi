@@ -36,7 +36,8 @@ Inicio.js
   * lifeTakenDamage : 10, lifeRestoredBurrow : 10, lifeRestoredAlone : 2
   
  Index.html (Izam)
- -  <div id="info"></div>
+-   <div id="health"></div>
+    <div id="info"></div>
     <div id="map"></div>
     <div id="clients"></div>
     

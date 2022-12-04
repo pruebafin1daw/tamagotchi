@@ -99,6 +99,8 @@ class Master {
                 }
                 if(i == finish && j == finish){
                     this.map[i][j].endPoint = true;
+                    this.map[i][j].burrow = false;
+
                 }
             }          
         }
@@ -112,7 +114,8 @@ class Master {
                 x : newSlot.x,
                 burrow : newSlot.burrow
             }
-        });   
+        });
+
     }
 
     drawMap(){

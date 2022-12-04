@@ -17,6 +17,10 @@ Reparto funciones Master:
 
 Client Izam: 
 - Mover Cliente (en desarrollo)
+  * dealClients()
+  * movePlayer()
+  * showMap()
+  * refreshMap -> por terminar
 - Lucha
 - Cliente Muerto
 - Final

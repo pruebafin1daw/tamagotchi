@@ -24,61 +24,38 @@ class Client {
             //A tratar como veamos conveniente, solo estoy mostrando el id
             default:
                 let player = JSON.parse(msg.valor);
-                console.log(player.origin);
+                console.log(player);
                 //Guardo todos los datos del jugador en esta variable
                 this.player = player;
                 //Creo el mapa aquí para asegurarme que los datos han llegado
-                this.createMap();
+                this.drawMap();
                 break;
         }        
         console.log("This was a client message");
     }
 
-    createMap(){
-        this.map = [];
+    drawMap(){
         let burrows = this.player.map;
         let size = burrows[0].size;
         let finish = size / 2 - 0.5;
         let cont = 0;
-        for (let i=0;i<size;i++) {
-            this.map[i] = new Array();
-            for (let j=0;j<size;j++) {
-                this.map[i][j] = {
-                    y: i,
-                    x: j,
-                    endPoint : false,
-                    players: [],
-                    burrow: false,
-                    burrowPlayer: null
-                }
+        let table = document.createElement('table');
+        for (let i = 0; i < size; i++) {
+            let row = document.createElement('td');
+            for (let j = 0; j < size; j++) {
+                let cell = document.createElement('tr');
                 if(cont < burrows.length){
                     if(burrows[cont].y == i && burrows[cont].x == j){
-                        this.map[i][j].burrow = true;
-                        cont++;
+                        cell.innerHTML = 'M ';
+                        cont++
+                    }else{
+                        cell.innerHTML = '0 ';
                     }
-                }
-                if(i == finish && j == finish){
-                    this.map[i][j].endPoint = true;
-                }
-            }
-            //console.log(this.map);          
-        }
-        //console.log(this.map);
-        this.drawMap();
-    }
-
-    drawMap(){
-        let table = document.createElement('table');
-        for (let i = 0; i < this.map.length; i++) {
-            let row = document.createElement('td');
-            for (let j = 0; j < this.map[i].length; j++) {
-                let cell = document.createElement('tr');
-                if(this.map[i][j].endPoint == true){
-                    cell.innerHTML = 'F ';
-                }else if(this.map[i][j].burrow == true){
-                    cell.innerHTML = 'M ';
                 }else{
                     cell.innerHTML = '0 ';
+                }
+                if(i == finish && j == finish){
+                    cell.innerHTML = 'F ';
                 }
                 row.appendChild(cell);
             }

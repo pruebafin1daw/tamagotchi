@@ -34,3 +34,11 @@ Master.js
 Inicio.js
 - Se ha añadido al json (Carlos)
   * lifeTakenDamage : 10, lifeRestoredBurrow : 10, lifeRestoredAlone : 2
+  
+ Index.html (Izam)
+ -  <div id="info"></div>
+    <div id="map"></div>
+    <div id="clients"></div>
+    
+ Index.js(Izam)
+ - Se ha añadido el if(data.tipo === "deadPlayer")

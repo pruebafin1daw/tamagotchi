@@ -124,14 +124,20 @@ class Master {
                     player.y = newPositionY;
                     this.updateMap(player, oldPlayer, box, oldBox);
                 } else {
+                    object = {
+                        id: player.id,
+                        func: actions
+                    }
                     if (box.burrow) {
-                        this.comunication.send("occupiedBurrow", player); // Communication debe indicar al cliente que ya hay un jugador en la madriguera
+                        object.action = "occupiedBurrow"
                     } else {
-                        this.comunication.send("battle", player); // Communication debe indicar al cliente que ha entrado en batalla
+                        object.action = "battle"
+                        this.comunication.send("battle", player);
                         player.x = newPositionX;
                         player.y = newPositionY;
                         this.updateMap(player, oldPlayer, box, oldBox);
                     }
+                    this.communication.send(1, object);
                 }
             }
     }

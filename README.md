@@ -6,10 +6,10 @@ Miguel:
 con la que el cliente actualizará la interfaz
 
 Raul
-- Implementación de la interfaz de usuario 
+- Implementación formulario de inicio de juego y control de comida en jugadores
 
 Sergio
 - Ataque y manejo de energia
 
 Pablo
-- 
+- Diseño del juego, eventos de victoria, perder, lucha y salud

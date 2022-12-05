@@ -61,6 +61,8 @@ game.Client = class {
             console.log(msg.valor.burrow)
             divBurrow.textContent = msg.valor.burrow  ? 'Estas en una madriguera' : 'No estas en una madriguera';
         }
+
+        //Si nos llega un 
     }
 
     //Dibuja el mapa en la interfaz

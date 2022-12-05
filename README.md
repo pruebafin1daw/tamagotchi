@@ -16,13 +16,14 @@ Reparto funciones Master:
 - endgame() -> Carlos (por terminar comentarios)
 
 Client Izam: 
-- Mover Cliente (en desarrollo)
-  * dealClients() -> Terminado
-  * movePlayer() -> Por terminar
-  * showMap() -> Terminado
-- Lucha
-- Cliente Muerto -> Terminado
-- Final
+      FUNCIONES       ESTADO      NECESIDADES
+  * deadClients() -> Terminado  (content.name)
+  * movePlayer()  -> Terminado  (Nada, se llama al iniciar la partida)
+  * showMap()     -> Terminado  (content.width, content.burrow, content.energy, content.x, content.y)
+  * refreshMao()  -> Terminado  (content.energy, content.x, content.y)
+  * moreEnergy()  -> Terminado  (content.energy)
+  * deadPlayer()  -> Terminado  (Nada, ya que solo limpio el body y muestro el mensaje de que ha perdido)
+  * actions()     -> Terminado  (content.action)
 
 Master.js
 - Se ha añadido al init (Carlos)

@@ -15,7 +15,7 @@ Reparto funciones Master:
   * killPlayer() -> Carlos (por terminar comentarios)
 - endgame() -> Carlos (por terminar comentarios)
 
-Client Izam: 
+Client Izam: <br>
       FUNCIONES       ESTADO      NECESIDADES
   * deadClients() -> Terminado  (content.name)
   * movePlayer()  -> Terminado  (Nada, se llama al iniciar la partida)

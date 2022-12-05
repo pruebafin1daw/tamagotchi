@@ -7,6 +7,9 @@ class Master {
         this.map = new Array();
         this.edges = [];
         this.clientMap = [];
+        //Copia de mapa con solo el nombre de cllientes?
+        //Idea en proceso
+        //this.clientPlayers = [];
         this.getSize(config);
         /* for (let i=0;i<config.height;i++) {
             this.map[i] = new Array();
@@ -115,6 +118,11 @@ class Master {
                 burrow : newSlot.burrow
             }
         });
+        // this.clientPlayers = this.players.map(newPlayerArray => {
+        //     return {
+        //         player : newPlayerArray.name
+        //     }
+        // });
 
     }
 
@@ -147,6 +155,9 @@ class Master {
                 break;
             //Implementar aquí los diferentes casos de mensajes que
             //puede recibir el master y su respuesta
+            case "username":
+                this.usernameUpdate();
+                break;
             default:
                 //Este es el jugador que aparece en la consola de master
                 console.log(msg.valor);
@@ -167,7 +178,8 @@ class Master {
                 y: 0,
                 inBurrow: true,
                 energy: 100,
-                map : this.clientMap
+                map : this.clientMap,
+                players : this.clientPlayers
             }
 
             let index = Math.floor(Math.random() * this.edges.length);
@@ -178,10 +190,15 @@ class Master {
             //TO DO Introducir nombre
             
             this.players.push(player);
+            this.clientPlayers.push(player.name);
             //Esto pasa los datos del jugador a todo el mundo junto con su id
             //Habrá que modficarla a medida que avancemos para que solo pase datos concretos
             this.communication.send(JSON.stringify(player), origin);            
         }
+    }
+
+    usernameUpdate() {
+        //TO DO EVERYTHING
     }
 
     

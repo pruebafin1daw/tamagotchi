@@ -34,6 +34,8 @@ class Client {
                 this.getName();
                 //Creo el mapa aquí para asegurarme que los datos han llegado
                 this.drawMap();
+                //Asigno las teclas y que envien mensaje
+                this.tamagotchiMovement();
                 break;
         }        
         console.log("This was a client message");
@@ -68,6 +70,7 @@ class Client {
         }
         this.container.appendChild(table);
     }
+
     //Funcion similar a la del maestro para crear mapa pero con nombre
     getName(){
         let form = document.createElement("form");
@@ -95,6 +98,41 @@ class Client {
             }
         });
         form.appendChild(button);
+    }
+
+    tamagotchiMovement() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                //cambiar los sends por mensajes correctamente seteados.
+                case "ArrowRight":
+                    console.log("derecha");
+                    const message = {
+                        type : '0',
+                        valor : "MoveTama",
+                        direction : "right"
+                    }
+                    this.comunication.send(JSON.stringify(message), this.id);
+                    break;
+
+                case "ArrowLeft":
+                    console.log("izquierda");
+                    //this.comunication.send("asdf", "asdf");
+
+                    break;
+
+                case "ArrowDown":
+                    console.log("abajo");
+                    //this.comunication.send("asdf", "asdf");
+
+                    break;
+
+                case "ArrowUp":
+                    console.log("ARRIBA");
+                    //this.comunication.send("asdf", "asdf");
+
+                    break;
+            }
+        })
     }
 }
 

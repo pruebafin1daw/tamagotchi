@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 // Import the ws module as a variable called WebSocketServer.
 var WebSocketServer = require("ws").Server;
 
-// Create a new WebSocketServer running on port 7007.
+// Create a new WebSocketServer running on port 8023.
 var wss = new WebSocketServer({port: 8023});
 var clientMaster = null;
 var first = true;

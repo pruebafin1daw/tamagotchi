@@ -9,7 +9,7 @@ class Master {
         this.clientMap = [];
         //Copia de mapa con solo el nombre de cllientes?
         //Idea en proceso
-        //this.clientPlayers = [];
+        this.clientPlayers = [];
         this.getSize(config);
         /* for (let i=0;i<config.height;i++) {
             this.map[i] = new Array();
@@ -157,6 +157,9 @@ class Master {
             //puede recibir el master y su respuesta
             case "username":
                 this.usernameUpdate();
+                break;
+            case "MoveTama":
+                console.log(msg.direction);
                 break;
             default:
                 //Este es el jugador que aparece en la consola de master

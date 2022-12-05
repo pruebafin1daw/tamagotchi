@@ -8,7 +8,7 @@ Equipo 4:
 Reparto funciones Master:
 - Conectar Cliente
 - Iniciar Partida
-- Mover Cliente -> Iker (por terminar comentarios)
+- Mover Cliente -> Iker (terminado)
 - manageShift() -> Carlos (por terminar comentarios)
   * manageBattles() -> Carlos (terminado)
   * restoreLife() -> Carlos (terminado)

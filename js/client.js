@@ -3,24 +3,28 @@ import {Communication} from "./communication.js";
 class Client {
     active = false;
     map = null;
-    energy = null;
+    object = null;
     
     init(comunication, id) {
         this.id = id;
         this.comunication = comunication;
         this.comunication.handler = this;
-        this.comunication.send("newPlayer",id);
+        object = {
+            id : id,
+            funct : newPlayer
+        } 
+        this.comunication.send(0, object);
     }
 
-    newMsg(msg,origin) {
-        this.eval(msg.valor(origin));
+    newMsg(content) {
+        this.eval(content.funct(content));
     }
 
-    deadClients(origin){
-        //origin.name is the dead client name send by master
+    deadClients(content){
+        //content.name is the dead client name send by master
         let textfile = document.getElementById("clients");
         let clientName = document.createElement('h4');
-        clientName.innerHTML = origin.name + " ha muerto";
+        clientName.innerHTML = content.name + " ha muerto";
         textfile.appendChild(clientName);
 
         const myTimeout = setTimeout(clearName, 8000);
@@ -34,56 +38,70 @@ class Client {
     //add to document lister to send a message when the client push any arrow
     movePlayer(){
         document.addEventListener("keyup", (e) => {
+            object = {
+                id : this.id,
+                funct : movePlayer
+            }
             switch (e.key) {
                 case "ArrowLeft":
-                    this.comunication.send("movePlayer", this.id, "left");
+                    object.movement = "left";
+                    this.comunication.send(0, object);
                 break;
                 case "ArrowRight":
-                    this.comunication.send("movePlayer", this.id, "right");
-                break;
+                    object.movement = "right";
+                    this.comunication.send(0, object);
+                    break;
                 case "ArrowUp":
-                    this.comunication.send("movePlayer", this.id, "up");
-                break;
+                    object.movement = "up";
+                    this.comunication.send(0, object);
+                    break;
                 case "ArrowDown":
-                    this.comunication.send("movePlayer", this.id, "down");
-                break;
+                    object.movement = "down";
+                    this.comunication.send(0, object);
+                    break;
             }
         });
     }
 
-    //Function to catch master move info
-    foo(movement){
-        if(movement.confirm == true){
-            this.refreshMap(movement);
+
+    size = null;
+    burrow = null;
+    goal = null
+    //Function for draw game map at start of game
+    showMap(content){
+        size = content.width;                               //Height and width are equals because the map is square
+        burrow = content.burrow;                            //burrow is an array, it has all burrow positions
+        goal = Math.trunc(size / 2);
+        object = {
+            energy : content.energy,
+            x : content.x,
+            y : content.y
         }
+        this.refreshMap(object);
     }
-
     //Refresh the map to show the movement
-
-    //Function for draw game map
-    showMap(mapInfo){
+    refreshMap(content){
+        let energy = document.getElementById("health");
         let div = document.getElementById("map");
-        energy = document.getElementById("health");
-        let size = mapInfo.width;//Height and width are equals because the map is square
-        let burrow = mapInfo.burrow; //burrow is an array, it has all burrow positions
-        let positionX = mapInfo.x;//Position of player
-        let positionY = mapInfo.y;
         while (div.firstChild) {
             div.removeChild(div.firstChild);
         }
-        let energyValue = document.createElement('h2');
-        energyValue.innerHTML = mapInfo.energy;
-        this.energy.appendChild(energyValue);
-        map = [];
-        let goal = Math.trunc(size / 2);
+        while (energy.firstChild) {
+            energy.removeChild(div.firstChild);
+        }
 
+        let energyValue = document.createElement('h2');
+        energyValue.innerHTML = content.energy;
+        energy.appendChild(energyValue);
+        map = [];
+        
         for (let i = 0; i < size; i++) {
             map.push([]);
             for (let j = 0; j < size; j++) {
                 let space = document.createElement('div');
                 if (i == goal && j == goal){
                     space.setAttribute("class", "goal");            //goal class for the goal
-                }else if(i == positionY && j == positionX){
+                }else if(i == content.y && j == content.x){
                     space.setAttribute("class" , "player");         //player class for the client
                     space.setAttribute("id" , "player");
                 }else{
@@ -99,7 +117,8 @@ class Client {
             div.appendChild(document.createElement('br'));
         }
     }
-
+        
+    
     deadPlayer(){
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');

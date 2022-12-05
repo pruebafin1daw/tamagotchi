@@ -2,6 +2,7 @@ class Communication {
     socket = null;
     state = false;
     master = false;
+    id = null;
     handler = null;
     init(config) {
         this.socket = new WebSocket("ws://" + config.ip + ":" + config.port);
@@ -9,18 +10,19 @@ class Communication {
             this.state = true;
         };
         this.socket.onmessage = (event)=> {
-            let objeto = JSON.parse(event.data);
-            switch(objeto.valor) {
+            let data = JSON.parse(event.data);
+            switch(data.valor) {
                 case "master":
                     this.master = true;
-                    config.check(); //#2
+                    config.check();
                     break;
-                case "hello":
+                case "newClient":
+                    this.id = data.id;
                     config.check();
                     break;
                 default:
                     if (this.handler) {
-                        this.handler.newMsg(objeto,event.origin);
+                        this.handler.newMsg(data, event.origin);
                     }
             }
         };
@@ -48,10 +50,10 @@ class Communication {
         return this._handler;
     }
 
-    send(data,type) {
+    send(type, content) {
         const msg = {
-            tipo: type,
-            mensaje: data
+            type: type,
+            content: content
         }           
         this.socket.send(JSON.stringify(msg));
     }

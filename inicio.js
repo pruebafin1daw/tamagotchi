@@ -20,10 +20,10 @@ function hello() {
             lifeTakenDamage : 10,
             lifeRestoredBurrow : 10,
             lifeRestoredAlone : 2
-        },communication);
+        }, communication);
     }
     else {
         control = new Client();
-        control.init(communication);
+        control.init(communication, communication.id);
     }
 }

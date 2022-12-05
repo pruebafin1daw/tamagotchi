@@ -56,7 +56,7 @@ game.Client = class {
         }
 
         //Si nos llega un burrow esque va a salir o a entrar
-        if(msg.valor.burrow != null || msg.valor.burrow != undefined) {
+        if(msg.valor.burrow != null && msg.valor.burrow != undefined) {
             let divBurrow = document.querySelector('.madriguera');
             console.log(msg.valor.burrow)
             divBurrow.textContent = msg.valor.burrow  ? 'Estas en una madriguera' : 'No estas en una madriguera';
@@ -101,6 +101,7 @@ game.Client = class {
 
     //Dibuja la interfaz de usuario
     drawUI() {
+
         //Contenedor Interfaz
         let container = document.createElement('div');
         container.classList.toggle('interfaz');
@@ -117,6 +118,15 @@ game.Client = class {
 
         container.appendChild(texto);
         document.querySelector(`.${this.mainDiv}`).parentElement.append(container);
+    }
+
+    /*
+        Esta función va a actualizar la interfaz, se ejectará cada X segundos y tendrá que actualizar
+        los valores que se han puesto arriba con los datos recibidos por el Master
+    */
+    updateUI(msg) {
+
+
     }
 }
 
@@ -147,6 +157,20 @@ game.Master = class {
                 }
             })
         }
+
+        this.createInterval();
+    }
+
+    //Intervalo que recorre la lista de jugadores y les manda actualizaciones de estado como energía o jugadores
+    createInterval() {
+        setInterval( () => {
+            this.players.forEach( player => {
+                this.communication.send({
+                    energy: player.energy,
+                    players: this.players.length
+                }, 1, player.origin.id);
+            });
+        }, 1000);
     }
 
     createMap(config) {
@@ -156,7 +180,7 @@ game.Master = class {
 
             for (let j = 0; j < config.width; j++) {
 
-                this.map[i][j] = new game.Cell(j, i, false, [], false, null);
+                this.map[i][j] = new game.Cell(i, j, false, [], false, null);
 
                 if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {
                     if (( i + j ) % 2) {
@@ -304,6 +328,7 @@ game.Master = class {
 
     //Función que mueve al jugador
     movePlayer(msg, origin) {
+        console.log(this.map)
         let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);
 
         //Si existe el jugador y no está en una madriguera
@@ -395,7 +420,7 @@ game.Master = class {
     //Función que crea un jugador nuevo
     newPlayer(origin) {
         //Si el jugador no existe lo crea
-        if(!this.players.find(x => x.origin === origin)) {
+        if(!this.players.find(player => player.origin === origin)) {
             //Crea el jugador y le asigna una posicion
             let player = new game.Player(origin, '', 0, 0, true, 100);
             let index = Math.floor(Math.random() * this.edges.length);

@@ -16,7 +16,7 @@ Reparto funciones Master:
 - endgame() -> Carlos (por terminar comentarios)
 
 Client Izam: <br>
-      FUNCIONES       ESTADO      NECESIDADES
+      &nbsp&nbspFUNCIONES    &nbsp   ESTADO   &nbsp   NECESIDADES
   * deadClients() -> Terminado  (content.name)
   * movePlayer()  -> Terminado  (Nada, se llama al iniciar la partida)
   * showMap()     -> Terminado  (content.width, content.burrow, content.energy, content.x, content.y)

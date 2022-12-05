@@ -33,14 +33,9 @@ console.log("Server is Running...");
 
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
-
-	console.log(data)
 	
     let generic = MSGS[MSGS_GENERIC];
 	generic.valor = JSON.parse(msg).mensaje;
-
-	console.log(`Jugadores: ${wss.clients}`);
-    console.log("Desde mensajes: "+ data.tipo);
 
 	//TODO: REFACTORIZAR
     if (data.tipo != null) {
@@ -48,14 +43,11 @@ wss.broadcast = function broadcastMsg(msg) {
     		clientMaster.send(JSON.stringify(generic));
     	} 
 		else if(data.id) {
-			console.log(clients)
 			let client = clients.find(item => item.id == data.id);
 			
 			if(client) {
-				console.log(client)
 				client.socket.send(JSON.stringify(generic));
 			}
-
 		} 
 		//Para todos
 		else {
@@ -102,9 +94,6 @@ wss.on('connection', function connection(ws, request, client) {
 		ws.send(JSON.stringify(connected));
 		clientMaster.send(JSON.stringify(newClient));
 	}	
-
-
-    console.log('Connection received: ');
 
     ws.on('message', wss.broadcast);
 });

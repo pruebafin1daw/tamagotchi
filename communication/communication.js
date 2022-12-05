@@ -30,7 +30,6 @@ class Communication {
                         this.handler.newMsg(objeto, event.origin);
                     }
             }
-            console.log(objeto)
         };
 
         this.socket.onclose = (event) => {
@@ -67,7 +66,7 @@ class Communication {
         if(id != null) {
             msg.id = id;
         }
-
+        
         this.socket.send(JSON.stringify(msg));
     }
 }

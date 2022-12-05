@@ -25,52 +25,5 @@ function checkMaster(id) {
     else {
         control = new game.Client();
         control.init(mainDiv, communication, id);
-        setMovement(control);
     }    
 }
-
-function setMovement(control) {
-    //Mensaje que manda al master 
-    const msg = {
-        type: 'move',
-        playerId: control.id
-    }
-
-    document.addEventListener('keydown', (event) => {
-        switch(event.code){
-            case "ArrowUp":
-                msg.direction = 'up';                
-                communication.send(msg, 0);
-            break;
-
-            case "ArrowRight":
-                msg.direction = 'right';
-                communication.send(msg, 0);
-            break;
-
-            case "ArrowDown":
-                msg.direction = 'down';
-                communication.send(msg, 0);
-            break;
-
-            case "ArrowLeft":
-                msg.direction = 'left';
-                communication.send(msg, 0);
-            break;
-
-            case "Space":
-                msg.direction = "in-out";
-                communication.send(msg, 0);
-            break;
-        }
-
-    });
-}
-
-
-
-
-
-
-
-

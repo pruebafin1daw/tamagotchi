@@ -1,7 +1,3 @@
-# tamagotchi
-
-Equipo 2:
-1. Miguel García del Real Ortíz.
-2. Sergio Parejo Arroyo.
-3. Pablo Nicolás Valderas García.
-4. Raúl Guerrero Collantes.
+#01/12/2022
+- He añadido el código de sergio en su mayoría a mi estructura y lo he adaptado.
+- He hecho la funcionalidad de las madrigueras 

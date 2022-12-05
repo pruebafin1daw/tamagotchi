@@ -20,11 +20,12 @@ class Client {
         this.eval(content.funct(content));
     }
 
+    //text file on screen that show when someone sole
     deadClients(content){
         //content.name is the dead client name send by master
         let textfile = document.getElementById("clients");
         let clientName = document.createElement('h4');
-        clientName.innerHTML = content.name + " ha muerto";
+        clientName.innerHTML = content.name + " has died";
         textfile.appendChild(clientName);
 
         const myTimeout = setTimeout(clearName, 8000);
@@ -80,14 +81,14 @@ class Client {
         this.refreshMap(object);
     }
     //Refresh the map to show the movement
+    energy = document.getElementById("health");
     refreshMap(content){
-        let energy = document.getElementById("health");
         let div = document.getElementById("map");
         while (div.firstChild) {
             div.removeChild(div.firstChild);
         }
         while (energy.firstChild) {
-            energy.removeChild(div.firstChild);
+            energy.removeChild(energy.firstChild);
         }
 
         let energyValue = document.createElement('h2');
@@ -117,9 +118,19 @@ class Client {
             div.appendChild(document.createElement('br'));
         }
     }
-        
+
+    //increases energy when player is stationary
+    moreEnergy(content){
+        energy.removeChild(energy.firstChild);
+        let energyValue = document.createElement('h2');
+        energyValue.innerHTML = content.energy;
+        energy.appendChild(energyValue);
+    }
+
     
-    deadPlayer(){
+        
+    //Clear the screen and show a message when player lose
+    deadPlayer(content){
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');
         while (body.firstChild) {
@@ -127,15 +138,51 @@ class Client {
         }
         title.innerHTML = "YOU DIED";
         body.appendChild(title);
-        document.removeEventListener("keyup", (e) );                //Check this id errors
+        document.removeEventListener("keyup", (e) );                //Revisar esto si hay errores
     }
 
-    occupiedBurrow(){
-        
-    }
+    //---------ESTA PARTE NO ME GUSTA, HAY CAMBIARLA ES EL MISMO CÓDIGO CON FUNCIONES DE DIFERENTE NOMBRE-------------------
+    info = document.getElementById("info");
+    // occupiedBurrow(content){
+    //     let occupied = document.createElement('h4');
+    //     occupied.innerHTML = "Occupied burrow";
+    //     info.appendChild(occupied);
 
-    battle(){
+    //     const myTimeout = setTimeout(clearOccupied, 3000);
 
+    //     function clearOccupied() {
+    //         info.removeChild(info.firstElementChild);
+    //     }
+    // }
+
+    // battle(content){
+    //     let fight = document.createElement('h4');
+    //     fight.innerHTML = "You are in a battle, you might die";
+    //     info.appendChild(fight);
+
+    //     const myTimeout = setTimeout(clearFight, 3000);
+
+    //     function clearFight() {
+    //         info.removeChild(info.firstElementChild);
+    //     }
+    // }
+
+    //AHORA MUCHO MEJOR, la funcion se llama actions y le tenemos que pasar action : occupiedBurrow y si no le pasamos nada
+    //estaría en un batalla
+    actions(content){
+        let playerAction = document.createElement('h4');
+        if(content.action == "occupiedBurrow"){
+            playerAction.innerHTML = "Occupied burrow";
+            info.appendChild(playerAction);
+        }else{
+            playerAction.innerHTML = "You are in a battle, you might die";
+            info.appendChild(playerAction);
+        }
+        const myTimeout = setTimeout(clearAction, 3000);
+
+        function clearAction() {
+            info.removeChild(info.firstElementChild);
+        }
     }
 
 

@@ -51,10 +51,10 @@ class Master {
         }
     }
 
-    newPlayer(origin) {
-        if (!this.players.find(x => x.origin === origin)) {
+    newPlayer(id) {
+        if (!this.players.find(x => x.id === id)) {
             let player = {
-                origin: origin,
+                id: id,
                 name : "",
                 x: 0,
                 y: 0,
@@ -78,8 +78,8 @@ class Master {
     }
     
     movePlayer(msg) {
-            let oldPlayer = msg.player;
-            let player = msg.player;
+            let oldPlayer = this.players.find(x => x.id === msg.id);
+            let player = oldPlayer;
             let positionX = player.x;
             let positionY = player.y;
             let position, maxPosition, newPositionX, newPositionY;
@@ -142,6 +142,14 @@ class Master {
         this.map.slice(this.map.indexOf(box), 1, box);
         oldBox.players.slice(oldBox.players.indexOf(oldPlayer), 1);
         this.map.slice(this.map.indexOf(oldBox), 1, oldBox);
+        object = {
+            id: player.id,
+            func: refreshMap
+        }
+        object.energy = player.energy;
+        object.x = player.x;
+        object.y = player.y;
+        this.communication.send(1, object);
     }
         
     manageBattles() {

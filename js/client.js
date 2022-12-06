@@ -1,5 +1,4 @@
 class Client {
-    
     init(id, comunication) {
         this.id = id;
         this.comunication = comunication;
@@ -12,8 +11,8 @@ class Client {
     }
 
     newMsg(content) {
-        eval("this." + content.funct + "(" + JSON.stringify(content) +")");    }
-
+        eval("this." + content.funct + "(" + JSON.stringify(content) +")");    
+    }
     initClient(content) {
         this.x = content.x;
         this.y = content.y;
@@ -22,7 +21,6 @@ class Client {
         this.burrows = content.map.burrows;
         this.energy = 100;
     }
-
     showMap(content) {
         let div = document.getElementById("map");
         while(div.firstChild) {
@@ -49,7 +47,6 @@ class Client {
             div.appendChild(document.createElement('br'));
         }
     }
-
     //add to document lister to send a message when the client push any arrow
     movePlayer(content) {
         document.addEventListener("keyup", (e) => {
@@ -61,38 +58,32 @@ class Client {
                 case "ArrowLeft":
                     object.movement = "left";
                     this.comunication.send(0, object);
-                    console.log("left");
                 break;
                 case "ArrowRight":
                     object.movement = "right";
                     this.comunication.send(0, object);
-                    console.log("right");
                     break;
                 case "ArrowUp":
                     object.movement = "up";
                     this.comunication.send(0, object);
-                    console.log("up");
                     break;
                 case "ArrowDown":
                     object.movement = "down";
                     this.comunication.send(0, object);
-                    console.log("down");
                     break;
             }
         });
     }
-        
     //Clear the screen and show a message when player lose
     deadPlayer(content) {
-        let body = document.getElementsByName('body');
+        let container = document.getElementById('container');
         let title = document.createElement('h1');
-        while (body.firstChild) {
-            body.removeChild(body.firstChild);
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
         }
         title.innerHTML = "YOU DIED";
-        body.appendChild(title);
+        container.appendChild(title);
     }
-
     //increases energy when player is stationary
     refreshLife(content) {
         this.energy = content.energy;
@@ -104,7 +95,6 @@ class Client {
         healthValue.innerHTML = this.energy;
         health.appendChild(healthValue);
     }
-
     winnerPlayer(content){
         let container = document.getElementById("container");
         let title = document.createElement('h1');
@@ -114,20 +104,17 @@ class Client {
         title.innerHTML = "YOU WIN";
         container.appendChild(title);
     }
-
     updatePos(content) {
         this.x = content.x;
         this.y = content.y;
         this.showMap(content);
     }
-
     occupiedBurrow(content){
         let occupied = document.createElement('h4');
         occupied.innerHTML = "Occupied burrow";
         let info = document.getElementById("info");
         info.appendChild(occupied);
     }
-
     battle(content){
         let fight = document.createElement('h4');
         fight.innerHTML = "You are in a battle, you might die";
@@ -136,5 +123,4 @@ class Client {
         this.updatePos(content);
     }
 }
-
 export {Client};

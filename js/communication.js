@@ -1,5 +1,4 @@
 class Communication {
-
     socket = null;
     state = false;
     master = false;
@@ -33,11 +32,10 @@ class Communication {
             this.state = false;
         };
     }
-
     send(type, content) {
         const msg = {
             type: type,
-            content: content
+            content: content,
         }           
         this.socket.send(JSON.stringify(msg));
     }

@@ -1,5 +1,4 @@
 class Master {
-    
     init(config, communication) {
         this.config = config;
         this.communication = communication;
@@ -41,7 +40,6 @@ class Master {
     }
 
     newMsg(content) {
-
         eval("this." + content.funct + "(" + JSON.stringify(content) +")");
     }
 
@@ -94,7 +92,6 @@ class Master {
     }
         
     manageBattles() {
-
         this.players.forEach(element => {
             this.players.forEach(element2 => {
                 if(element != element2){
@@ -104,17 +101,9 @@ class Master {
                 }
             });
         });
-        // this.players.forEach(i => {
-        //     this.players.forEach(j => {
-        //         if(i.x == j.x && i.y == j.y) {
-        //             j.energy -= this.config.lifeTakenDamage;
-        //         }
-        //     });
-        // });
     }
 
     restoreLife() {
-
         this.players.forEach(element => {
             if(element.energy < 100){
                 let life = null;
@@ -126,27 +115,12 @@ class Master {
                 element.energy += life;
             }
         });
-
-        
-
-
-
-        // this.players(player => {
-        //     if(player.inBurrow) {
-        //         player.energy += this.config.lifeRestoredBurrow;
-        //     }
-        //     else if(!this.players.find(i => i.x == player.x && i.y == player.y)) {
-        //         player.energy += this.config.lifeRestoredAlone;
-        //     }
-        // });
     }
 
     killPlayer() {
         let object;
-
-
         this.players.forEach(player => {
-            if(player.energy == 0) {
+            if(player.energy <= 0) {
                 object = {
                     id: player.id,
                     funct: "deadPlayer"
@@ -162,32 +136,11 @@ class Master {
                 this.communication.send(1, object);
             }
         });
-
-
-
-        // this.players(player => {
-        //     if(player.energy == 0) {
-        //         object = {
-        //             id: player.id,
-        //             funct: "deadPlayer"
-        //         }
-        //         this.comunication.send(1, object);
-        //         this.players.slice(this.players.indexOf(player), 1);
-        //     } else {
-        //         object = {
-        //             id: player.id,
-        //             energy : player.energy,
-        //             funct: "refreshLife"
-        //         }
-        //         this.comunication.send(1, object);
-        //     }
-        // });
     }
     
     movePlayer(msg) {
         let oldPlayer = this.players.find(x => x.id == msg.id);
         let player = oldPlayer;
-        console.log(player);
         let positionX = player.x;
         let positionY = player.y;
         let position, maxPosition, newPositionX, newPositionY;
@@ -239,9 +192,11 @@ class Master {
                 }
                 if(box.endPoint) {
                     object.funct = "winnerPlayer";
-                    this.threadManage = null;
-                }
-                else {
+                    clearInterval(this.threadManage);
+                    this.communication.send(1, {
+                        funct: "deadPlayer"
+                    });
+                }else {
                     object.funct = "updatePos";
                 }
                 this.communication.send(1, object);
@@ -263,7 +218,6 @@ class Master {
             }
         }
     }
-
     updateMap(player, oldPlayer, box, oldBox) {
         this.players.slice(this.players.indexOf(oldPlayer), 1, player);
         box.players.push(player);

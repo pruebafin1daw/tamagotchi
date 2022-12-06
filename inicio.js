@@ -14,8 +14,8 @@ function hello() {
     if(communication.master) {
         control = new Master();
         control.init({
-            width: 51,
-            height: 51,
+            width: 11,
+            height: 11,
             porcentageBurrow : 0.2,
             lifeTakenDamage : 10,
             lifeRestoredBurrow : 10,

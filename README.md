@@ -16,5 +16,8 @@ Alejandro - Implementadas conexiones de prueba entre maestro y clientes
 Carlos - El cliente crea su mapa a partir de los datos que le manda el master, y dibuja el mapa.<br/>
 
 5/12<br/>
-Alejandro - Se pide el nombre al cliente y se guarda en su jugador
+Alejandro - Se pide el nombre al cliente y se guarda en su jugador<br/>
 Andrei - Intento de realizacion de movimiento del tamagotchi.
+
+6/12
+Carlos - El cliente consigue enviar su nombre al maestro

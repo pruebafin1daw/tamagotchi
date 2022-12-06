@@ -32,7 +32,7 @@ class Client {
         for(let i=0; i<this.width; i++) {
             for(let j=0; j<this.height; j++) {
                 let space = document.createElement('div');
-                if (i == this.width/2 && j == this.height/2){
+                if (i == Math.floor(this.width/2) && j == Math.floor(this.height/2)){
                     space.setAttribute("class", "goal");            //goal class for the goal
                 }else if(i == this.x && j == this.y) {
                     space.setAttribute("class" , "player");         //player class for the client
@@ -100,6 +100,7 @@ class Client {
     }
 
     winnerPlayer(content){
+        this.updatePos(content);
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');
         while (body.firstChild) {
@@ -123,11 +124,11 @@ class Client {
     }
 
     battle(content){
+        this.updatePos(content);
         let fight = document.createElement('h4');
         fight.innerHTML = "You are in a battle, you might die";
         let info = document.getElementById("info");
         info.appendChild(fight);
-        this.updatePos(content);
     }
 }
 

@@ -1,4 +1,5 @@
 class Communication {
+    
     socket = null;
     state = false;
     master = false;

@@ -183,6 +183,7 @@ class Master {
                 }
                 if(box.endPoint) {
                     object.funct = "winnerPlayer";
+                    this.threadManage = null;
                 }
                 else {
                     object.funct = "updatePos";

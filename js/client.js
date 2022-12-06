@@ -24,6 +24,32 @@ class Client {
         this.energy = 100;
     }
 
+    showMap(content) {
+        let div = document.getElementById("map");
+        while(div.firstChild) {
+            div.removeChild(div.firstChild);
+        }
+        for(let i=0; i<this.width; i++) {
+            for(let j=0; j<this.height; j++) {
+                let space = document.createElement('div');
+                if (i == this.width/2 && j == this.height/2){
+                    space.setAttribute("class", "goal");            //goal class for the goal
+                }else if(i == this.x && j == this.y) {
+                    space.setAttribute("class" , "player");         //player class for the client
+                }else{
+                    space.setAttribute("class" , "space");          //space clase for empty boxes
+                };
+                burrow.forEach(element => {
+                    if(i == element.x && j == element.y){
+                        space.setAttribute("class" , "burrow");     //burrow class for each burrow
+                    }
+                });
+                div.appendChild(space);
+            }
+            div.appendChild(document.createElement('br'));
+        }
+    }
+
     //add to document lister to send a message when the client push any arrow
     movePlayer(content) {
         document.addEventListener("keyup", (e) => {
@@ -51,40 +77,16 @@ class Client {
             }
         });
     }
-
-    updatePos(content) {
-        this.x = content.x;
-        this.y = content.y;
-    }
-
-    showMap(content) {
-        let div = document.getElementById("map");
-        while(div.firstChild) {
-            div.removeChild(div.firstChild);
-        }
-        let map = [];
         
-        for(let i=0; i<this.width; i++) {
-            map.push([]);
-            for(let j=0; j<this.height; j++) {
-                let space = document.createElement('div');
-                if (i == this.width/2 && j == this.height/2){
-                    space.setAttribute("class", "goal");            //goal class for the goal
-                }else if(i == this.y && j == this.x) {
-                    space.setAttribute("class" , "player");         //player class for the client
-                    space.setAttribute("id" , "player");
-                }else{
-                    space.setAttribute("class" , "space");          //space clase for empty boxes
-                };
-                burrow.forEach(element => {
-                    if(i == element.y && j == element.x){
-                        space.setAttribute("class" , "burrow");     //burrow class for each burrow
-                    }
-                });
-                div.appendChild(space);
-            }
-            div.appendChild(document.createElement('br'));
+    //Clear the screen and show a message when player lose
+    deadPlayer(content) {
+        let body = document.getElementsByName('body');
+        let title = document.createElement('h1');
+        while (body.firstChild) {
+            body.removeChild(body.firstChild);
         }
+        title.innerHTML = "YOU DIED";
+        body.appendChild(title);
     }
 
     //increases energy when player is stationary
@@ -96,16 +98,21 @@ class Client {
         energyValue.innerHTML = this.energy;
         energy.appendChild(energyValue);
     }
-        
-    //Clear the screen and show a message when player lose
-    deadPlayer() {
+
+    winnerPlayer(content){
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');
         while (body.firstChild) {
             body.removeChild(body.firstChild);
         }
-        title.innerHTML = "YOU DIED";
+        title.innerHTML = "YOU WIN";
         body.appendChild(title);
+    }
+
+    updatePos(content) {
+        this.x = content.x;
+        this.y = content.y;
+        this.showMap(content);
     }
 
     occupiedBurrow(content){
@@ -120,6 +127,7 @@ class Client {
         fight.innerHTML = "You are in a battle, you might die";
         let info = document.getElementById("info");
         info.appendChild(fight);
+        this.updatePos(content);
     }
 }
 

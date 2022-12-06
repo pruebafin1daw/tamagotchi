@@ -21,7 +21,7 @@ class Client {
     }
 
     //text file on screen that show when someone sole
-    deadClients(content){
+    deadClients(content) {
         //content.name is the dead client name send by master
         let textfile = document.getElementById("clients");
         let clientName = document.createElement('h4');
@@ -37,13 +37,13 @@ class Client {
     }
 
     //add to document lister to send a message when the client push any arrow
-    movePlayer(){
+    movePlayer() {
         document.addEventListener("keyup", (e) => {
             object = {
                 id : this.id,
                 funct : movePlayer
             }
-            switch (e.key) {
+            switch(e.key) {
                 case "ArrowLeft":
                     object.movement = "left";
                     this.comunication.send(0, object);
@@ -69,7 +69,7 @@ class Client {
     burrow = null;
     goal = null
     //Function for draw game map at start of game
-    showMap(content){
+    showMap(content) {
         size = content.width;                               //Height and width are equals because the map is square
         burrow = content.burrow;                            //burrow is an array, it has all burrow positions
         goal = Math.trunc(size / 2);
@@ -82,12 +82,12 @@ class Client {
     }
     //Refresh the map to show the movement
     energy = document.getElementById("health");
-    refreshMap(content){
+    refreshMap(content) {
         let div = document.getElementById("map");
-        while (div.firstChild) {
+        while(div.firstChild) {
             div.removeChild(div.firstChild);
         }
-        while (energy.firstChild) {
+        while(energy.firstChild) {
             energy.removeChild(energy.firstChild);
         }
 
@@ -96,13 +96,13 @@ class Client {
         energy.appendChild(energyValue);
         map = [];
         
-        for (let i = 0; i < size; i++) {
+        for(let i=0; i<size; i++) {
             map.push([]);
-            for (let j = 0; j < size; j++) {
+            for(let j=0; j<size; j++) {
                 let space = document.createElement('div');
                 if (i == goal && j == goal){
                     space.setAttribute("class", "goal");            //goal class for the goal
-                }else if(i == content.y && j == content.x){
+                }else if(i == content.y && j == content.x) {
                     space.setAttribute("class" , "player");         //player class for the client
                     space.setAttribute("id" , "player");
                 }else{
@@ -120,7 +120,7 @@ class Client {
     }
 
     //increases energy when player is stationary
-    moreEnergy(content){
+    moreEnergy(content) {
         energy.removeChild(energy.firstChild);
         let energyValue = document.createElement('h2');
         energyValue.innerHTML = content.energy;
@@ -130,7 +130,7 @@ class Client {
     
         
     //Clear the screen and show a message when player lose
-    deadPlayer(content){
+    deadPlayer(content) {
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');
         while (body.firstChild) {
@@ -169,12 +169,12 @@ class Client {
 
     //AHORA MUCHO MEJOR, la funcion se llama actions y le tenemos que pasar action : occupiedBurrow y si no le pasamos nada
     //estaría en un batalla
-    actions(content){
+    actions(content) {
         let playerAction = document.createElement('h4');
-        if(content.action == "occupiedBurrow"){
+        if(content.action == "occupiedBurrow") {
             playerAction.innerHTML = "Occupied burrow";
             info.appendChild(playerAction);
-        }else{
+        }else {
             playerAction.innerHTML = "You are in a battle, you might die";
             info.appendChild(playerAction);
         }

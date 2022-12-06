@@ -7,54 +7,49 @@ class Master {
         this.players = [];
         this.map = new Array();
         this.edges = [];
-        for (let i=0;i<this.config.height;i++) {
+        for(let i=0; i<this.config.width; i++) {
             this.map[i] = new Array();
-            for (let j=0;j<this.config.width;j++) {
+            for(let j=0; j<this.config.height; j++) {
                 this.map[i][j] = {
-                    y: i,
-                    x: j,
+                    x: i,
+                    y: j,
                     endPoint : false,
                     players: [],
                     burrow: false,
-                    burrowPlayer: null
+                    burrowPlayer: false
                 }
-                if ((i==0) || (i==this.config.height-1) || (j==0) || (j==this.config.width-1)) {
-                    if ((i+j)%2) {
+                if((i==0) || (i==this.config.width-1) || (j==0) || (j==this.config.height-1)) {
+                    if((i+j)%2) {
                         this.map[i][j].burrow = true;
-                        this.edges.push(this.map[i][j]);
                     }
-                } else if(Math.random() < this.config.porcentage){
+                    this.edges.push(this.map[i][j]);
+                } else if(Math.random() < this.config.porcentage) {
                     this.map[i][j].burrow = true;
                 }
             }
         }
-        this.map[this.config.height/2][this.config.width/2].endPoint = true;
-        this.flag = this.map[this.config.height/2][this.config.width/2];
-        let clientMap = { 
+        this.map[this.config.width/2][this.config.height/2].endPoint = true;
+        this.flag = this.map[this.config.width/2][this.config.height/2];
+        this.clientMap = { 
             width : this.config.width,
             height : this.config.height,
-            burrow : this.map.flatMap(num => num).filter(item => item.burrow).map(item => {
+            burrows : this.map.flatMap(num => num).filter(item => item.burrow).map(item => {
                 return {
-                    y : item.y,
-                    x : item.x
+                    x : item.x,
+                    y : item.y
                 }
             })
         }
-        console.log(clientMap);
     }
 
-    newMsg(msg,origin) {
-        switch(msg.valor) {
-            case "nuevo": 
-                this.newPlayer(origin);
-                break;
-        }
+    newMsg(content) {
+        this.eval(content.funct(content));
     }
 
-    newPlayer(id) {
-        if (!this.players.find(x => x.id === id)) {
+    newPlayer(content) {
+        if(!this.players.find(x => x.id === content.id)) {
             let player = {
-                id: id,
+                id: content.id,
                 name : "",
                 x: 0,
                 y: 0,
@@ -83,7 +78,7 @@ class Master {
             let positionX = player.x;
             let positionY = player.y;
             let position, maxPosition, newPositionX, newPositionY;
-            switch (msg.movement) {
+            switch(msg.movement) {
                 case "up": {
                 position = 0;
                 maxPosition = positionX;
@@ -113,10 +108,10 @@ class Master {
                 break;
                 }
             }
-            if (position < maxPosition) {
+            if(position < maxPosition) {
                 let box = this.map[newPositionY][newPositionX];
                 let oldBox = this.map[positionY][positionX];
-                if (box.players.length == 0) {
+                if(box.players.length == 0) {
                     if (box.burrow) {
                         player.inBurrow = true;
                     }
@@ -128,11 +123,10 @@ class Master {
                         id: player.id,
                         func: actions
                     }
-                    if (box.burrow) {
+                    if(box.burrow) {
                         object.action = "occupiedBurrow"
                     } else {
                         object.action = "battle"
-                        this.comunication.send("battle", player);
                         player.x = newPositionX;
                         player.y = newPositionY;
                         this.updateMap(player, oldPlayer, box, oldBox);
@@ -173,7 +167,7 @@ class Master {
             if(player.inBurrow) {
                 player.energy += this.config.lifeRestoredBurrow;
             }
-            else if (!this.players.find(i => i.x == player.x && i.y == player.y)) {
+            else if(!this.players.find(i => i.x == player.x && i.y == player.y)) {
                 player.energy += this.config.lifeRestoredAlone;
             }
         });
@@ -182,15 +176,23 @@ class Master {
     killPlayer() {
         this.players(player => {
             if(player.energy == 0) {
-                this.comunication.send("deadPlayer", player); // Communication debe indicar al cliente que ha muerto y cerrar la conexión
+                object = {
+                    id: player.id,
+                    func: "deadPlayer"
+                }
+                this.comunication.send(1, object); // Communication debe indicar al cliente que ha muerto y cerrar la conexión
                 this.players.slice(this.players.indexOf(player), 1);
             }
         });
     }
 
     endgame() { // Método que debe de ser lanzado al comienzo de la partida con una promesa
-        if (this.players.find(player => player.x == this.flag.x && player.y == this.flag.y)) {
-            this.comunication.send("winnerPlayer", player); // Communication debe indicar al cliente que ha ganado y terminar el juego
+        if(this.players.find(player => player.x == this.flag.x && player.y == this.flag.y)) {
+            object = {
+                id: player.id,
+                func: "winnerPlayer"
+            }
+            this.comunication.send(1, object); // Communication debe indicar al cliente que ha ganado y terminar el juego
         }
     }
 }

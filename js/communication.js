@@ -10,7 +10,7 @@ class Communication {
             this.state = true;
         };
         this.socket.onmessage = (event)=> {
-            let data = JSON.parse(event.data);
+            let data = JSON.parse(event);
             switch(data.funct) {
                 case "master":
                     this.master = true;
@@ -20,8 +20,8 @@ class Communication {
                     this.id = data.id;
                     config.check();
                     break;
-                case "deadPlayer":
-                    this.handler.deadClients(data);
+                default:
+                    this.handler.newMsg(data);
                     break;
             }
         };

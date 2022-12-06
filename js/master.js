@@ -60,88 +60,92 @@ class Master {
             player.y = cell.y;
             this.map[cell.x][cell.y].players.push(player);
             this.players.push(player);
+            object = {
+                id: player.id,
+                func: "initClient",
+                x: player.x,
+                y: player.y,
+                map: this.clientMap
+            }
+            this.communication.send(1, object);
         }
-    }
-
-    gameStart() {
-        this.threadManage = setInterval(()=>this.manageShift(), 500);
     }
     
     movePlayer(msg) {
-            let oldPlayer = this.players.find(x => x.id == msg.id);
-            let player = oldPlayer;
-            let positionX = player.x;
-            let positionY = player.y;
-            let position, maxPosition, newPositionX, newPositionY;
-            switch(msg.movement) {
-                case "up": {
-                position = 0;
-                maxPosition = positionX;
-                newPositionX = positionX - 1;
-                newPositionY = positionY;
-                break;
-                }
-                case "left": {
-                position = 0;
-                maxPosition = positionY;
-                newPositionX = positionX;
-                newPositionY = positionY - 1;
-                break;
-                }
-                case "right": {
-                position = positionY;
-                maxPosition = this.map.length;
-                newPositionX = positionX;
-                newPositionY = positionY + 1;
-                break;
-                }
-                case "down": {
-                position = positionX;
-                maxPosition = this.map.length;
-                newPositionX = positionX + 1;
-                newPositionY = positionY;
-                break;
-                }
+        let oldPlayer = this.players.find(x => x.id == msg.id);
+        let player = oldPlayer;
+        let positionX = player.x;
+        let positionY = player.y;
+        let position, maxPosition, newPositionX, newPositionY;
+        switch(msg.movement) {
+            case "up": {
+            position = 0;
+            maxPosition = positionX;
+            newPositionX = positionX - 1;
+            newPositionY = positionY;
+            break;
             }
-            if(position < maxPosition) {
-                let box = this.map[newPositionY][newPositionX];
-                let oldBox = this.map[positionY][positionX];
-                if(box.players.length == 0) {
-                    if(box.burrow) {
-                        player.inBurrow = true;
-                    }
+            case "left": {
+            position = 0;
+            maxPosition = positionY;
+            newPositionX = positionX;
+            newPositionY = positionY - 1;
+            break;
+            }
+            case "right": {
+            position = positionY;
+            maxPosition = this.map.length;
+            newPositionX = positionX;
+            newPositionY = positionY + 1;
+            break;
+            }
+            case "down": {
+            position = positionX;
+            maxPosition = this.map.length;
+            newPositionX = positionX + 1;
+            newPositionY = positionY;
+            break;
+            }
+        }
+        if(position < maxPosition) {
+            let box = this.map[newPositionY][newPositionX];
+            let oldBox = this.map[positionY][positionX];
+            if(box.players.length == 0) {
+                if(box.burrow) {
+                    player.inBurrow = true;
+                }
+                player.x = newPositionX;
+                player.y = newPositionY;
+                this.updateMap(player, oldPlayer, box, oldBox);
+                object = {
+                    id: player.id,
+                    x: player.x,
+                    y: player.y
+                }
+                if(box.endPoint) {
+                    object.funct = "winnerPlayer";
+                }
+                else {
+                    object.funct = "refreshMap";
+                }
+                this.communication.send(1, object);
+            } else {
+                object = {
+                    id: player.id
+                }
+                if(box.burrow) {
+                    object.funct = "occupiedBurrow"
+                } else {
+                    object.funct = "battle"
                     player.x = newPositionX;
                     player.y = newPositionY;
                     this.updateMap(player, oldPlayer, box, oldBox);
-                    object = {
-                        id: player.id,
-                        x: player.x,
-                        y: player.y
-                    }
-                    if(box.endPoint) {
-                        object.funct = "winnerPlayer";
-                    }
-                    else {
-                        object.funct = "refreshMap";
-                    }
-                    this.communication.send(1, object);
-                } else {
-                    object = {
-                        id: player.id
-                    }
-                    if(box.burrow) {
-                        object.funct = "occupiedBurrow"
-                    } else {
-                        object.funct = "battle"
-                        player.x = newPositionX;
-                        player.y = newPositionY;
-                        this.updateMap(player, oldPlayer, box, oldBox);
-                        object.x = player.x;
-                        object.y = player.y;
-                    }
-                    this.communication.send(1, object);
+                    object.x = player.x;
+                    object.y = player.y;
                 }
+                this.communication.send(1, object);
             }
+        }
     }
 
     updateMap(player, oldPlayer, box, oldBox) {
@@ -150,6 +154,10 @@ class Master {
         this.map.slice(this.map.indexOf(box), 1, box);
         oldBox.players.slice(oldBox.players.indexOf(oldPlayer), 1);
         this.map.slice(this.map.indexOf(oldBox), 1, oldBox);
+    }
+
+    gameStart() {
+        this.threadManage = setInterval(()=>this.manageShift(), 500);
     }
 
     manageShift() {

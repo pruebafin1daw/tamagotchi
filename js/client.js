@@ -1,12 +1,10 @@
 class Client {
-    map = null;
-    object = null;
     
     init(id, comunication) {
         this.id = id;
         this.comunication = comunication;
         this.comunication.handler = this;
-        object = {
+        let object = {
             id : id,
             funct : "newPlayer"
         } 
@@ -15,6 +13,14 @@ class Client {
 
     newMsg(content) {
         this.eval(content.funct(content));
+    }
+
+    initClient(content) {
+        this.x = content.x;
+        this.y = content.y;
+        this.width = content.map.width;
+        this.height = content.map.height;
+        this.burrows = content.map.burrows;
     }
 
     //text file on screen that show when someone sole
@@ -30,13 +36,12 @@ class Client {
         function clearName() {
             textfile.removeChild(textfile.firstElementChild);
         }
-
     }
 
     //add to document lister to send a message when the client push any arrow
     movePlayer() {
         document.addEventListener("keyup", (e) => {
-            object = {
+            let object = {
                 id : this.id,
                 funct : "movePlayer"
             }
@@ -61,7 +66,6 @@ class Client {
         });
     }
 
-
     size = null;
     burrow = null;
     goal = null
@@ -70,13 +74,14 @@ class Client {
         size = content.width;                               //Height and width are equals because the map is square
         burrow = content.burrow;                            //burrow is an array, it has all burrow positions
         goal = Math.trunc(size / 2);
-        object = {
+        let object = {
             energy : content.energy,
             x : content.x,
             y : content.y
         }
         this.refreshMap(object);
     }
+
     //Refresh the map to show the movement
     energy = document.getElementById("health");
     refreshMap(content) {
@@ -91,7 +96,7 @@ class Client {
         let energyValue = document.createElement('h2');
         energyValue.innerHTML = content.energy;
         energy.appendChild(energyValue);
-        map = [];
+        let map = [];
         
         for(let i=0; i<size; i++) {
             map.push([]);
@@ -123,8 +128,6 @@ class Client {
         energyValue.innerHTML = content.energy;
         energy.appendChild(energyValue);
     }
-
-    
         
     //Clear the screen and show a message when player lose
     deadPlayer() {

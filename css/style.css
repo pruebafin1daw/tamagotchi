@@ -1,24 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;700&display=swap');
 
-html, body {
+html,
+body {
     background-color: #333333;
     height: 100%;
+    font-family: 'Outfit' !important;
     overflow: hidden;
+    user-select: none;
+}
+
+.x {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    animation: x 6s linear infinite alternate;
+    display: none;
+    position: absolute;
+    z-index: 999999999999;
+}
+.y {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+
+    animation: y 2s linear infinite alternate;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url(../src/lightning.png);
+
+    transition: all .5s ease;
+}
+.y:hover {
+    filter: brightness(50%);
+}
+@keyframes x {
+    100% {
+        transform: translateX(calc(100vw - 100px));
+    }
+}
+@keyframes y {
+    100% {
+      transform: translateY( calc(100vh - 100px) );
+    }
 }
 
 span {
     color: rgb(149, 48, 48);
+    font-weight: bold;
 }
 
-.player{
+.interfaz {
+    flex-direction: column;
+}
+
+.player {
     background-image: url('../src/Tamagotchi.svg');
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
 }
 
-/* MIO */
-table{
+table {
     width: 42em;
     height: 70vh;
     margin: 2em auto 0.5em auto;
@@ -28,22 +72,85 @@ tr {
     width: 100%;
 }
 
+td {
+    border: 1px solid black;
+}
+
 .cell {
-    background-color: #6f2b2b;
+    background-color: #9c7127;
+}
+
+.energy {
+    color: white;
+    font-size: 2em;
+    margin: 1em 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.fight {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0%;
+
+    animation: .6s ease-in-out .6s infinite alternate damage;
+}
+
+@keyframes damage {
+    0% {
+        background-color: rgb(143, 42, 42);
+    }
+
+    100% {
+        background-color: black;
+    }
+}
+
+.winFight {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    animation: .3s ease-in-out .3s alternate winFight;
+}
+
+@keyframes winFight {
+    0% {
+        opacity: 0%;
+        background-color: black;
+    }
+
+    100% {
+        opacity: 100%;
+        background-color: rgb(11, 95, 11);
+    }
 }
 
 /* La madriguera en sí */
 .burrow {
-    background-color: rgb(10, 84, 87);
+    background-color: rgb(10, 87, 14);
 }
 
 .goal {
-    background-color: green;
+    background-color: #9c7127;
+}
+
+.goalReward {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(https://cdn-icons-png.flaticon.com/512/1366/1366509.png);
 }
 
 /* Esto es el texto de la madriguera */
-.madriguera{
-    font-family: 'Outfit' !important;
+.madriguera {
     color: white;
     text-align: center;
     margin-top: 10px;
@@ -55,7 +162,8 @@ tr {
     top: 0;
     width: 100%;
     height: 100%;
-    font-size: 2em;
+    font-size: 5em;
+    font-weight: bold;
     text-align: center;
 
     display: flex;
@@ -68,7 +176,42 @@ tr {
     opacity: 0%;
 }
 
+.dead {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 5em;
+    font-weight: bold;
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    color: rgb(143, 42, 42);
+    background-color: black;
+    opacity: 0%;
+}
+
+.deadUI {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+}
+
 .fadingMessage {
     opacity: 0%;
     transition: all 3s ease-in-out;
+}
+
+.controls {
+    color: white;
+    width: 100%;
+    background-color: rgba(0, 0, 0, .3);
+
+    padding: 0.5em 0;
+    text-align: center;
 }

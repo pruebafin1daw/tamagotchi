@@ -21,6 +21,11 @@ game.Client = class {
 
         this.movementId = null;
         this.setMovement(this);
+
+        this.healId = null;
+        this.healCounter = 0;
+
+        this.visitedBurrows = [];
     }
 
     removeMovement() {
@@ -71,15 +76,70 @@ game.Client = class {
     }
 
     newMsg(msg, origin) {
+        if (msg.valor.energyButton) {
+            this.updateUI(
+                {
+                    'message': 'buttonEnergy',
+                    'inBurrow': msg.valor.inBurrow
+                },
+                '', true
+            );
+        }
+
+        if (msg.valor.energy) {
+            this.updateUI(
+                {
+                    'message': 'energy',
+                    'object': msg.valor.energy
+                },
+                document.querySelector('.energy'),
+                true
+            );
+        }
 
         //Si esta peleando le quitamos el movimiento
         if (msg.valor.fight) {
             this.removeMovement();
+            this.updateUI(
+                {
+                    'message': 'fight',
+                    'object': msg.valor.id,
+                    'fighting': true
+                },
+                '',
+                true
+            );
         } else if (msg.valor.fight == false) {
             this.setMovement();
+            this.updateUI(
+                {
+                    'message': 'fight',
+                    'object': msg.valor.id,
+                    'fighting': false
+                },
+                '',
+                true
+            );
         }
 
-        if (msg.valor.dead) {
+        if (msg.valor.player && msg.valor.dead) {
+            this.updateUI(
+                {
+                    'message': 'deadUI',
+                    'object': msg.valor.player.name
+                },
+                document.querySelector('.deadUI'),
+                false
+            );
+        } else if (msg.valor.dead) {
+            this.updateUI(
+                {
+                    'message': 'dead',
+                    'object': this.player
+                },
+                document.querySelector('.dead'),
+                true
+            );
             this.communication.socket.close();
         }
 
@@ -90,6 +150,10 @@ game.Client = class {
 
             //Pedimos nombre al cliente
             this.player.name = prompt('Enter your name');
+            while (!this.player.name) {
+                this.player.name = prompt('Enter your name');
+            }
+            
             this.communication.send({
                 player: this.player,
                 type: 'updateClient'
@@ -119,14 +183,13 @@ game.Client = class {
 
                 //Cogemos el div para introducir la clase en la nueva posición
                 let div = document.querySelector(`.${this.mainDiv}`);
-                let table = div.childNodes[1];
+                let table = div.childNodes[0];
                 table.childNodes[this.player.x].childNodes[this.player.y].classList.toggle('player');
             }
         }
 
         //Si nos llega un burrow esque va a salir o a entrar
         if (msg.valor.burrow != null && msg.valor.burrow != undefined) {
-            // MIO
             this.updateUI(
                 {
                     'message': 'burrow',
@@ -137,21 +200,27 @@ game.Client = class {
             );
         }
 
+        // Si nos llega meta esque alguien ha ganado
         if (msg.valor.goal) {
             this.updateUI(
                 {
                     'message': 'win',
-                    'object': this.player.name
+                    'object': msg.valor.name
                 },
                 document.querySelector('.winner'),
                 true
             );
-            this.clo
+            this.communication.send({
+                'close': true,
+            }, 3);
+            this.communication.socket.close();
         }
     }
 
     //Dibuja el mapa en la interfaz
     drawMap() {
+        document.getElementById('energy').innerHTML = '<span>ENERGY</span>&nbsp;' + this.player.energy;
+
         let table = document.createElement('table');
         for (let x = 0; x < this.map.width; x++) {
             let row = document.createElement('tr');
@@ -182,6 +251,9 @@ game.Client = class {
                     docCell.classList.toggle('cell');
                 } else if (cell.goal) {
                     docCell.classList.toggle('goal');
+                    let reward = document.createElement('div');
+                    reward.classList.toggle('goalReward');
+                    docCell.appendChild(reward);
                 }
 
                 if (cell.x == this.player.x && cell.y == this.player.y) {
@@ -197,7 +269,6 @@ game.Client = class {
 
     //Dibuja la interfaz de usuario
     drawUI() {
-
         //Contenedor Interfaz
         let container = document.createElement('div');
         container.classList.toggle('interfaz');
@@ -206,17 +277,31 @@ game.Client = class {
         //TODO => Loger que saque mensajes a los usuarios
         //TODO => Energía del usuario
 
-
         //Madriguera
         let burrow = document.createElement('div');
         burrow.classList.toggle('madriguera');
+        burrow.innerHTML = "You're into a burrow";
 
         //Winner
         let winner = document.createElement('div');
         winner.classList.toggle('winner');
 
+        //Fight
+        let fight = document.createElement('div');
+        fight.style.opacity = '0%';
+        fight.classList.toggle('fight');
+
+        //Dead
+        let dead = document.createElement('div');
+        dead.classList.toggle('dead');
+        let deadUI = document.createElement('div');
+        deadUI.classList.toggle('deadUI');
+
         container.appendChild(burrow);
         container.appendChild(winner);
+        container.appendChild(fight);
+        container.appendChild(dead);
+        container.appendChild(deadUI);
         document.querySelector(`.${this.mainDiv}`).parentElement.append(container);
     }
 
@@ -231,21 +316,64 @@ game.Client = class {
             case 'burrow':
                 message.innerHTML = msg.object ? "You're into a burrow" : "You're out of a burrow";
                 break;
+
             case 'win':
-                message.innerHTML = '¡PLAYER <span>' + msg.object + '</span> HAS WON!';
+                message.innerHTML = '¡PLAYER <span>' + msg.object.toUpperCase() + '</span> HAS WON!';
                 div.style.opacity = '50%';
                 div.style.transition = 'opacity 3s ease';
-                this.communication.socket.close();
                 break;
-        }
 
-        // Opacidad al mensaje con transición
-        setTimeout(() => { message.classList.toggle('fadingMessage'); }, 10);
+            case 'fight':
+                let divFight = document.querySelector('.fight');
+                if (divFight.classList.contains('winFight')) divFight.classList.remove('winFight');
+                if (msg.fighting) divFight.style.opacity = '70%';
+                else divFight.classList.add('winFight');
+                div = divFight;
+                break;
+
+            case 'dead':
+                document.getElementById('energy').innerHTML = '<span>ENERGY</span>&nbsp;0';
+                message.innerHTML = 'YOU DIED';
+                div.style.opacity = '50%';
+                div.style.transition = 'opacity 3s ease';
+                break;
+
+            case 'deadUI':
+                message.innerHTML = 'Player <span>' + msg.object.toUpperCase() + '</span> has died...';
+                message.style.opacity = '50%';
+                message.style.transition = 'opacity 3s ease';
+                break;
+
+            case 'energy':
+                this.player.energy = msg.object;
+                document.getElementById('energy').innerHTML = '<span>ENERGY</span>&nbsp;' + Math.floor(this.player.energy);
+                return;
+
+            case 'buttonEnergy':
+                let buttonEnergy = document.getElementById('buttonEnergy');
+                if (msg.inBurrow) {
+                    this.setUpdateEnergy();
+                    buttonEnergy.style.display = 'block';
+                    
+                    if (!this.checkBurrowVisited(this.player.x, this.player.y)) {
+                        this.visitedBurrows.push({
+                            x: this.player.x,
+                            y: this.player.y
+                        });
+                    } else buttonEnergy.style.display = 'none';
+                } else {
+                    this.healCounter = 0;
+                    buttonEnergy.style.display = 'none';
+                }
+                return;
+        }
 
         // Si el mensaje no va para el cliente, el mensaje se irá añadiendo al contenedor
         // para que haya un historial
         if (!self) {
-            div.appendChild(message);
+            setTimeout(() => {
+                div.appendChild(message);
+            }, 10);
         }
         // A lo contrario, el mensaje se renovará sin ser añadido constantemente
         else {
@@ -260,6 +388,43 @@ game.Client = class {
         setTimeout(() => {
             if (!self) div.removeChild(message);
         }, 3000);
+    }
+
+    setUpdateEnergy() {
+        let visited = this.checkBurrowVisited(this.player.x, this.player.y);
+        if (!visited && this.healId == null) {
+            this.healId = this.updateEnergy.bind(this);
+            document.getElementById('buttonEnergy').addEventListener('click', this.healId);
+        }
+    }
+
+    removeUpdateEnergy() {
+        document.getElementById('buttonEnergy').removeEventListener('click', this.healId);
+    }
+
+    updateEnergy() {
+        // Actualizamos a master
+        if (this.player.energy <= 80 && this.healCounter < 2) {
+            this.communication.send({
+                energy: 15,
+                type: 'healing',
+                idPlayer: this.player.origin.id
+            }, 0);
+
+            this.healCounter++;
+            if (this.healCounter == 2) {
+                document.getElementById('buttonEnergy').style.display = 'none';
+                this.healCounter = 0;
+            }
+        }
+    }
+
+    checkBurrowVisited(x, y) {
+        let burrowFound = this.visitedBurrows.find(burrow => {
+            if (burrow.x == x && burrow.y == y) return burrow;
+        });
+        if (burrowFound) return true;
+        else return false;
     }
 }
 
@@ -299,13 +464,12 @@ game.Master = class {
     createInterval() {
         setInterval(() => {
             this.players.forEach(player => {
-                console.log(player);
                 this.communication.send({
                     energy: player.energy,
                     players: this.players.length
                 }, 1, player.origin.id);
             });
-        }, 1000);
+        }, 16.666);
     }
 
     createMap(config) {
@@ -453,6 +617,10 @@ game.Master = class {
         }
 
         switch (cadena) {
+            case 'healing':
+                this.players.find(x => x.origin.id === msg.valor.idPlayer).energy += msg.valor.energy;
+                break;
+
             case 'updateClient':
                 let player = this.players.pop();
                 player.name = msg.valor.player.name;
@@ -513,32 +681,25 @@ game.Master = class {
                     break;
             }
 
-            if (moved) {
-                let dead = jugador.spendEnergy(10);
-                if (dead) {
-                    // AQUI PABLO ENVIA MENSAJE DE CUANDO MUERE
-                    this.communication.send({
-                        dead: true
-                    }, 1, jugador.origin.id);
-                }
-            }
+            let win = false;
 
             //Si los valores originales no han cambiado es porque no se ha movido
             if (originalX != jugador.x || originalY != jugador.y) {
                 this.map[originalX][originalY].players.pop(jugador);
                 this.map[jugador.x][jugador.y].players.push(jugador);
 
-                // Goal MIO
+                // Goal
                 if (this.map[jugador.x][jugador.y].goal) {
+                    win = true;
                     this.communication.send({
                         goal: this.map[jugador.x][jugador.y].goal,
+                        name: jugador.name,
                         type: 'winner'
                     }, 1);
                 }
 
                 //Batalla del cliente
                 if (this.map[jugador.x][jugador.y].players.length > 1) {
-                    console.log("Fight!");
                     this.handleFight(jugador);
                 }
 
@@ -546,6 +707,28 @@ game.Master = class {
                 this.communication.send({
                     jugador: jugador,
                 }, 1, jugador.origin.id);
+            }
+
+            if (!win && moved) {
+                let dead = jugador.spendEnergy(10);
+
+                //Enviar energy a jugador
+                this.communication.send({
+                    energy: jugador.energy
+                }, 1, jugador.origin.id);
+
+                if (dead) {
+                    // Mensaje global de muerte
+                    this.communication.send({
+                        dead: true,
+                        player: jugador
+                    }, 1);
+
+                    // Mensaje local de muerte
+                    this.communication.send({
+                        dead: true
+                    }, 1, jugador.origin.id);
+                }
             }
         }
 
@@ -585,7 +768,12 @@ game.Master = class {
     fightAction(fight) {
         let escape = Math.random();
         let extraDamage = 0;
+        let finished = false;
         for (const player of fight.players) {
+            if (finished) {
+                return;
+            }
+
             escape = escape - (player.energy / 1000);
             extraDamage = player.energy / 100;
             if (escape < 0.10) {
@@ -593,7 +781,18 @@ game.Master = class {
             }
 
             let dead = player.spendEnergy(10 + extraDamage);
+
+            //Enviar energy a jugador
+            this.communication.send({
+                energy: this.energy
+            }, 1, player.id);
+
             if (dead) {
+                this.communication.send({
+                    dead: true,
+                    player: player
+                }, 1);
+
                 // AQUI MUERE ALGUIEN
                 fight.players.splice(fight.players.indexOf(player), 1);
                 if (dead) {
@@ -603,10 +802,12 @@ game.Master = class {
                     }, 1, player.origin.id);
                 }
             }
-        }
-        if (fight.players.length <= 1) {
-            // AQUI ACABA LA BATALLA
-            this.endfight(fight);
+
+            if (fight.players.length <= 1) {
+                finished = true,
+                    // AQUI ACABA LA BATALLA
+                    this.endfight(fight);
+            }
         }
     }
 
@@ -618,22 +819,32 @@ game.Master = class {
                 fight: false
             }, 1, player.origin.id);
         }
-        console.log(this.players);
     }
 
     handleBurrow(cell, player) {
         let inBurrow = false;
         if (cell && cell.burrow) {
             if (cell.burrowPlayer == null) {
-
                 cell.burrowPlayer = player;
                 player.inBurrow = true;
                 inBurrow = true;
+
+                // COMIDA
+                this.communication.send({
+                    'energyButton': true,
+                    'inBurrow': true
+                }, 1, player.id);
             }
 
             else if (cell.burrowPlayer == player) {
                 cell.burrowPlayer = null;
                 player.inBurrow = false;
+
+                // COMIDA
+                this.communication.send({
+                    'energyButton': true,
+                    'inBurrow': false
+                }, 1, player.id);
             }
 
         }
@@ -642,7 +853,7 @@ game.Master = class {
             burrow: inBurrow,
         }
 
-        this.communication.send(burrowMsg, 2, player.id);
+        this.communication.send(burrowMsg, 1, player.origin.id);
     }
 
     //Función que crea un jugador nuevo
@@ -684,7 +895,8 @@ game.Player = class {
 
     spendEnergy(quantity) {
         this.energy -= quantity;
-        if (this.energy < 0) {
+
+        if (this.energy <= 0) {
             this.energy = 0;
             return true;
         }

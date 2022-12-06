@@ -58,11 +58,10 @@ class Communication {
     }
 
     send(data, type, id) {
-        const msg =  {
+        const msg = {
             tipo: type,
             mensaje: data,
         }
-
         if(id != null) {
             msg.id = id;
         }

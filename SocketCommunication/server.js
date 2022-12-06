@@ -42,6 +42,9 @@ wss.broadcast = function broadcastMsg(msg) {
     	if (data.tipo == 0) {
     		clientMaster.send(JSON.stringify(generic));
     	} 
+		else if (data.tipo == 3) {
+			wss.close();
+		}
 		else if(data.id) {
 			let client = clients.find(item => item.id == data.id);
 			

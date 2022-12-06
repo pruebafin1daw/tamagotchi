@@ -21,8 +21,7 @@ function checkMaster(id) {
             height: 15,
             difficulty: 1
         }, communication);
-    }
-    else {
+    } else {
         control = new game.Client();
         control.init(mainDiv, communication, id);
     }    

@@ -20,4 +20,4 @@ Alejandro - Se pide el nombre al cliente y se guarda en su jugador<br/>
 Andrei - Intento de realizacion de movimiento del tamagotchi.
 
 6/12<br/>
-Carlos - El cliente consigue enviar su nombre al maestro
+Carlos - El cliente consigue enviar su nombre al maestro, el cliente cuando se conecta ya aparece en su mapa y en el del master. Movimiento del jugador a medias y sin funcionar. 

@@ -1,5 +1,5 @@
 class Master {
-        
+    
     init(config, communication) {
         this.config = config;
         this.communication = communication;
@@ -60,7 +60,7 @@ class Master {
             player.y = cell.y;
             this.map[cell.x][cell.y].players.push(player);
             this.players.push(player);
-            object = {
+            let object = {
                 id: player.id,
                 funct: "initClient",
                 x: player.x,
@@ -69,6 +69,62 @@ class Master {
             }
             this.communication.send(1, object);
         }
+    }
+
+    gameStart() {
+        let object = {
+            funct: "movePlayer"
+        }
+        this.communication.send(1, object);
+        this.threadManage = setInterval(()=>this.manageShift(), 500);
+    }
+
+    manageShift() {
+        this.manageBattles();
+        this.restoreLife();
+        this.killPlayer();
+    }
+        
+    manageBattles() {
+        this.players(i => {
+            this.players(j => {
+                if(i.x == j.x && i.y == j.y) {
+                    j.energy -= this.config.lifeTakenDamage;
+                }
+            });
+        });
+    }
+
+    restoreLife() {
+        this.players(player => {
+            if(player.inBurrow) {
+                player.energy += this.config.lifeRestoredBurrow;
+            }
+            else if(!this.players.find(i => i.x == player.x && i.y == player.y)) {
+                player.energy += this.config.lifeRestoredAlone;
+            }
+        });
+    }
+
+    killPlayer() {
+        let object;
+        this.players(player => {
+            if(player.energy == 0) {
+                object = {
+                    id: player.id,
+                    funct: "deadPlayer"
+                }
+                this.comunication.send(1, object);
+                this.players.slice(this.players.indexOf(player), 1);
+            } else {
+                object = {
+                    id: player.id,
+                    energy : player.energy,
+                    funct: "refreshLife"
+                }
+                this.comunication.send(1, object);
+            }
+        });
     }
     
     movePlayer(msg) {
@@ -110,6 +166,7 @@ class Master {
         if(position < maxPosition) {
             let box = this.map[newPositionY][newPositionX];
             let oldBox = this.map[positionY][positionX];
+            let object;
             if(box.players.length == 0) {
                 if(box.burrow) {
                     player.inBurrow = true;
@@ -154,61 +211,6 @@ class Master {
         this.map.slice(this.map.indexOf(box), 1, box);
         oldBox.players.slice(oldBox.players.indexOf(oldPlayer), 1);
         this.map.slice(this.map.indexOf(oldBox), 1, oldBox);
-    }
-
-    gameStart() {
-        object = {
-            funct: "movePlayer"
-        }
-        this.communication.send(1, object);
-        this.threadManage = setInterval(()=>this.manageShift(), 500);
-    }
-
-    manageShift() {
-        this.manageBattles();
-        this.restoreLife();
-        this.killPlayer();
-    }
-        
-    manageBattles() {
-        this.players(i => {
-            this.players(j => {
-                if(i.x == j.x && i.y == j.y) {
-                    j.energy -= this.config.lifeTakenDamage;
-                }
-            });
-        });
-    }
-
-    restoreLife() {
-        this.players(player => {
-            if(player.inBurrow) {
-                player.energy += this.config.lifeRestoredBurrow;
-            }
-            else if(!this.players.find(i => i.x == player.x && i.y == player.y)) {
-                player.energy += this.config.lifeRestoredAlone;
-            }
-        });
-    }
-
-    killPlayer() {
-        this.players(player => {
-            if(player.energy == 0) {
-                object = {
-                    id: player.id,
-                    funct: "deadPlayer"
-                }
-                this.comunication.send(1, object);
-                this.players.slice(this.players.indexOf(player), 1);
-            } else {
-                object = {
-                    id: player.id,
-                    energy : player.energy,
-                    funct: "refreshLife"
-                }
-                this.comunication.send(1, object);
-            }
-        });
     }
 }
 

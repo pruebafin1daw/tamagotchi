@@ -52,16 +52,6 @@ class Client {
         });
     }
 
-    //increases energy when player is stationary
-    refreshLife(content) {
-        this.energy = content.energy;
-        let energy = document.getElementById("health");
-        energy.removeChild(energy.firstChild);
-        let energyValue = document.createElement('h2');
-        energyValue.innerHTML = this.energy;
-        energy.appendChild(energyValue);
-    }
-
     //Refresh the map to show the movement
     refreshMap(content) {
         let div = document.getElementById("map");
@@ -92,6 +82,16 @@ class Client {
             div.appendChild(document.createElement('br'));
         }
     }
+
+    //increases energy when player is stationary
+    refreshLife(content) {
+        this.energy = content.energy;
+        let energy = document.getElementById("health");
+        energy.removeChild(energy.firstChild);
+        let energyValue = document.createElement('h2');
+        energyValue.innerHTML = this.energy;
+        energy.appendChild(energyValue);
+    }
         
     //Clear the screen and show a message when player lose
     deadPlayer() {
@@ -102,66 +102,20 @@ class Client {
         }
         title.innerHTML = "YOU DIED";
         body.appendChild(title);
-        document.removeEventListener("keyup", (e) );                //Revisar esto si hay errores
     }
 
-    //---------ESTA PARTE NO ME GUSTA, HAY CAMBIARLA ES EL MISMO CÓDIGO CON FUNCIONES DE DIFERENTE NOMBRE-------------------
-    info = document.getElementById("info");
-    // occupiedBurrow(content){
-    //     let occupied = document.createElement('h4');
-    //     occupied.innerHTML = "Occupied burrow";
-    //     info.appendChild(occupied);
-
-    //     const myTimeout = setTimeout(clearOccupied, 3000);
-
-    //     function clearOccupied() {
-    //         info.removeChild(info.firstElementChild);
-    //     }
-    // }
-
-    // battle(content){
-    //     let fight = document.createElement('h4');
-    //     fight.innerHTML = "You are in a battle, you might die";
-    //     info.appendChild(fight);
-
-    //     const myTimeout = setTimeout(clearFight, 3000);
-
-    //     function clearFight() {
-    //         info.removeChild(info.firstElementChild);
-    //     }
-    // }
-
-    //AHORA MUCHO MEJOR, la funcion se llama actions y le tenemos que pasar action : occupiedBurrow y si no le pasamos nada
-    //estaría en un batalla
-    actions(content) {
-        let playerAction = document.createElement('h4');
-        if(content.action == "occupiedBurrow") {
-            playerAction.innerHTML = "Occupied burrow";
-            info.appendChild(playerAction);
-        }else {
-            playerAction.innerHTML = "You are in a battle, you might die";
-            info.appendChild(playerAction);
-        }
-        const myTimeout = setTimeout(clearAction, 3000);
-
-        function clearAction() {
-            info.removeChild(info.firstElementChild);
-        }
+    occupiedBurrow(content){
+        let occupied = document.createElement('h4');
+        occupied.innerHTML = "Occupied burrow";
+        let info = document.getElementById("info");
+        info.appendChild(occupied);
     }
 
-    //text file on screen that show when someone sole
-    deadClients(content) {
-        //content.name is the dead client name send by master
-        let textfile = document.getElementById("clients");
-        let clientName = document.createElement('h4');
-        clientName.innerHTML = content.name + " has died";
-        textfile.appendChild(clientName);
-
-        const myTimeout = setTimeout(clearName, 8000);
-
-        function clearName() {
-            textfile.removeChild(textfile.firstElementChild);
-        }
+    battle(content){
+        let fight = document.createElement('h4');
+        fight.innerHTML = "You are in a battle, you might die";
+        let info = document.getElementById("info");
+        info.appendChild(fight);
     }
 }
 

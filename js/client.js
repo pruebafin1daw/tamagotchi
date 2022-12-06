@@ -17,15 +17,21 @@ class Client {
     }
     // Funcion llamada en default case en communication al llegar un mensaje nuevo
     newMsg(msg,origin) {
-        if(typeof msg.valor == 'object'){
+        if(msg.valor.direction){
             msg.valor = msg.valor.valor;
         }
+        /*if(typeof msg.valor == 'object'){
+            msg.valor = msg.valor.valor;
+        }*/
+        //JSON.parse(msg);
         switch (msg.valor) {
             case "nuevo":
-                console.log("Nuevo usuario conectado")
+                console.log("Nuevo usuario conectado");
                 break;
             case "username":
                 console.log('La informacion ha llegado');
+                break;
+            case "move":
                 break;
             //Aquí recibe los datos del jugador mandado por maestro
             //A tratar como veamos conveniente, solo estoy mostrando el id
@@ -70,6 +76,9 @@ class Client {
                 if(i == finish && j == finish){
                     cell.innerHTML = 'F ';
                 }
+                if(i == this.player.playerY && j == this.player.playerX){
+                    cell.innerHTML = 'X ';
+                }
                 row.appendChild(cell);
             }
             table.appendChild(row);
@@ -102,14 +111,13 @@ class Client {
                 form.style.display = "none";
                 //console.log(this.player);
                 let msg = {
-                    type : "message",
+                    playerName : username,
                     valor : "username",
-                    name : username
+                    id : this.player.origin
                 }
                 //Los mensajes para ser recibidos se deberán de enviar así
-                msg = JSON.parse(JSON.stringify(msg));
                 console.log(msg);
-                this.comunication.send(msg, "username");
+                this.comunication.send(msg, this.player.origin);
             }
         });
         form.appendChild(button);
@@ -117,34 +125,46 @@ class Client {
 
     tamagotchiMovement() {
         document.addEventListener('keydown', (e) => {
+            var message = "";
             switch (e.key) {
                 //cambiar los sends por mensajes correctamente seteados.
                 case "ArrowRight":
-                    console.log("derecha");
-                    const message = {
+                    message = {
                         type : '0',
-                        valor : "MoveTama",
-                        direction : "right"
+                        valor : "move",
+                        direction : "right",
+                        id : this.player.origin
                     }
-                    this.comunication.send(JSON.stringify(message), this.id);
+                    this.comunication.send(message, this.player.origin);
                     break;
 
                 case "ArrowLeft":
-                    console.log("izquierda");
-                    //this.comunication.send("asdf", "asdf");
-
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "left",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
                     break;
-
                 case "ArrowDown":
-                    console.log("abajo");
-                    //this.comunication.send("asdf", "asdf");
-
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "down",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
                     break;
 
                 case "ArrowUp":
-                    console.log("ARRIBA");
-                    //this.comunication.send("asdf", "asdf");
-
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "up",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
                     break;
             }
         })

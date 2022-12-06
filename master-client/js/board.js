@@ -1,4 +1,5 @@
 import { Box } from "./box.js";
+import { Player } from "./player.js";
 
 class Board {
     constructor(config) {
@@ -9,10 +10,12 @@ class Board {
         this.emptyBox = 0;
         this.burrow = 1;
         this.goal = 2;
+        this.players = [];
 
         this.setDimensions(config.width, config.height);
         this.setBoard();
         this.drawBoard();
+        this.communication.listenMessages();
     }
 
     setDimensions(width, height) {
@@ -61,6 +64,19 @@ class Board {
             fragment.appendChild(row);
         });
         container.appendChild(fragment);
+    }
+
+    addPlayer(name, id) {
+        let [x, y] = [Math.floor(Math.random() * this.width), Math.floor(Math.random() * this.height)];
+        let player = new Player({
+            id, name, x, y
+        });
+        this.players.push(player);
+        this.communication.sendId({
+            type: "player",
+            player
+        }, id);
+        return player;
     }
 }
 

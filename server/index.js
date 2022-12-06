@@ -14,24 +14,12 @@ console.log("Server is Running...");
 // loop through all the connected clients and send them the msg.
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
-    console.log(data);
-    let message;
-    if (typeof data.message == 'object') {
-        message = {
-            type: 'mensaje',
-            valor: data.message.move,
-            id: data.message.id
-        }
-    } else {
-        message = {
-            type: 'mensaje',
-            valor: data.message,
-            id: data.id
-        }
-    }
+    let message = {
+        value: data.message
+    };
     
-    if (data.tipo != null) {
-        if (data.tipo == 0) {
+    if (data.type != null) {
+        if (data.type == 0) {
             clientMaster.send(JSON.stringify(message));
         } else if (data.id) {
             let client = clients.find(item => item.id == data.id);
@@ -66,10 +54,9 @@ wss.on('connection', function connection(ws) {
             socket: ws
         });
         const message = {
-            type: 'mensaje',
-            valor: 'player',
-            id
+            id,
+            type: 'newPlayer'
         }
-        // ws.send(JSON.stringify(message));
+        ws.send(JSON.stringify(message));
     }
 });

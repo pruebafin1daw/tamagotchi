@@ -1,12 +1,14 @@
 import { Board } from "./board.js";
 
 class Communication {
-    MASTER = 0;
-    CLIENTS = 1;
-    clients = [];
-    board = null;
-    socket = null;
-    state = false;
+    constructor() {
+        this.MASTER = 0;
+        this.CLIENTS = 1;
+        this.clients = [];
+        this.board = null;
+        this.socket = null;
+        this.state = false;
+    }
 
     init(config) {
         this.socket = new WebSocket(`ws://${config.ip}:${config.port}`);
@@ -19,11 +21,11 @@ class Communication {
             });
         };
 
-        this.socket.onclose = (event)=> {
+        this.socket.onclose = (event) => {
             this.state = false;
         };
 
-        this.socket.onerror = (error)=> {
+        this.socket.onerror = (error) => {
             this.state = false;
         };
     }
@@ -32,7 +34,7 @@ class Communication {
         const msg = {
             type,
             message: data
-        }           
+        }
         this.socket.send(JSON.stringify(msg));
     }
 
@@ -47,9 +49,17 @@ class Communication {
     listenMessages() {
         this.socket.onmessage = (e) => {
             let data = JSON.parse(e.data);
-
+            switch(data.value.type) {
+                case "newPlayer":
+                    let player = this.board.addPlayer(data.value.id, data.value.name);
+                    this.clients.push({
+                        id: data.value.id,
+                        player
+                    });
+                    break;
+            }
         }
     }
 }
 
-export {Communication};
+export { Communication };

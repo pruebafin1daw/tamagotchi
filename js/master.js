@@ -147,6 +147,9 @@ class Master {
     }
 
     newMsg(msg,origin) {
+        if(typeof msg.valor == 'object'){
+            msg.valor = msg.valor.valor;
+        }
         switch(msg.valor) {
             case "newClient": 
                 this.newPlayer(origin);
@@ -168,7 +171,7 @@ class Master {
             //TO DO Funciones importantes 
             //Ejemplo movimiento
         }
-        console.log("Master recieved a message")
+        console.log("Master recieved a message");
         //TO DO llamada a funcion dibujar mapa
     }
 
@@ -202,6 +205,7 @@ class Master {
 
     usernameUpdate() {
         //TO DO EVERYTHING
+        console.log('nombre de usuario recibido');
     }
 
     

@@ -17,9 +17,15 @@ class Client {
     }
     // Funcion llamada en default case en communication al llegar un mensaje nuevo
     newMsg(msg,origin) {
+        if(typeof msg.valor == 'object'){
+            msg.valor = msg.valor.valor;
+        }
         switch (msg.valor) {
             case "nuevo":
                 console.log("Nuevo usuario conectado")
+                break;
+            case "username":
+                console.log('La informacion ha llegado');
                 break;
             //Aquí recibe los datos del jugador mandado por maestro
             //A tratar como veamos conveniente, solo estoy mostrando el id
@@ -92,9 +98,18 @@ class Client {
                 //TO DO Aquí actualizo el nombre del usuario pero no lo manda al maestro
                 //Probablemente requiera un send() y un nuevo caso del maestro para recibir ese tipo
                 //de mensaje y tratarlo correctamente
-                this.player.name = username                
+                this.player.name = username;                
                 form.style.display = "none";
-                console.log(this.player)
+                //console.log(this.player);
+                let msg = {
+                    type : "message",
+                    valor : "username",
+                    name : username
+                }
+                //Los mensajes para ser recibidos se deberán de enviar así
+                msg = JSON.parse(JSON.stringify(msg));
+                console.log(msg);
+                this.comunication.send(msg, "username");
             }
         });
         form.appendChild(button);

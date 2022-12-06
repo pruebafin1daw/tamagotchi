@@ -73,8 +73,10 @@ class Master {
 
     gameStart() {
         let object = {
-            funct: "movePlayer"
+            funct: "showMap"
         }
+        this.communication.send(1, object);
+        object.funct = "movePlayer";
         this.communication.send(1, object);
         this.threadManage = setInterval(()=>this.manageShift(), 500);
     }
@@ -183,7 +185,7 @@ class Master {
                     object.funct = "winnerPlayer";
                 }
                 else {
-                    object.funct = "refreshMap";
+                    object.funct = "updatePos";
                 }
                 this.communication.send(1, object);
             } else {

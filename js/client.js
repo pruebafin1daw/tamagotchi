@@ -52,8 +52,12 @@ class Client {
         });
     }
 
-    //Refresh the map to show the movement
-    refreshMap(content) {
+    updatePos(content) {
+        this.x = content.x;
+        this.y = content.y;
+    }
+
+    showMap(content) {
         let div = document.getElementById("map");
         while(div.firstChild) {
             div.removeChild(div.firstChild);
@@ -66,7 +70,7 @@ class Client {
                 let space = document.createElement('div');
                 if (i == this.width/2 && j == this.height/2){
                     space.setAttribute("class", "goal");            //goal class for the goal
-                }else if(i == content.y && j == content.x) {
+                }else if(i == this.y && j == this.x) {
                     space.setAttribute("class" , "player");         //player class for the client
                     space.setAttribute("id" , "player");
                 }else{

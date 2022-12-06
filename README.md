@@ -19,5 +19,5 @@ Carlos - El cliente crea su mapa a partir de los datos que le manda el master, y
 Alejandro - Se pide el nombre al cliente y se guarda en su jugador<br/>
 Andrei - Intento de realizacion de movimiento del tamagotchi.
 
-6/12
+6/12<br/>
 Carlos - El cliente consigue enviar su nombre al maestro

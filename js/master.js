@@ -68,6 +68,9 @@ class Master {
                 map: this.clientMap
             }
             this.communication.send(1, object);
+            if(this.players.length >= 4) {
+                this.gameStart();
+            }
         }
     }
 

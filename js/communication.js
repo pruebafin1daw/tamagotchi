@@ -1,5 +1,5 @@
 class Communication {
-    
+
     socket = null;
     state = false;
     master = false;
@@ -11,7 +11,7 @@ class Communication {
             this.state = true;
         };
         this.socket.onmessage = (event)=> {
-            let data = JSON.parse(event);
+            let data = JSON.parse(event.data);
             switch(data.funct) {
                 case "master":
                     this.master = true;

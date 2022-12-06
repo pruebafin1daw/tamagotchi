@@ -17,9 +17,9 @@ function checkMaster(id) {
     if(communication.master){
         control = new game.Master();
         control.init(mainDiv, {
-            width: 5,
-            height: 5,
-            difficulty: 0.2
+            width: 15,
+            height: 15,
+            difficulty: 1
         }, communication);
     }
     else {

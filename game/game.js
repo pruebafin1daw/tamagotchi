@@ -15,7 +15,7 @@ game.Client = class {
     init(mainDiv, communication, id) {
         this.mainDiv = mainDiv;
         this.id = id;
-        
+
         this.communication = communication;
         this.communication.handler = this;
 
@@ -23,76 +23,84 @@ game.Client = class {
         this.setMovement(this);
     }
 
-    removeMovement(){
+    removeMovement() {
         document.removeEventListener('keydown', this.movementId)
         this.movementId = null;
     }
 
     setMovement() {
         //Mensaje que manda al master 
-        if(this.movementId == null){
+        if (this.movementId == null) {
             this.movementId = this.movement.bind(this);
             document.addEventListener('keydown', this.movementId);
         }
     }
 
-    movement(event){
+    movement(event) {
         const msg = {
             type: 'move',
             playerId: this.id
         }
-        
-        switch(event.code){
+
+        switch (event.code) {
             case "ArrowUp":
-                msg.direction = 'up';                
+                msg.direction = 'up';
                 this.communication.send(msg, 0);
-            break;
+                break;
 
             case "ArrowRight":
                 msg.direction = 'right';
                 this.communication.send(msg, 0);
-            break;
+                break;
 
             case "ArrowDown":
                 msg.direction = 'down';
                 this.communication.send(msg, 0);
-            break;
+                break;
 
             case "ArrowLeft":
                 msg.direction = 'left';
                 this.communication.send(msg, 0);
-            break;
+                break;
 
             case "Space":
                 msg.direction = "in-out";
                 this.communication.send(msg, 0);
-            break;
+                break;
         }
     }
 
     newMsg(msg, origin) {
 
         //Si esta peleando le quitamos el movimiento
-        if(msg.valor.fight){
+        if (msg.valor.fight) {
             this.removeMovement();
-        }else if(msg.valor.fight == false){
+        } else if (msg.valor.fight == false) {
             this.setMovement();
         }
 
-        if(msg.valor.dead){
+        if (msg.valor.dead) {
             this.communication.socket.close();
         }
-        
+
         //Si nos llegan el mapa y el jugador, los asigna y dibuja el mapa
-        if(msg.valor.map && msg.valor.player){
+        if (msg.valor.map && msg.valor.player) {
             this.map = msg.valor.map;
             this.player = msg.valor.player;
+
+            //Pedimos nombre al cliente
+            this.player.name = prompt('Enter your name');
+            this.communication.send({
+                player: this.player,
+                type: 'updateClient'
+            }, 0);
+
             this.drawMap();
             this.drawUI();
         }
 
         //Si nos llega un jugador esque se va a mover
-        if(msg.valor.jugador) {
+        if (msg.valor.jugador) {
             let jugador = msg.valor.jugador;
 
             let maxHeight = this.map.height - 1;
@@ -100,7 +108,7 @@ game.Client = class {
 
 
             //Si las posiciones del jugador son distintas a las del nuestro
-            if(this.player.x != jugador.x || this.player.y != jugador.y && jugador.x <= maxHeight || jugador.y <= maxWidth){
+            if (this.player.x != jugador.x || this.player.y != jugador.y && jugador.x <= maxHeight || jugador.y <= maxWidth) {
                 //Asignamos las nuevas posiciones
                 this.player.x = jugador.x;
                 this.player.y = jugador.y;
@@ -108,47 +116,75 @@ game.Client = class {
                 //Editamos el HTML
                 let previousCell = document.querySelector('.player');
                 previousCell.classList.toggle('player');
-    
+
                 //Cogemos el div para introducir la clase en la nueva posición
                 let div = document.querySelector(`.${this.mainDiv}`);
                 let table = div.childNodes[1];
-                table.childNodes[this.player.x].childNodes[this.player.y].classList.toggle('player');   
+                table.childNodes[this.player.x].childNodes[this.player.y].classList.toggle('player');
             }
         }
 
         //Si nos llega un burrow esque va a salir o a entrar
-        if(msg.valor.burrow != null && msg.valor.burrow != undefined) {
-            let divBurrow = document.querySelector('.madriguera');
-            divBurrow.textContent = msg.valor.burrow  ? 'Estas en una madriguera' : 'No estas en una madriguera';
+        if (msg.valor.burrow != null && msg.valor.burrow != undefined) {
+            // MIO
+            this.updateUI(
+                {
+                    'message': 'burrow',
+                    'object': msg.valor.burrow
+                },
+                document.querySelector('.madriguera'),
+                true
+            );
+        }
+
+        if (msg.valor.goal) {
+            this.updateUI(
+                {
+                    'message': 'win',
+                    'object': this.player.name
+                },
+                document.querySelector('.winner'),
+                true
+            );
+            this.clo
         }
     }
 
     //Dibuja el mapa en la interfaz
     drawMap() {
         let table = document.createElement('table');
-        for(let x = 0; x < this.map.width; x++){
+        for (let x = 0; x < this.map.width; x++) {
             let row = document.createElement('tr');
-            for(let y = 0; y < this.map.height; y++){
+            for (let y = 0; y < this.map.height; y++) {
                 let endPointX = Math.floor(this.map.width % 2);
                 let endPointY = Math.floor(this.map.height % 2);
                 let endPoint = x == endPointX && y == endPointY;
 
                 let burrow = false;
+                let goal = false;
 
-                if(this.map.burrows.find(burrow => burrow.x == x && burrow.y == y)){
+                if (this.map.burrows.find(burrow => burrow.x == x && burrow.y == y)) {
                     burrow = true;
                 }
 
-                let cell = new game.Cell(x, y, endPoint, [], burrow, false);
-                this.fullMap.push(cell);
-
-
-                let docCell = document.createElement('td');
-                if(cell.burrow) {
-                   docCell.classList.toggle('burrow'); 
+                let cell = new game.Cell(x, y, endPoint, [], burrow, false, goal);
+                if (x == Math.floor(this.map.width / 2) && y == Math.floor(this.map.height / 2)) {
+                    cell.burrow = false;
+                    cell.goal = true;
                 }
 
-                if(cell.x == this.player.x && cell.y == this.player.y){
+                this.fullMap.push(cell);
+
+                let docCell = document.createElement('td');
+                if (cell.burrow) {
+                    docCell.classList.toggle('burrow');
+                } else if (!cell.burrow && !cell.goal) {
+                    docCell.classList.toggle('cell');
+                } else if (cell.goal) {
+                    docCell.classList.toggle('goal');
+                }
+
+                if (cell.x == this.player.x && cell.y == this.player.y) {
                     docCell.classList.toggle('player');
                 }
 
@@ -170,13 +206,17 @@ game.Client = class {
         //TODO => Loger que saque mensajes a los usuarios
         //TODO => Energía del usuario
 
-        
-        //Madriguera
-        let texto = document.createElement('h1');
-        texto.textContent = "Estas en una madriguera";
-        texto.classList.toggle('madriguera');
 
-        container.appendChild(texto);
+        //Madriguera
+        let burrow = document.createElement('div');
+        burrow.classList.toggle('madriguera');
+
+        //Winner
+        let winner = document.createElement('div');
+        winner.classList.toggle('winner');
+
+        container.appendChild(burrow);
+        container.appendChild(winner);
         document.querySelector(`.${this.mainDiv}`).parentElement.append(container);
     }
 
@@ -184,9 +224,42 @@ game.Client = class {
         Esta función va a actualizar la interfaz, se ejectará cada X segundos y tendrá que actualizar
         los valores que se han puesto arriba con los datos recibidos por el Master
     */
-    updateUI(msg) {
+    updateUI(msg, div, self) {
+        // Mensaje
+        let message = document.createElement('p');
+        switch (msg.message) {
+            case 'burrow':
+                message.innerHTML = msg.object ? "You're into a burrow" : "You're out of a burrow";
+                break;
+            case 'win':
+                message.innerHTML = '¡PLAYER <span>' + msg.object + '</span> HAS WON!';
+                div.style.opacity = '50%';
+                div.style.transition = 'opacity 3s ease';
+                this.communication.socket.close();
+                break;
+        }
 
+        // Opacidad al mensaje con transición
+        setTimeout(() => { message.classList.toggle('fadingMessage'); }, 10);
 
+        // Si el mensaje no va para el cliente, el mensaje se irá añadiendo al contenedor
+        // para que haya un historial
+        if (!self) {
+            div.appendChild(message);
+        }
+        // A lo contrario, el mensaje se renovará sin ser añadido constantemente
+        else {
+            if (!div.hasChildNodes()) div.appendChild(message);
+            else {
+                div.innerHTML = '';
+                div.appendChild(message);
+            }
+        }
+
+        // Duración del mensaje
+        setTimeout(() => {
+            if (!self) div.removeChild(message);
+        }, 3000);
     }
 }
 
@@ -213,8 +286,8 @@ game.Master = class {
             //Refugios del mapa
             burrows: this.map.flatMap(num => num).filter(item => item.burrow).map(item => {
                 return {
-                    y : item.y,
-                    x : item.x
+                    y: item.y,
+                    x: item.x
                 }
             })
         }
@@ -224,8 +297,9 @@ game.Master = class {
 
     //Intervalo que recorre la lista de jugadores y les manda actualizaciones de estado como energía o jugadores
     createInterval() {
-        setInterval( () => {
-            this.players.forEach( player => {
+        setInterval(() => {
+            this.players.forEach(player => {
+                console.log(player);
                 this.communication.send({
                     energy: player.energy,
                     players: this.players.length
@@ -236,25 +310,29 @@ game.Master = class {
 
     createMap(config) {
         for (let i = 0; i < config.height; i++) {
-
             this.map[i] = new Array();
-
             for (let j = 0; j < config.width; j++) {
+                this.map[i][j] = new game.Cell(i, j, false, [], false, null, false);
 
-                this.map[i][j] = new game.Cell(i, j, false, [], false, null);
-
-                if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {
-                    if (( i + j ) % 2) {
+                // Burrow
+                if ((i == 0) || (i == config.height - 1) || (j == 0) || (j == config.width - 1)) {
+                    if ((i + j) % 2) {
                         this.map[i][j].burrow = true;
                         this.edges.push(this.map[i][j]);
                     }
-                } else if(Math.random() < config.porcentage){
+                } else if (Math.floor(Math.random() + config.difficulty / 10) >= 1) {
                     this.map[i][j].burrow = true;
                 }
+
+                // Goal
+                if (i == Math.floor(config.width / 2) && j == Math.floor(config.height / 2)) {
+                    this.map[i][j].burrow = false;
+                    this.map[i][j].goal = true;
+                }
             }
-        }  
+        }
     }
-    
+
     //Función que genera un formulario para el admin
     showAdminConfigIU() {
         this.form = new FormUI();
@@ -312,33 +390,33 @@ game.Master = class {
         let y = +this.config.ejeY;
 
         //Convertimos los numeros en impares
-        if(x % 2 == 0) {
-            x ++;
+        if (x % 2 == 0) {
+            x++;
         }
-        if(y % 2 == 0) {
-            y ++;
+        if (y % 2 == 0) {
+            y++;
         }
 
         //Calculamos los centros respectivos donde irá la bandera del final
-        let centerX = Math.ceil(x/2);
-        let centerY = Math.ceil(y/2);
+        let centerX = Math.ceil(x / 2);
+        let centerY = Math.ceil(y / 2);
 
         let meta = new game.Cell(centerX, centerY, game.FLAG);
 
         this.map = [];
 
-        for(let i = 0; i < x ; i ++) {
+        for (let i = 0; i < x; i++) {
             let layer = [];
-            for (let j = 0; j < y; j ++) {
-                if(i == centerX && j == centerY) {
+            for (let j = 0; j < y; j++) {
+                if (i == centerX && j == centerY) {
                     //Si los indices son los de la meta mete la casilla meta en la posición
                     layer.push(meta);
-                }else{
+                } else {
                     //Crea una casillas de un tipo random entre 0 y 1 (Vacia o descanso)
                     //TODO: Hacer que el master pase también la cantidad de áreas de descanso.
                     layer.push(new game.Cell(i, j, Math.round(Math.random())));
                 }
-            } 
+            }
             this.map.push(layer);
         }
 
@@ -348,11 +426,13 @@ game.Master = class {
         */
 
         let tabla = document.createElement('table');
-        for(let arr in this.map) {
+        for (let arr in this.map) {
             let row = document.createElement('tr');
-            for(let index in arr) {
+            for (let index in arr) {
                 let cell = document.createElement('td');
-                cell.textContent = index
+                cell.style.width = 100 / x;
+                cell.style.height = 100 / y;
+                cell.textContent = index;
                 row.appendChild(cell);
             }
             tabla.appendChild(row);
@@ -368,22 +448,28 @@ game.Master = class {
     newMsg(msg, origin) {
         let cadena = msg.valor;
 
-        if(msg.valor.type){
+        if (msg.valor.type) {
             cadena = msg.valor.type;
         }
 
-        switch(cadena) {
+        switch (cadena) {
+            case 'updateClient':
+                let player = this.players.pop();
+                player.name = msg.valor.player.name;
+                this.players.push(player);
+                break;
+
             case 'newClient':
                 this.newPlayer(msg, origin);
-            break;
-            
+                break;
+
             case 'disconnected':
                 this.players.pop(this.players.find(num => num.origin === origin));
-            break;
+                break;
 
             case 'move':
                 this.movePlayer(msg, origin);
-            break;
+                break;
         }
     }
 
@@ -392,44 +478,44 @@ game.Master = class {
         let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);
 
         //Si existe el jugador y no está en una madriguera
-        if(jugador && !jugador.inBurrow){
+        if (jugador && !jugador.inBurrow) {
 
             let moved = false;
             let originalX = jugador.x;
             let originalY = jugador.y;
-            switch(msg.valor.direction) {
+            switch (msg.valor.direction) {
                 case "up":
-                    if(jugador.x > 0 && !(this.map[jugador.x - 1][jugador.y].burrow && this.map[jugador.x - 1][jugador.y].players.length > 0)){
-                        jugador.x--; 
+                    if (jugador.x > 0 && !(this.map[jugador.x - 1][jugador.y].burrow && this.map[jugador.x - 1][jugador.y].players.length > 0)) {
+                        jugador.x--;
                         moved = true;
                     }
-                break;
+                    break;
 
                 case "down":
-                    if(jugador.x < this.clientMap.height - 1 && !(this.map[jugador.x + 1][jugador.y].burrow && this.map[jugador.x + 1][jugador.y].players.length > 0)){
+                    if (jugador.x < this.clientMap.height - 1 && !(this.map[jugador.x + 1][jugador.y].burrow && this.map[jugador.x + 1][jugador.y].players.length > 0)) {
                         jugador.x++;
                         moved = true;
                     }
-                break;
+                    break;
 
                 case "right":
-                    if(jugador.y < this.clientMap.width - 1 && !(this.map[jugador.x][jugador.y + 1].burrow && this.map[jugador.x ][jugador.y + 1].players.length > 0)){
+                    if (jugador.y < this.clientMap.width - 1 && !(this.map[jugador.x][jugador.y + 1].burrow && this.map[jugador.x][jugador.y + 1].players.length > 0)) {
                         jugador.y++;
                         moved = true;
                     }
-                break;
+                    break;
 
                 case "left":
-                    if(jugador.y > 0 && !(this.map[jugador.x][jugador.y - 1].burrow && this.map[jugador.x][jugador.y - 1].players.length > 0)){
+                    if (jugador.y > 0 && !(this.map[jugador.x][jugador.y - 1].burrow && this.map[jugador.x][jugador.y - 1].players.length > 0)) {
                         jugador.y--;
                         moved = true;
                     }
-                break;
+                    break;
             }
 
-            if(moved){
+            if (moved) {
                 let dead = jugador.spendEnergy(10);
-                if(dead){
+                if (dead) {
                     // AQUI PABLO ENVIA MENSAJE DE CUANDO MUERE
                     this.communication.send({
                         dead: true
@@ -438,12 +524,20 @@ game.Master = class {
             }
 
             //Si los valores originales no han cambiado es porque no se ha movido
-            if(originalX != jugador.x || originalY != jugador.y){
+            if (originalX != jugador.x || originalY != jugador.y) {
                 this.map[originalX][originalY].players.pop(jugador);
                 this.map[jugador.x][jugador.y].players.push(jugador);
 
+                // Goal MIO
+                if (this.map[jugador.x][jugador.y].goal) {
+                    this.communication.send({
+                        goal: this.map[jugador.x][jugador.y].goal,
+                        type: 'winner'
+                    }, 1);
+                }
+
                 //Batalla del cliente
-                if(this.map[jugador.x][jugador.y].players.length > 1) {
+                if (this.map[jugador.x][jugador.y].players.length > 1) {
                     console.log("Fight!");
                     this.handleFight(jugador);
                 }
@@ -455,16 +549,16 @@ game.Master = class {
             }
         }
 
-        if(jugador && msg.valor.direction == "in-out") {
+        if (jugador && msg.valor.direction == "in-out") {
             let cell = this.map.flat().find(cell => cell.x == jugador.x && cell.y == jugador.y);
             this.handleBurrow(cell, jugador);
         }
     }
 
-    handleFight(jugador){
+    handleFight(jugador) {
         let cell = this.map[jugador.x][jugador.y];
         let fight = this.activeFights.find(element => element.cell == cell);
-        if(!fight){
+        if (!fight) {
             fight = {
                 cell: this.map[jugador.x][jugador.y],
                 players: [...cell.players],
@@ -472,7 +566,7 @@ game.Master = class {
             }
             this.activeFights.push(fight);
             this.activateFight(fight);
-        }else{
+        } else {
             fight.players.push(jugador);
         }
 
@@ -483,26 +577,26 @@ game.Master = class {
         }
     }
 
-    activateFight(fight){
+    activateFight(fight) {
         // AQUI EMPIEZA LA BATALLA
         fight.action = setInterval(() => this.fightAction(fight), 300);
     }
 
-    fightAction(fight){
+    fightAction(fight) {
         let escape = Math.random();
         let extraDamage = 0;
         for (const player of fight.players) {
             escape = escape - (player.energy / 1000);
             extraDamage = player.energy / 100;
-            if(escape < 0.10){
+            if (escape < 0.10) {
                 fight.players.splice(fight.players.indexOf(player), 1);
             }
 
             let dead = player.spendEnergy(10 + extraDamage);
-            if(dead){
+            if (dead) {
                 // AQUI MUERE ALGUIEN
                 fight.players.splice(fight.players.indexOf(player), 1);
-                if(dead){
+                if (dead) {
                     // AQUI PABLO ENVIA MENSAJE DE CUANDO MUERE
                     this.communication.send({
                         dead: true
@@ -510,13 +604,13 @@ game.Master = class {
                 }
             }
         }
-        if(fight.players.length <= 1){
+        if (fight.players.length <= 1) {
             // AQUI ACABA LA BATALLA
             this.endfight(fight);
         }
     }
 
-    endfight(fight){
+    endfight(fight) {
         clearInterval(fight.action);
         this.activeFights.splice(this.activeFights.indexOf(fight), 1);
         for (const player of fight.cell.players) {
@@ -529,15 +623,15 @@ game.Master = class {
 
     handleBurrow(cell, player) {
         let inBurrow = false;
-        if(cell && cell.burrow){
-            if(cell.burrowPlayer == null) {
-                
+        if (cell && cell.burrow) {
+            if (cell.burrowPlayer == null) {
+
                 cell.burrowPlayer = player;
                 player.inBurrow = true;
                 inBurrow = true;
             }
-            
-            else if(cell.burrowPlayer == player) {
+
+            else if (cell.burrowPlayer == player) {
                 cell.burrowPlayer = null;
                 player.inBurrow = false;
             }
@@ -554,7 +648,7 @@ game.Master = class {
     //Función que crea un jugador nuevo
     newPlayer(origin) {
         //Si el jugador no existe lo crea
-        if(!this.players.find(player => player.origin === origin)) {
+        if (!this.players.find(player => player.origin === origin)) {
             //Crea el jugador y le asigna una posicion
             let player = new game.Player(origin, '', 0, 0, true, 100);
             let index = Math.floor(Math.random() * this.edges.length);
@@ -588,9 +682,9 @@ game.Player = class {
         this.energy = energy;
     }
 
-    spendEnergy(quantity){
+    spendEnergy(quantity) {
         this.energy -= quantity;
-        if(this.energy < 0){
+        if (this.energy < 0) {
             this.energy = 0;
             return true;
         }
@@ -600,13 +694,14 @@ game.Player = class {
 
 //Clase Celda
 game.Cell = class {
-    constructor(x, y, endPoint, players, burrow, burrowPlayer) {
+    constructor(x, y, endPoint, players, burrow, burrowPlayer, goal) {
         this.x = x;
         this.y = y;
         this.endPoint = endPoint;
         this.players = players;
         this.burrow = burrow;
         this.burrowPlayer = burrowPlayer;
+        this.goal = goal;
     }
 }
 

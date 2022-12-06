@@ -12,8 +12,7 @@ class Client {
     }
 
     newMsg(content) {
-        this.eval(content.funct(content));
-    }
+        eval("this." + content.funct + "(" + JSON.stringify(content) +")");    }
 
     initClient(content) {
         this.x = content.x;
@@ -32,14 +31,15 @@ class Client {
         for(let i=0; i<this.width; i++) {
             for(let j=0; j<this.height; j++) {
                 let space = document.createElement('div');
-                if (i == Math.floor(this.width/2) && j == Math.floor(this.height/2)){
+                if (i == this.width/2 && j == this.height/2){
                     space.setAttribute("class", "goal");            //goal class for the goal
                 }else if(i == this.x && j == this.y) {
                     space.setAttribute("class" , "player");         //player class for the client
                 }else{
                     space.setAttribute("class" , "space");          //space clase for empty boxes
                 };
-                burrow.forEach(element => {
+                
+                this.burrows.forEach(element => {
                     if(i == element.x && j == element.y){
                         space.setAttribute("class" , "burrow");     //burrow class for each burrow
                     }
@@ -61,18 +61,22 @@ class Client {
                 case "ArrowLeft":
                     object.movement = "left";
                     this.comunication.send(0, object);
+                    console.log("left");
                 break;
                 case "ArrowRight":
                     object.movement = "right";
                     this.comunication.send(0, object);
+                    console.log("right");
                     break;
                 case "ArrowUp":
                     object.movement = "up";
                     this.comunication.send(0, object);
+                    console.log("up");
                     break;
                 case "ArrowDown":
                     object.movement = "down";
                     this.comunication.send(0, object);
+                    console.log("down");
                     break;
             }
         });
@@ -100,7 +104,6 @@ class Client {
     }
 
     winnerPlayer(content){
-        this.updatePos(content);
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');
         while (body.firstChild) {
@@ -124,11 +127,11 @@ class Client {
     }
 
     battle(content){
-        this.updatePos(content);
         let fight = document.createElement('h4');
         fight.innerHTML = "You are in a battle, you might die";
         let info = document.getElementById("info");
         info.appendChild(fight);
+        this.updatePos(content);
     }
 }
 

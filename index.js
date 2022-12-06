@@ -34,7 +34,10 @@ wss.broadcast = function broadcastMsg(msg) {
             }
         }else {
     		wss.clients.forEach(function each(client) {
-                client.socket.send(JSON.stringify(data.content));
+                if(client != clientMaster){
+                    client.send(JSON.stringify(data.content));
+                };
+                
             });
     	}
     }

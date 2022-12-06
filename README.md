@@ -13,7 +13,7 @@ Miguel:
 <br/>
 Raúl:
   <br/>
-  &emsp;X Implementación formulario de inicio de juego y control de comida en jugadores.
+  &emsp;X Implementación formulario de inicio de juego.
 <br/>
 <br/>
 Sergio:
@@ -28,6 +28,8 @@ Pablo:
   &emsp;✓ Diseño del juego, eventos de victoria, perder, lucha y salud.
   <br/>
   &emsp;✓ Funcionalidad y mecánicas.
+  <br/>
+  &emsp;✓ Control de comida en jugadores.
 <br/>
 <br/>
 ----- RESULTADO -----

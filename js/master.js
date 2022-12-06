@@ -62,7 +62,7 @@ class Master {
             this.players.push(player);
             object = {
                 id: player.id,
-                func: "initClient",
+                funct: "initClient",
                 x: player.x,
                 y: player.y,
                 map: this.clientMap
@@ -157,6 +157,10 @@ class Master {
     }
 
     gameStart() {
+        object = {
+            funct: "movePlayer"
+        }
+        this.communication.send(1, object);
         this.threadManage = setInterval(()=>this.manageShift(), 500);
     }
 
@@ -192,7 +196,7 @@ class Master {
             if(player.energy == 0) {
                 object = {
                     id: player.id,
-                    func: "deadPlayer"
+                    funct: "deadPlayer"
                 }
                 this.comunication.send(1, object);
                 this.players.slice(this.players.indexOf(player), 1);
@@ -200,7 +204,7 @@ class Master {
                 object = {
                     id: player.id,
                     energy : player.energy,
-                    func: "refreshLife"
+                    funct: "refreshLife"
                 }
                 this.comunication.send(1, object);
             }

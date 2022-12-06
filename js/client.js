@@ -21,25 +21,11 @@ class Client {
         this.width = content.map.width;
         this.height = content.map.height;
         this.burrows = content.map.burrows;
-    }
-
-    //text file on screen that show when someone sole
-    deadClients(content) {
-        //content.name is the dead client name send by master
-        let textfile = document.getElementById("clients");
-        let clientName = document.createElement('h4');
-        clientName.innerHTML = content.name + " has died";
-        textfile.appendChild(clientName);
-
-        const myTimeout = setTimeout(clearName, 8000);
-
-        function clearName() {
-            textfile.removeChild(textfile.firstElementChild);
-        }
+        this.energy = 100;
     }
 
     //add to document lister to send a message when the client push any arrow
-    movePlayer() {
+    movePlayer(content) {
         document.addEventListener("keyup", (e) => {
             let object = {
                 id : this.id,
@@ -66,43 +52,29 @@ class Client {
         });
     }
 
-    size = null;
-    burrow = null;
-    goal = null
-    //Function for draw game map at start of game
-    showMap(content) {
-        size = content.width;                               //Height and width are equals because the map is square
-        burrow = content.burrow;                            //burrow is an array, it has all burrow positions
-        goal = Math.trunc(size / 2);
-        let object = {
-            energy : content.energy,
-            x : content.x,
-            y : content.y
-        }
-        this.refreshMap(object);
+    //increases energy when player is stationary
+    refreshLife(content) {
+        this.energy = content.energy;
+        let energy = document.getElementById("health");
+        energy.removeChild(energy.firstChild);
+        let energyValue = document.createElement('h2');
+        energyValue.innerHTML = this.energy;
+        energy.appendChild(energyValue);
     }
 
     //Refresh the map to show the movement
-    energy = document.getElementById("health");
     refreshMap(content) {
         let div = document.getElementById("map");
         while(div.firstChild) {
             div.removeChild(div.firstChild);
         }
-        while(energy.firstChild) {
-            energy.removeChild(energy.firstChild);
-        }
-
-        let energyValue = document.createElement('h2');
-        energyValue.innerHTML = content.energy;
-        energy.appendChild(energyValue);
         let map = [];
         
-        for(let i=0; i<size; i++) {
+        for(let i=0; i<this.width; i++) {
             map.push([]);
-            for(let j=0; j<size; j++) {
+            for(let j=0; j<this.height; j++) {
                 let space = document.createElement('div');
-                if (i == goal && j == goal){
+                if (i == this.width/2 && j == this.height/2){
                     space.setAttribute("class", "goal");            //goal class for the goal
                 }else if(i == content.y && j == content.x) {
                     space.setAttribute("class" , "player");         //player class for the client
@@ -119,14 +91,6 @@ class Client {
             }
             div.appendChild(document.createElement('br'));
         }
-    }
-
-    //increases energy when player is stationary
-    refreshLife(content) {
-        energy.removeChild(energy.firstChild);
-        let energyValue = document.createElement('h2');
-        energyValue.innerHTML = content.energy;
-        energy.appendChild(energyValue);
     }
         
     //Clear the screen and show a message when player lose
@@ -182,6 +146,21 @@ class Client {
 
         function clearAction() {
             info.removeChild(info.firstElementChild);
+        }
+    }
+
+    //text file on screen that show when someone sole
+    deadClients(content) {
+        //content.name is the dead client name send by master
+        let textfile = document.getElementById("clients");
+        let clientName = document.createElement('h4');
+        clientName.innerHTML = content.name + " has died";
+        textfile.appendChild(clientName);
+
+        const myTimeout = setTimeout(clearName, 8000);
+
+        function clearName() {
+            textfile.removeChild(textfile.firstElementChild);
         }
     }
 }

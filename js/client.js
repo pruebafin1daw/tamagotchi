@@ -38,12 +38,12 @@ class Client {
                 }else{
                     space.setAttribute("class" , "space");          //space clase for empty boxes
                 };
-                
                 this.burrows.forEach(element => {
                     if(i == element.x && j == element.y){
                         space.setAttribute("class" , "burrow");     //burrow class for each burrow
                     }
                 });
+                
                 div.appendChild(space);
             }
             div.appendChild(document.createElement('br'));
@@ -106,13 +106,13 @@ class Client {
     }
 
     winnerPlayer(content){
-        let body = document.getElementsByName('body');
+        let container = document.getElementById("container");
         let title = document.createElement('h1');
-        while (body.firstChild) {
-            body.removeChild(body.firstChild);
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
         }
         title.innerHTML = "YOU WIN";
-        body.appendChild(title);
+        container.appendChild(title);
     }
 
     updatePos(content) {

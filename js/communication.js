@@ -6,12 +6,12 @@ class Communication {
     handler = null;
     init(config) {
         this.socket = new WebSocket("ws://" + config.ip + ":" + config.port);
-        this.socket.onopen = (e)=> {
+        this.socket.onopen = ()=> {
             this.state = true;
         };
         this.socket.onmessage = (event)=> {
             let data = JSON.parse(event.data);
-            switch(data.valor) {
+            switch(data.funct) {
                 case "master":
                     this.master = true;
                     config.check();
@@ -20,34 +20,17 @@ class Communication {
                     this.id = data.id;
                     config.check();
                     break;
-                default:
-                    if (this.handler) {
-                        this.handler.newMsg(data, event.origin);
-                    }
+                case "deadPlayer":
+                    this.handler.deadClients(data);
+                    break;
             }
         };
-        this.socket.onclose = (event)=> {
+        this.socket.onclose = ()=> {
             this.state = false;
         };
-        this.socket.onerror = (error)=> {
+        this.socket.onerror = ()=> {
             this.state = false;
         };
-    }
-
-    static get MASTER() {
-        return 0;
-    }
-
-    static get ALL() {
-        return 1;
-    }
-
-    set handler(newHandler) {
-        this._handler = newHandler;
-    }
-
-    get handler() {
-        return this._handler;
     }
 
     send(type, content) {

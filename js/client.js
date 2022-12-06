@@ -5,7 +5,7 @@ class Client {
     map = null;
     object = null;
     
-    init(comunication, id) {
+    init(id, comunication) {
         this.id = id;
         this.comunication = comunication;
         this.comunication.handler = this;

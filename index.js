@@ -17,14 +17,14 @@ console.log("Server is Running...");
 // loop through all the connected clients and send them the msg.
 wss.broadcast = function broadcastMsg(msg) {
     let data = JSON.parse(msg);
-    if (data.type != null) {
-    	if (data.type == 0) {
+    if(data.type != null) {
+    	if(data.type == 0) {
     		clientMaster.send(JSON.stringify(data.content));
-    	}else if(data.content.id){
+    	}else if(data.content.id) {
             let client = clients.find(item => item.id == data.content.id);
-            if(client){
+            if(client) {
                 client.socket.send(JSON.stringify(data.content));
-                if(data.content.funct ==  "deadPlayer"){
+                if(data.content.funct ==  "deadPlayer") {
                     client.socket.close();
                     //Search on clients the client index
                     let indexOf = clients.findIndex(object => object.id == client.id);
@@ -45,11 +45,11 @@ wss.broadcast = function broadcastMsg(msg) {
 // is called.
 wss.on('connection', function connection(ws) {
     ws.on('message', wss.broadcast);
-    if (first) {
+    if(first) {
     	clientMaster = ws;
     	first = false;
         const message = {
-            valor: 'master'
+            funct: 'master'
         }
         clientMaster.send(JSON.stringify(message));
     } else {
@@ -59,7 +59,7 @@ wss.on('connection', function connection(ws) {
             socket : ws
         });
         const message = {
-            valor: 'newClient',
+            funct: 'newClient',
             id : id
         }
         ws.send(JSON.stringify(message));

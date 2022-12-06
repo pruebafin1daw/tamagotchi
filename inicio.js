@@ -11,7 +11,7 @@ communication.init({
 });
 
 function hello() {
-    if(communication.master){
+    if(communication.master) {
         control = new Master();
         control.init({
             width: 51,
@@ -24,6 +24,6 @@ function hello() {
     }
     else {
         control = new Client();
-        control.init(communication, communication.id);
+        control.init(communication.id, communication);
     }
 }

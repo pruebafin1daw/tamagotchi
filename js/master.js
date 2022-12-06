@@ -65,7 +65,6 @@ class Master {
 
     gameStart() {
         this.threadManage = setInterval(()=>this.manageShift(), 500);
-        
     }
     
     movePlayer(msg) {
@@ -120,10 +119,10 @@ class Master {
                         y: player.y
                     }
                     if(box.endPoint) {
-                        object.funct = winnerPlayer;
+                        object.funct = "winnerPlayer";
                     }
                     else {
-                        object.funct = refreshMap;
+                        object.funct = "refreshMap";
                     }
                     this.communication.send(1, object);
                 } else {
@@ -192,6 +191,7 @@ class Master {
             } else {
                 object = {
                     id: player.id,
+                    energy : player.energy,
                     func: "refreshLife"
                 }
                 this.comunication.send(1, object);

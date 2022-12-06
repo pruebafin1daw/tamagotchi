@@ -1,7 +1,4 @@
-import {Communication} from "./communication.js";
-
 class Client {
-    active = false;
     map = null;
     object = null;
     
@@ -11,7 +8,7 @@ class Client {
         this.comunication.handler = this;
         object = {
             id : id,
-            funct : newPlayer
+            funct : "newPlayer"
         } 
         this.comunication.send(0, object);
     }
@@ -41,7 +38,7 @@ class Client {
         document.addEventListener("keyup", (e) => {
             object = {
                 id : this.id,
-                funct : movePlayer
+                funct : "movePlayer"
             }
             switch(e.key) {
                 case "ArrowLeft":
@@ -120,7 +117,7 @@ class Client {
     }
 
     //increases energy when player is stationary
-    moreEnergy(content) {
+    refreshLife(content) {
         energy.removeChild(energy.firstChild);
         let energyValue = document.createElement('h2');
         energyValue.innerHTML = content.energy;
@@ -130,7 +127,7 @@ class Client {
     
         
     //Clear the screen and show a message when player lose
-    deadPlayer(content) {
+    deadPlayer() {
         let body = document.getElementsByName('body');
         let title = document.createElement('h1');
         while (body.firstChild) {
@@ -184,18 +181,6 @@ class Client {
             info.removeChild(info.firstElementChild);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 export {Client};

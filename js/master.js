@@ -46,7 +46,6 @@ class Master {
     }
 
     newPlayer(content) {
-        console.log("aqui");
         if(!this.players.find(x => x.id == content.id)) {
             let player = {
                 id: content.id,
@@ -117,15 +116,18 @@ class Master {
     restoreLife() {
 
         this.players.forEach(element => {
-            if(element.inBurrow) {
-                element.energy += this.config.lifeRestoredBurrow;
-            }
-            else if(!this.element.find(i => i.x == element.x && i.y == element.y)) {
-                element.energy += this.config.lifeRestoredAlone;
+            if(element.energy < 100){
+                let life = null;
+                if(element.inBurrow) {
+                    life = this.config.lifeRestoredAlone;
+                } else if(!this.element.find(i => i.x == element.x && i.y == element.y)) {
+                    life = this.config.lifeRestoredAlone;
+                }
+                element.energy += life;
             }
         });
 
-
+        
 
 
 
@@ -149,7 +151,7 @@ class Master {
                     id: player.id,
                     funct: "deadPlayer"
                 }
-                this.comunication.send(1, object);
+                this.communication.send(1, object);
                 this.players.slice(this.players.indexOf(player), 1);
             } else {
                 object = {
@@ -157,7 +159,7 @@ class Master {
                     energy : player.energy,
                     funct: "refreshLife"
                 }
-                this.comunication.send(1, object);
+                this.communication.send(1, object);
             }
         });
 

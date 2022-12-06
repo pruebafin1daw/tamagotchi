@@ -6,7 +6,7 @@ class Master {
         this.communication.handler = this;
         this.players = [];
         this.map = new Array();
-        this.edges = [];
+        this.spanw = [];
         for(let i=0; i<this.config.width; i++) {
             this.map[i] = new Array();
             for(let j=0; j<this.config.height; j++) {
@@ -15,21 +15,19 @@ class Master {
                     y: j,
                     endPoint : false,
                     players: [],
-                    burrow: false,
-                    burrowPlayer: false
+                    burrow: false
                 }
                 if((i==0) || (i==this.config.width-1) || (j==0) || (j==this.config.height-1)) {
                     if((i+j)%2) {
                         this.map[i][j].burrow = true;
+                        this.spanw.push(this.map[i][j]);
                     }
-                    this.edges.push(this.map[i][j]);
-                } else if(Math.random() < this.config.porcentage) {
+                } else if(Math.random() < this.config.porcentageBurrow) {
                     this.map[i][j].burrow = true;
                 }
             }
         }
         this.map[this.config.width/2][this.config.height/2].endPoint = true;
-        this.flag = this.map[this.config.width/2][this.config.height/2];
         this.clientMap = { 
             width : this.config.width,
             height : this.config.height,
@@ -47,7 +45,7 @@ class Master {
     }
 
     newPlayer(content) {
-        if(!this.players.find(x => x.id === content.id)) {
+        if(!this.players.find(x => x.id == content.id)) {
             let player = {
                 id: content.id,
                 name : "",
@@ -56,24 +54,22 @@ class Master {
                 inBurrow: true,
                 energy: 100
             }
-
-            let index = Math.floor(Math.random() * this.edges.length);
-            let cell = this.edges.splice(index,1);
-            cell.burrowPlayer = player;
+            let index = Math.floor(Math.random() * this.spanw.length);
+            let cell = this.spanw.splice(index, 1);
             player.x = cell.x;
             player.y = cell.y;
+            this.map[cell.x][cell.y].players.push(player);
             this.players.push(player);
         }
     }
 
-    manageShift() { // Método que debe de ser lanzado al comienzo de la partida con una promesa cada X tiempo
-        this.manageBattles();
-        this.restoreLife();
-        this.killPlayer();
+    gameStart() {
+        this.threadManage = setInterval(()=>this.manageShift(), 500);
+        
     }
     
     movePlayer(msg) {
-            let oldPlayer = this.players.find(x => x.id === msg.id);
+            let oldPlayer = this.players.find(x => x.id == msg.id);
             let player = oldPlayer;
             let positionX = player.x;
             let positionY = player.y;
@@ -112,24 +108,37 @@ class Master {
                 let box = this.map[newPositionY][newPositionX];
                 let oldBox = this.map[positionY][positionX];
                 if(box.players.length == 0) {
-                    if (box.burrow) {
+                    if(box.burrow) {
                         player.inBurrow = true;
                     }
                     player.x = newPositionX;
                     player.y = newPositionY;
                     this.updateMap(player, oldPlayer, box, oldBox);
-                } else {
                     object = {
                         id: player.id,
-                        func: actions
+                        x: player.x,
+                        y: player.y
+                    }
+                    if(box.endPoint) {
+                        object.funct = winnerPlayer;
+                    }
+                    else {
+                        object.funct = refreshMap;
+                    }
+                    this.communication.send(1, object);
+                } else {
+                    object = {
+                        id: player.id
                     }
                     if(box.burrow) {
-                        object.action = "occupiedBurrow"
+                        object.funct = "occupiedBurrow"
                     } else {
-                        object.action = "battle"
+                        object.funct = "battle"
                         player.x = newPositionX;
                         player.y = newPositionY;
                         this.updateMap(player, oldPlayer, box, oldBox);
+                        object.x = player.x;
+                        object.y = player.y;
                     }
                     this.communication.send(1, object);
                 }
@@ -142,14 +151,12 @@ class Master {
         this.map.slice(this.map.indexOf(box), 1, box);
         oldBox.players.slice(oldBox.players.indexOf(oldPlayer), 1);
         this.map.slice(this.map.indexOf(oldBox), 1, oldBox);
-        object = {
-            id: player.id,
-            func: refreshMap
-        }
-        object.energy = player.energy;
-        object.x = player.x;
-        object.y = player.y;
-        this.communication.send(1, object);
+    }
+
+    manageShift() {
+        this.manageBattles();
+        this.restoreLife();
+        this.killPlayer();
     }
         
     manageBattles() {
@@ -180,20 +187,16 @@ class Master {
                     id: player.id,
                     func: "deadPlayer"
                 }
-                this.comunication.send(1, object); // Communication debe indicar al cliente que ha muerto y cerrar la conexión
+                this.comunication.send(1, object);
                 this.players.slice(this.players.indexOf(player), 1);
+            } else {
+                object = {
+                    id: player.id,
+                    func: "refreshLife"
+                }
+                this.comunication.send(1, object);
             }
         });
-    }
-
-    endgame() { // Método que debe de ser lanzado al comienzo de la partida con una promesa
-        if(this.players.find(player => player.x == this.flag.x && player.y == this.flag.y)) {
-            object = {
-                id: player.id,
-                func: "winnerPlayer"
-            }
-            this.comunication.send(1, object); // Communication debe indicar al cliente que ha ganado y terminar el juego
-        }
     }
 }
 

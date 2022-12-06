@@ -16,7 +16,7 @@ function hello() {
         control.init({
             width: 51,
             height: 51,
-            porcentage : 0.2,
+            porcentageBurrow : 0.2,
             lifeTakenDamage : 10,
             lifeRestoredBurrow : 10,
             lifeRestoredAlone : 2

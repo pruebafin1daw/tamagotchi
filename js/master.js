@@ -27,7 +27,7 @@ class Master {
                 }
             }
         }
-        this.map[this.config.width/2][this.config.height/2].endPoint = true;
+        this.map[Math.floor(this.config.width/2)][Math.floor(this.config.height/2)].endPoint = true;
         this.clientMap = { 
             width : this.config.width,
             height : this.config.height,

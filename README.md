@@ -1,29 +1,36 @@
 
 ----- TODO -----
 <br/>
+<br/>
 Miguel:
   <br/>
-  ✓ He añadido el código de sergio en su mayoría a mi estructura y lo he adaptado.
+  &emsp;✓ He añadido el código de sergio en su mayoría a mi estructura y lo he adaptado.
   <br/>
-  ✓ He hecho la funcionalidad de las madrigueras.
+  &emsp;✓ He hecho la funcionalidad de las madrigueras.
   <br/>
-  ✓ He hecho la funcionalidad del intervalo para mandar mensajes con la que el cliente actualizará la interfaz.
+  &emsp;✓ He hecho la funcionalidad del intervalo para mandar mensajes con la que el cliente actualizará la interfaz.
+<br/>
 <br/>
 Raúl:
   <br/>
-  X Implementación formulario de inicio de juego y control de comida en jugadores.
+  &emsp;X Implementación formulario de inicio de juego.
+<br/>
 <br/>
 Sergio:
   <br/>
-  ✓ Ataque y manejo de energia.
+  &emsp;✓ Ataque y manejo de energia.
   <br/>
-  ✓ Funcionalidad y mecánicas.
+  &emsp;✓ Funcionalidad y mecánicas.
+<br/>
 <br/>
 Pablo:
   <br/>
-  ✓ Diseño del juego, eventos de victoria, perder, lucha y salud.
+  &emsp;✓ Diseño del juego, eventos de victoria, perder, lucha y salud.
   <br/>
-  ✓ Funcionalidad y mecánicas.
+  &emsp;✓ Funcionalidad y mecánicas.
+  <br/>
+  &emsp;✓ Control de comida en jugadores.
+<br/>
 <br/>
 ----- RESULTADO -----
 <br/>

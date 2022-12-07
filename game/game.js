@@ -550,7 +550,6 @@ game.Master = class {
         }
 
         this.players.forEach( player => {
-            console.log(container, table)
             table[player.x].childNodes[player.y].classList.toggle('player');
         });
     }
@@ -579,7 +578,8 @@ game.Master = class {
                 break;
 
             case 'disconnected':
-                this.players.pop(this.players.find(num => num.origin === origin));
+                let index = this.players.indexOf(this.players.find(num => num.origin === origin));
+                this.players.splice(index, 1);
                 break;
 
             case 'move':
@@ -635,7 +635,8 @@ game.Master = class {
 
             //Si los valores originales no han cambiado es porque no se ha movido
             if (originalX != jugador.x || originalY != jugador.y) {
-                this.map[originalX][originalY].players.pop(jugador);
+                let index = this.players.indexOf(jugador);
+                this.map[originalX][originalY].players.splice(index, 1);
                 this.map[jugador.x][jugador.y].players.push(jugador);
 
                 // Goal
@@ -679,7 +680,9 @@ game.Master = class {
                         dead: true
                     }, 1, jugador.origin.id);
 
-                    this.players.pop(jugador);
+                    let index = this.players.indexOf(jugador);
+
+                    this.players.splice(index, 1);
                 }
             }
         }

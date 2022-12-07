@@ -99,6 +99,13 @@ wss.on('connection', function connection(ws, request, client) {
 	}	
 
     ws.on('message', wss.broadcast);
+
+	ws.on('close', ws => {
+		clientMaster.send(JSON.stringify({
+			type: 'mensaje',
+			valor: 'disconnected'
+		}));
+	})
 });
 
 const interval = setInterval(function ping() {

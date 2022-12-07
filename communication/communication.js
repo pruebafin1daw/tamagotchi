@@ -29,6 +29,7 @@ class Communication {
                     if(this.handler) {
                         this.handler.newMsg(objeto, event.origin);
                     }
+                break;
             }
         };
 

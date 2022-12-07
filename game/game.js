@@ -458,6 +458,8 @@ game.Master = class {
         }
 
         this.createInterval();
+
+        this.printMap();
     }
 
     //Intervalo que recorre la lista de jugadores y les manda actualizaciones de estado como energía o jugadores
@@ -497,48 +499,7 @@ game.Master = class {
         }
     }
 
-    //Función que genera un formulario para el admin
-    showAdminConfigIU() {
-        this.form = new FormUI();
-        this.form.init({
-            id: "FormAdmin",
-            name: "Formulario de Administrador",
-            desc: "Introduce los datos que quieras para la partida",
-            container: this.mainDiv,
-            action: this.printMap,
-            fields: [
-                {
-                    id: "ejeX",
-                    type: "number",
-                    max: 50,
-                    min: 10,
-                    placeholder: "Introduce el ancho del mapa"
-                },
-                {
-                    id: "ejeY",
-                    type: "number",
-                    max: 50,
-                    min: 10,
-                    placeholder: "Introduce el alto del mapa"
-                },
-                {
-                    id: "maxPlayers",
-                    type: "number",
-                    max: 15,
-                    min: 2,
-                    placeholder: "Introduce la cantidad de jugadores Máxima"
-                },
-                {
-                    id: "submit",
-                    type: "submit",
-                }
-            ]
-        });
-
-        this.form.data.addEventListener("change", (target) => {
-            console.log("holi")
-        })
-    }
+    
 
     //Función que guarda el formulario del admin
     saveAdminConfig() {
@@ -547,65 +508,51 @@ game.Master = class {
 
     //Para imprimir la información del admin
     printMap() {
-        config = JSON.parse(JSON.stringify(Object.fromEntries(data)));
-
-        //Cogemos el ancho y largo del tablero
-        let x = +this.config.ejeX;
-        let y = +this.config.ejeY;
-
-        //Convertimos los numeros en impares
-        if (x % 2 == 0) {
-            x++;
-        }
-        if (y % 2 == 0) {
-            y++;
-        }
-
-        //Calculamos los centros respectivos donde irá la bandera del final
-        let centerX = Math.ceil(x / 2);
-        let centerY = Math.ceil(y / 2);
-
-        let meta = new game.Cell(centerX, centerY, game.FLAG);
-
-        this.map = [];
-
-        for (let i = 0; i < x; i++) {
-            let layer = [];
-            for (let j = 0; j < y; j++) {
-                if (i == centerX && j == centerY) {
-                    //Si los indices son los de la meta mete la casilla meta en la posición
-                    layer.push(meta);
-                } else {
-                    //Crea una casillas de un tipo random entre 0 y 1 (Vacia o descanso)
-                    //TODO: Hacer que el master pase también la cantidad de áreas de descanso.
-                    layer.push(new game.Cell(i, j, Math.round(Math.random())));
-                }
-            }
-            this.map.push(layer);
-        }
-
-        /*
-            Esta parte de aquí abajo no funciona porque es asíncrona la función por lo que se ejecutaría fuera
-            de el bloque de la clase y no podría acceder a sus variables
-        */
-
+        //Saca el mapa
         let tabla = document.createElement('table');
         for (let arr in this.map) {
             let row = document.createElement('tr');
-            for (let index in arr) {
+            for (let index in this.map[0]) {
                 let cell = document.createElement('td');
-                cell.style.width = 100 / x;
-                cell.style.height = 100 / y;
-                cell.textContent = index;
+                if(this.map[arr][index].burrow) {
+                    cell.classList.toggle('burrow');
+                } else if(this.map[arr][index].goal) {
+                    let div = document.createElement('div');
+                    div.classList.toggle('goalReward');
+                    cell.classList.toggle('goal');
+                    cell.appendChild(div);
+                } else {
+                    cell.classList.toggle('cell');
+                }
                 row.appendChild(cell);
             }
             tabla.appendChild(row);
         }
 
-        let div = document.querySelector(`.${config.container}`);
+        let div = document.querySelector('.mainDiv');
 
         div.innerHTML = "";
         div.appendChild(tabla);
+    }
+
+    updateMap() {
+        let div = document.querySelector('.mainDiv');
+
+        let container = div.childNodes;
+        let table = Array.from(container[0].childNodes);
+
+        for(let elem of table) {
+            for(let cell of elem.childNodes) {
+                if(cell.classList.contains('player')){
+                    cell.classList.toggle('player');
+                }
+            }
+        }
+
+        this.players.forEach( player => {
+            console.log(container, table)
+            table[player.x].childNodes[player.y].classList.toggle('player');
+        });
     }
 
     //Función para ejecutar los mensajes que nos llegan de communication
@@ -639,10 +586,13 @@ game.Master = class {
                 this.movePlayer(msg, origin);
                 break;
         }
+
+        this.updateMap();
     }
 
     //Función que mueve al jugador
     movePlayer(msg, origin) {
+        
         let jugador = this.players.find(x => x.origin.id === msg.valor.playerId);
 
         //Si existe el jugador y no está en una madriguera
@@ -728,6 +678,8 @@ game.Master = class {
                     this.communication.send({
                         dead: true
                     }, 1, jugador.origin.id);
+
+                    this.players.pop(jugador);
                 }
             }
         }

@@ -10,7 +10,7 @@ class Master {
         //Copia de mapa con solo el nombre de cllientes?
         //Idea en proceso
         this.clientPlayers = [];
-        this.getSize(config);  
+        this.getSize(config);
     }
 
     getSize(config){
@@ -59,7 +59,7 @@ class Master {
                     burrow: false,
                     burrowPlayer: null
                 }
-                if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {                    
+                if ((i==0) || (i==config.height-1) || (j==0) || (j==config.width-1)) {
                     if ((i+j)%2) {
                         this.map[i][j].burrow = true;
                         this.edges.push(this.map[i][j]);
@@ -73,7 +73,7 @@ class Master {
                     this.map[i][j].burrow = false;
 
                 }
-            }          
+            }
         }
         console.log(this.map);
         this.drawMap();
@@ -130,7 +130,7 @@ class Master {
             msg.valor = msg.valor.valor;
         }
         switch(msg.valor) {
-            case "newClient": 
+            case "newClient":
                 this.newPlayer(origin);
                 break;
             case "inputData":
@@ -174,14 +174,14 @@ class Master {
             player.playerY = cell[0].y;
             console.log(player);
             //TO DO Introducir nombre
-            
+
             this.players.push(player);
             this.map[cell[0].x][cell[0].y].players.push(player);
             this.clientPlayers.push(player.name);
             //Esto pasa los datos del jugador a todo el mundo junto con su id
             //Habrá que modficarla a medida que avancemos para que solo pase datos concretos
             this.communication.send(JSON.stringify(player), origin);
-            this.drawMap();            
+            this.drawMap();
         }
     }
 
@@ -190,37 +190,54 @@ class Master {
         player.name = name;
     }
 
-    controlMovement(direction, id){
+    controlMovement(direction, id) {
         let player = this.players.find(x => x.origin === id);
-        switch(direction){
-            case 'right': 
-                if(this.controlPlace(player.playerY, player.playerX++, player)){
-                    let index = this.map[player.playerY][player.playerX].players.indexOf(player);
-                    this.map[player.playerY][player.playerX].players.splice(index);
-                    this.drawMap();
-                } 
-                break;
-            case 'left': 
-                if(this.controlPlace(player.playerY, player.playerX--, player)){
-                    let index = this.map[player.playerY][player.playerX].players.indexOf(player);
-                    this.map[player.playerY][player.playerX].players.splice(index);
-                    this.drawMap();
-                }
-                break;
-            case 'up': 
-                if(this.controlPlace(player.playerY++, player.playerX, player)){
-                    let index = this.map[player.playerY][player.playerX].players.indexOf(player);
-                    this.map[player.playerY][player.playerX].players.splice(index);
-                    this.drawMap();
-                } 
-                break;
-            case 'down': 
-                if(this.controlPlace(player.playerY--, player.playerX, player)){
-                    let index = this.map[player.playerY][player.playerX].players.indexOf(player);
-                    this.map[player.playerY][player.playerX].players.splice(index);
-                    this.drawMap();
-                }
-                break;
+        //Si no tienes energia para moverte no te deberias poder mover.
+        //Ademas, añadir funcion para curarte un poco si no te mueves.
+        if (player.energy > 10){
+            switch (direction) {
+                case 'right':
+                    if (this.controlPlace(player.playerY, player.playerX++, player)) {
+                        let index = this.map[player.playerY][player.playerX].players.indexOf(player);
+                        this.map[player.playerY][player.playerX].players.splice(index);
+                        this.drawMap();
+                        //console logs para mostrar el cambio de energia, moveEnergy deberia de estar en controlPlace o funcion aparte para no estar repetido 4 veces.
+                        console.log(player.energy);
+                        this.moveEnergy(player);
+                        console.log(player.energy);
+                    }
+                    break;
+                case 'left':
+                    if (this.controlPlace(player.playerY, player.playerX--, player)) {
+                        let index = this.map[player.playerY][player.playerX].players.indexOf(player);
+                        this.map[player.playerY][player.playerX].players.splice(index);
+                        this.drawMap();
+                        console.log(player.energy);
+                        this.moveEnergy(player);
+                        console.log(player.energy);
+                    }
+                    break;
+                case 'up':
+                    if (this.controlPlace(player.playerY++, player.playerX, player)) {
+                        let index = this.map[player.playerY][player.playerX].players.indexOf(player);
+                        this.map[player.playerY][player.playerX].players.splice(index);
+                        this.drawMap();
+                        console.log(player.energy);
+                        this.moveEnergy(player);
+                        console.log(player.energy);
+                    }
+                    break;
+                case 'down':
+                    if (this.controlPlace(player.playerY--, player.playerX, player)) {
+                        let index = this.map[player.playerY][player.playerX].players.indexOf(player);
+                        this.map[player.playerY][player.playerX].players.splice(index);
+                        this.drawMap();
+                        console.log(player.energy);
+                        this.moveEnergy(player);
+                        console.log(player.energy);
+                    }
+                    break;
+            }
         }
     }
 
@@ -233,12 +250,15 @@ class Master {
             text.innerHTML = 'Other player is there';
         }else if(this.map[y][x].burrow == true){
             text.innerHTML = 'You are healing';
+            console.log("you are healing");
             this.map[y][x].players.push(player);
             move = true;
+            this.burrowHealing(player);
         }
         if(this.map[y][x].players.length != 0){
             text.innerHTML = 'You are in a fight, you migth die';
             this.map[y][x].players.push(player);
+            //this.playerCombat(player);
             move = true;
         }
         if(this.map[y][x].endPoint == true){
@@ -246,11 +266,55 @@ class Master {
         }
         if(this.map[y][x].endPoint == true && this.map[y][x].burrow == false && this.map[y][x].players.length == 0){
             text.innerHTML = 'Moving';
+            console.log("Moving");
             this.map[y][x].players.push(player);
             move = true;
         }
         this.container.appendChild(text);
         return move;
+    }
+
+    moveEnergy(player){
+        player.energy -= 10;
+        this.playerKiller(player);
+    }
+
+    /*playerCombat(player) {
+        player.energy -= Math.floor(Math.random() * 10);
+        this.playerKiller(player);
+        let otherplayer = this.players.find(x => x.origin !== player.id && x.playerX == player.playerX && x.playerY == player.playerY);
+        otherplayer.energy -= Math.floor(Math.random() * 10);
+        this.playerKiller(otherplayer);
+    }*/
+
+    /*//Posible reemplazo?
+    playerCombat(){
+        for (let i = 0; i < this.players.length; i++) {
+            let damage = Math.floor(Math.random() * 10);
+            for (let j = 0; j < this.players.length; j++) {
+                if(this.players[i].playerX == this.players[j].playerX && this.players[i].playerY == this.players[j].playerY){
+                    this.players[j].energy -= damage;
+                    this.playerKiller(this.players[j]);
+                }
+            }
+        }
+    }*/
+
+    burrowHealing(player){
+        console.log(player.energy);
+        if (player.energy >= 90){
+            player.energy = 100;
+        } else {
+            player.energy += 10;
+        }
+        console.log(player.energy);
+    }
+
+    playerKiller(player){
+        if(player.energy<1){
+            console.log("Estas muerto");
+            //mandar msg para "matar" cliente y eliminarlo de la lista de jugadores
+        }
     }
 }
 

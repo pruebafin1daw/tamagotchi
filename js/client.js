@@ -33,6 +33,13 @@ class Client {
                 break;
             case "move":
                 break;
+/*
+            //quitar controles por muerte
+            case "dead":
+                this.tamagotchiDeath();
+                this.drawDeath();
+
+                break;*/
             //Aquí recibe los datos del jugador mandado por maestro
             //A tratar como veamos conveniente, solo estoy mostrando el id
             default:
@@ -169,6 +176,58 @@ class Client {
             }
         })
     }
+
+    /*//No funciona.
+    tamagotchiDeath() {
+        document.removeEventListener('keydown', (e) => {
+            var message = "";
+            switch (e.key) {
+                //cambiar los sends por mensajes correctamente seteados.
+                case "ArrowRight":
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "right",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
+                    break;
+
+                case "ArrowLeft":
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "left",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
+                    break;
+                case "ArrowDown":
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "down",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
+                    break;
+
+                case "ArrowUp":
+                    message = {
+                        type : '0',
+                        valor : "move",
+                        direction : "up",
+                        id : this.player.origin
+                    }
+                    this.comunication.send(message, this.player.origin);
+                    break;
+            }
+        })
+    }
+
+    drawDeath(){
+        this.container.innerHTML = "You dead.";
+    }*/
 }
 
 

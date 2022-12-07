@@ -20,4 +20,9 @@ Alejandro - Se pide el nombre al cliente y se guarda en su jugador<br/>
 Andrei - Intento de realizacion de movimiento del tamagotchi.
 
 6/12<br/>
-Carlos - El cliente consigue enviar su nombre al maestro, el cliente cuando se conecta ya aparece en su mapa y en el del master. Movimiento del jugador a medias y sin funcionar. 
+Carlos - El cliente consigue enviar su nombre al maestro, el cliente cuando se conecta ya aparece en su mapa y en el del master. Movimiento del jugador a medias y sin funcionar. <br/>
+Andrei - Añadidas funcionalidades:<br/>
+&emsp;- Master - burrowHealing, para curar en madrigueras<br/>
+&emsp;- Master - playerKiller, para matar a un jugador (queda por implementar mensaje)<br/>
+&emsp;- Master - moveEnergy, pierde energia al moverse<br/>
+&emsp;&emsp; playerCombat a falta de poder probarlo con 2 players.

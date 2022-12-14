@@ -10,7 +10,14 @@ class Master {
         //Copia de mapa con solo el nombre de cllientes?
         //Idea en proceso
         this.clientPlayers = [];
-        this.getSize(config);
+        //this.getSize(config);
+        this.getSizeTest(config);
+    }
+
+    getSizeTest(config){
+        config.width = 13;
+        config.height = 13;
+        this.createMap(config);
     }
 
     getSize(config){
@@ -35,9 +42,8 @@ class Master {
                 text.innerHTML = "Write an odd number";
                 form.appendChild(text);
             }else{
-                let size = map.value;
-                config.width = size;
-                config.height = size;
+                config.width = mapSize;
+                config.height = mapSize;
                 //JUGADORES : x = players.value;
                 form.style.display = "none";
                 this.createMap(config);
@@ -101,9 +107,9 @@ class Master {
             let row = document.createElement('td');
             for (let j = 0; j < this.map[i].length; j++) {
                 let cell = document.createElement('tr');
-                if(this.map[i][j].endPoint == true){
+                if(this.map[j][i].endPoint == true){
                     cell.innerHTML = 'F ';
-                }else if(this.map[i][j].burrow == true){
+                }else if(this.map[j][i].burrow == true){
                     cell.innerHTML = 'M ';
                 }else{
                     cell.innerHTML = '0 ';

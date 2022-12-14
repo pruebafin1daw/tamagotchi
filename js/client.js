@@ -64,22 +64,31 @@ class Client {
         let burrows = this.player.map;
         let size = burrows[0].size;
         let finish = size / 2 - 0.5;
-        let cont = 0;
         let table = document.createElement('table');
+        console.log(burrows[2].x);
+        console.log(burrows[2].y);
         for (let i = 0; i < size; i++) {
             let row = document.createElement('td');
             for (let j = 0; j < size; j++) {
                 let cell = document.createElement('tr');
-                if(cont < burrows.length){
-                    if(burrows[cont].y == i && burrows[cont].x == j){
+                for(let k = 0; k < burrows.length ; k++){
+                    console.log(burrows[k]);
+                    if(burrows[k].x == j && burrows[k].y == i){
                         cell.innerHTML = 'M ';
-                        cont++
                     }else{
                         cell.innerHTML = '0 ';
                     }
-                }else{
-                    cell.innerHTML = '0 ';
                 }
+                // if(cont < burrows.length){
+                //     if(burrows[cont].y == i && burrows[cont].x == j){
+                //         cell.innerHTML = 'M ';
+                //         cont++
+                //     }else{
+                //         cell.innerHTML = '0 ';
+                //     }
+                // }else{
+                //     cell.innerHTML = '0 ';
+                // }
                 if(i == finish && j == finish){
                     cell.innerHTML = 'F ';
                 }
